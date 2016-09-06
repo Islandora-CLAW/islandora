@@ -1,9 +1,9 @@
 # This .info.yml files provides the basic information about our module to Drupal
 # More: https://www.drupal.org/node/2000204
-name: Islandora CLAW
-description: 'Learning Drupal 8 with Islandora Claw'
+name: 'islandora'
+description: "Drupal 8 islandora claw playground"
 type: module
-package: Islandora
+package: islandora
 core: 8.x
 dependencies:
   - block
@@ -11,4 +11,6 @@ dependencies:
   - path
   - text
   - options
-version: '8.x-2.x-dev'
+  - inline_entity_form
+  - jsonld
+version: '8.x-1.x-dev'

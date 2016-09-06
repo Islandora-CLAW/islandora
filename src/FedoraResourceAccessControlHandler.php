@@ -11,6 +11,7 @@ use Drupal\Core\Access\AccessResult;
  * Access controller for the Fedora resource entity.
  *
  * @see \Drupal\islandora\Entity\FedoraResource.
+ * @ingroup islandora
  */
 class FedoraResourceAccessControlHandler extends EntityAccessControlHandler {
 

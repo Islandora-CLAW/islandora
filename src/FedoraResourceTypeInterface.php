@@ -10,9 +10,4 @@ use Drupal\Core\Config\Entity\ConfigEntityInterface;
 interface FedoraResourceTypeInterface extends ConfigEntityInterface {
 
   // Add get/set methods for your configuration properties here.
-
-  /**
-   * Return the entities rdf_type
-   */
-  public function getRdfType();
 }

@@ -1,19 +1,12 @@
-entity.fedora_resource.collection:
-  path: '/admin/structure/fedora_resource'
+# Islandora Routing definition
+entity.fedora_resource_type.rdftest:
+  path: '/fedora_resource/{fedora_resource}/rdf'
   defaults:
-    _entity_list: 'fedora_resource'
-    _title: 'Fedora Resource'
+    _controller: '\Drupal\node\Controller\NodePreviewController::view'
+    _title_callback: '\Drupal\node\Controller\NodePreviewController::title'
   requirements:
-    _permission: 'administer fedora resource entities'
+    _node_preview_access: '{node_preview}'
   options:
-    _admin_route: true
-
-entity.fedora_resource_type.collection:
-  path: '/admin/structure/fedora_resource_type'
-  defaults:
-    _entity_list: 'fedora_resource_type'
-    _title: 'Fedora Resource Type'
-  requirements:
-    _permission: 'administer fedora resource type entities'
-  options:
-    _admin_route: true
+    parameters:
+      node_preview:
+        type: 'node_preview'

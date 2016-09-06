@@ -37,15 +37,6 @@ class FedoraResourceTypeForm extends EntityForm {
       '#disabled' => !$fedora_resource_type->isNew(),
     );
 
-    $form['rdf_type'] = array(
-      '#type' => 'textfield',
-      '#title' => $this->t('RDF Type'),
-      '#maxlength' => 255,
-      '#default_value' => $fedora_resource_type->getRdfType(),
-      '#description' => $this->t('Base RDF type for this entity'),
-      '#required' => TRUE,
-    );
-
     /* You will need additional form elements for your custom properties. */
 
     return $form;

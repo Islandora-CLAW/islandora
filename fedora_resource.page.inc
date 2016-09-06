@@ -5,8 +5,17 @@
  * Contains fedora_resource.page.inc.
  *
  * Page callback for Fedora resource entities.
+ *
+ * This file is part of the Islandora Project.
+ *
+ * (c) Islandora Foundation
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ *
+ * @author Diego Pino Navarro <dpino@metro.org> https://github.com/diegopino
+ *
  */
-
 use Drupal\Core\Render\Element;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
@@ -48,7 +57,7 @@ function template_preprocess_fedora_resource_content_add_list(&$variables) {
   foreach ($variables['content'] as $type) {
     $variables['types'][$type->id()] = array(
       'link' => Link::fromTextAndUrl($type->label(), new Url('entity.fedora_resource.add_form', array(
-        'fedora_resource_type' => $type->id()
+        'fedora_resource_type' => $type->id(),
       ), array('query' => $query))),
       'description' => array(
       '#markup' => $type->label(),

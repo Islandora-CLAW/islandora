@@ -2,7 +2,16 @@
 
 /**
  * @file
- * Contains islandora.module..
+ * Contains islandora.module.
+ *
+ * This file is part of the Islandora Project.
+ *
+ * (c) Islandora Foundation
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ *
+ * @author Diego Pino Navarro <dpino@metro.org> https://github.com/diegopino
  */
 
 use Drupal\Core\Routing\RouteMatchInterface;
@@ -55,4 +64,21 @@ function islandora_theme_suggestions_fedora_resource(array $variables) {
   $suggestions[] = 'fedora_resource__' . $entity->id();
   $suggestions[] = 'fedora_resource__' . $entity->id() . '__' . $sanitized_view_mode;
   return $suggestions;
+}
+
+/**
+ * Implements hook_rdf_namespaces().
+ */
+function islandora_rdf_namespaces() {
+  // Yes, it's amazing, rdf is not registered by default!
+  return array(
+    'ldp'  => 'http://www.w3.org/ns/ldp#',
+    'dc11' => 'http://purl.org/dc/elements/1.1/',
+    'nfo' => 'http://www.semanticdesktop.org/ontologies/2007/03/22/nfo/v1.1/',
+    'ebucore' => 'http://www.ebu.ch/metadata/ontologies/ebucore/ebucore#',
+    'fedora' => 'http://fedora.info/definitions/v4/repository#',
+    'owl' => 'http://www.w3.org/2002/07/owl#',
+    'ore' => 'http://www.openarchives.org/ore/terms/',
+    'rdf' => 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
+  );
 }

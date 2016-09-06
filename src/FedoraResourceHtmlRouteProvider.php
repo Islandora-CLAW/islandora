@@ -2,8 +2,10 @@
 
 namespace Drupal\islandora;
 
+use Drupal\Component\Uuid\Uuid;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\Routing\AdminHtmlRouteProvider;
+use Drupal\Core\Entity\Routing\EntityRouteProviderInterface;
 use Symfony\Component\Routing\Route;
 
 /**
@@ -11,8 +13,9 @@ use Symfony\Component\Routing\Route;
  *
  * @see Drupal\Core\Entity\Routing\AdminHtmlRouteProvider
  * @see Drupal\Core\Entity\Routing\DefaultHtmlRouteProvider
+ * @ingroup islandora
  */
-class FedoraResourceHtmlRouteProvider extends AdminHtmlRouteProvider {
+class FedoraResourceHtmlRouteProvider extends AdminHtmlRouteProvider implements EntityRouteProviderInterface {
 
   /**
    * {@inheritdoc}
@@ -37,7 +40,39 @@ class FedoraResourceHtmlRouteProvider extends AdminHtmlRouteProvider {
       $collection->add("$entity_type_id.settings", $settings_form_route);
     }
 
+    if ($uuid_route = $this->getUuidRoute($entity_type)) {
+      $collection->add("islandora.{$entity_type_id}.uuid", $uuid_route);
+    }
+
+
     return $collection;
+  }
+
+  /** Gets the UUID route.
+   *
+   * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
+   *   The entity type.
+   *
+   * @return \Symfony\Component\Routing\Route|null
+   *   The generated route, if available.
+   */
+  protected function getUuidRoute(EntityTypeInterface $entity_type) {
+    if ($entity_type->getKey('uuid') && $entity_type->hasViewBuilderClass() && $entity_type->hasLinkTemplate('uuid')) {
+      $entity_type_id = $entity_type->id();
+      $route = new Route($entity_type->getLinkTemplate('uuid'));
+      $route
+        ->addDefaults([
+          '_entity_view' => 'fedora_resource.full',
+          '_title_callback' => '\Drupal\Core\Entity\Controller\EntityController::title',
+        ])
+        ->setRequirement('_entity_access', $entity_type_id . '.view')
+        ->setOption('parameters', [
+          $entity_type_id => ['type' => 'entity:' . $entity_type_id],
+        ])
+        // Fetch UUID pattern from Uuid class(constant)
+        ->setRequirement($entity_type_id, '^' . Uuid::VALID_PATTERN . '$');
+      return $route;
+    }
   }
 
   /**

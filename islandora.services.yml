@@ -1,0 +1,8 @@
+# Islandora Services
+# islandora.services.yml:
+services:
+  islandora.paramconverter.entity:
+    class: Drupal\islandora\ParamConverter\UuidEntityConverter
+    tags:
+      - { name: paramconverter }
+    arguments: ['@entity.manager']

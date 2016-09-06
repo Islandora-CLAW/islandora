@@ -3,7 +3,6 @@ entity.fedora_resource.add_form:
   title: 'Add Fedora resource'
   appears_on:
     - entity.fedora_resource.collection
-
 entity.fedora_resource_type.add_form:
   route_name: 'entity.fedora_resource_type.add_form'
   title: 'Add Fedora resource type'

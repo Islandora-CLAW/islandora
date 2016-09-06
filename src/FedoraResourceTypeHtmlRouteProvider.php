@@ -11,6 +11,7 @@ use Symfony\Component\Routing\Route;
  *
  * @see Drupal\Core\Entity\Routing\AdminHtmlRouteProvider
  * @see Drupal\Core\Entity\Routing\DefaultHtmlRouteProvider
+ * @ingroup islandora
  */
 class FedoraResourceTypeHtmlRouteProvider extends AdminHtmlRouteProvider {
 

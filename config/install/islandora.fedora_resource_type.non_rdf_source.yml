@@ -1,4 +1,3 @@
 langcode: en
 id: non_rdf_source
 label: 'Non RDF Source'
-rdf_type: fedora:Binary

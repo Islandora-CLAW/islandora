@@ -10,9 +10,6 @@ islandora.fedora_resource_type.*:
       label: 'Label'
     uuid:
       type: string
-    rdf_type:
-      type: label
-      label: 'RDF type'
 
 # Plugin \Drupal\islandora\Plugin\Search\FedoraResourceSearch
 search.plugin.node_search:
