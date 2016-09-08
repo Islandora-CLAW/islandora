@@ -245,20 +245,10 @@ class FedoraResource extends ContentEntityBase implements FedoraResourceInterfac
    *   An array of default values.
    */
   public static function getFedoraRoot() {
+    // Just stub code, we need to figure out what "root is" in this context
     return array('root');
   }
 
-  /**
-   * Default value callback for 'fedora_has_parent' base field definition.
-   *
-   * @see ::baseFieldDefinitions()
-   *
-   * @return array
-   *   An array of default values.
-   */
-  public static function getFedoraRoot() {
-    return array('root');
-  }
 
   /**
    * {@inheritdoc}
