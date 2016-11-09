@@ -41,7 +41,7 @@ class FedoraResourceHtmlRouteProvider extends AdminHtmlRouteProvider implements 
     }
 
     if ($uuid_route = $this->getUuidRoute($entity_type)) {
-      $collection->add("islandora.{$entity_type_id}.uuid", $uuid_route);
+      $collection->add("entity.{$entity_type_id}.uuid", $uuid_route);
     }
 
 
@@ -62,12 +62,12 @@ class FedoraResourceHtmlRouteProvider extends AdminHtmlRouteProvider implements 
       $route = new Route($entity_type->getLinkTemplate('uuid'));
       $route
         ->addDefaults([
-          '_entity_view' => 'fedora_resource.full',
+          '_entity_view' => "{$entity_type_id}.full",
           '_title_callback' => '\Drupal\Core\Entity\Controller\EntityController::title',
         ])
-        ->setRequirement('_entity_access', $entity_type_id . '.view')
+        ->setRequirement('_entity_access', "{$entity_type_id}.view")
         ->setOption('parameters', [
-          $entity_type_id => ['type' => 'entity:' . $entity_type_id],
+          $entity_type_id => ['type' => "uuid"],
         ])
         // Fetch UUID pattern from Uuid class(constant)
         ->setRequirement($entity_type_id, '^' . Uuid::VALID_PATTERN . '$');
