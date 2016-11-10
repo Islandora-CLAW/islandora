@@ -1,0 +1,2 @@
+broker_url: 'http://localhost:61613'
+triplestore_index_queue: '/islandora/triplestore/index'

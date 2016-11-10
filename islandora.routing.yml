@@ -10,3 +10,21 @@ entity.fedora_resource_type.rdftest:
     parameters:
       node_preview:
         type: 'node_preview'
+
+# Menu list of Islandora configuration forms 
+system.admin_config_islandora:
+  path: '/admin/config/islandora'
+  defaults:
+    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
+    _title: 'Islandora'
+  requirements:
+    _permission: 'access administration pages'
+
+# Core Islandora configuration form 
+system.islandora_settings:
+  path: '/admin/config/islandora/core'
+  defaults:
+    _form: '\Drupal\islandora\Form\IslandoraSettingsForm'
+    _title: 'Islandora Settings'
+  requirements:
+    _permission: 'administer site configuration'

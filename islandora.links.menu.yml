@@ -14,3 +14,16 @@ entity.fedora_resource_type.collection:
   parent: system.admin_structure
   weight: 99
 
+# Menu list of Islandora configuration forms 
+system.admin_config_islandora:
+  title: Islandora
+  parent: system.admin_config
+  route_name: system.admin_config_islandora 
+  weight: 100
+
+# Core Islandora configuration form 
+system.islandora_settings:
+  title: 'Core Settings'
+  parent: system.admin_config_islandora
+  route_name: system.islandora_settings 
+  description: 'Confgure core Islandora settings'
