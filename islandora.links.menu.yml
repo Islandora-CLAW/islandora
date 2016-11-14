@@ -1,11 +1,3 @@
-# Fedora resource menu items definition
-entity.fedora_resource.collection:
-  title: 'Fedora resource list'
-  route_name: entity.fedora_resource.collection
-  description: 'List Fedora resource entities'
-  parent: system.admin_structure
-  weight: 100
-
 # Fedora resource type menu items definition
 entity.fedora_resource_type.collection:
   title: 'Fedora resource type list'

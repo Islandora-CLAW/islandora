@@ -57,7 +57,7 @@ use Drupal\user\UserInterface;
  *     "add-form" = "/fedora_resource/add/{fedora_resource_type}",
  *     "edit-form" = "/fedora_resource/{fedora_resource}/edit",
  *     "delete-form" = "/fedora_resource/{fedora_resource}/delete",
- *     "collection" = "/admin/structure/fedora_resource",
+ *     "collection" = "/admin/content/fedora_resource",
  *   },
  *   bundle_entity_type = "fedora_resource_type",
  *   field_ui_base_route = "entity.fedora_resource_type.edit_form"
@@ -293,7 +293,7 @@ class FedoraResource extends ContentEntityBase implements FedoraResourceInterfac
       ))
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
-      
+
       $fields['fedora_has_parent'] = BaseFieldDefinition::create('entity_reference')
         ->setLabel(t('Fedora has Parent'))
         ->setDescription(t('Parent Fedora Resource.'))

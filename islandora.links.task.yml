@@ -14,3 +14,8 @@ entity.fedora_resource.delete_form:
   base_route:  entity.fedora_resource.canonical
   title: Delete
   weight: 10
+
+entity.fedora_resource.collection:
+  route_name: entity.fedora_resource.collection
+  base_route: system.admin_content
+  title: 'Fedora Resources'
