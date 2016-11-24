@@ -17,6 +17,8 @@ class IslandoraSettingsForm extends ConfigFormBase {
   const CONFIG_NAME = 'islandora.settings';
   const BROKER_URL = 'broker_url';
   const TRIPLESTORE_INDEX_QUEUE = 'triplestore_index_queue';
+  const FEDORA_REST_ENDPOINT = 'fedora_rest_endpoint';
+  const FEDORA_INDEXING_QUEUE = 'fedora_indexing_queue';
 
   /**
    * {@inheritdoc}
@@ -52,6 +54,20 @@ class IslandoraSettingsForm extends ConfigFormBase {
       '#default_value' => $config->get(self::TRIPLESTORE_INDEX_QUEUE),
     );
 
+    $form[self::FEDORA_REST_ENDPOINT] = array(
+      '#type' => 'textfield',
+      '#title' => $this->t('Fedora REST Endpoint'),
+      '#description' => $this->t('The URL for your Fedora instance.'),
+      '#default_value' => $config->get(self::FEDORA_REST_ENDPOINT),
+    );
+
+    $form[self::FEDORA_INDEXING_QUEUE] = array(
+      '#type' => 'textfield',
+      '#title' => $this->t('Fedora Indexing Queue Name'),
+      '#description' => $this->t('Name of the queue where Drupal will publish updates to have "indexed" to Fedora'),
+      '#default_value' => $config->get(self::FEDORA_INDEXING_QUEUE),
+    );
+
     return parent::buildForm($form, $form_state);
   }
 
@@ -64,6 +80,8 @@ class IslandoraSettingsForm extends ConfigFormBase {
     $config
       ->set(self::BROKER_URL, $form_state->getValue(self::BROKER_URL))
       ->set(self::TRIPLESTORE_INDEX_QUEUE, $form_state->getValue(self::TRIPLESTORE_INDEX_QUEUE))
+      ->set(self::FEDORA_REST_ENDPOINT, $form_state->getValue(self::FEDORA_REST_ENDPOINT))
+      ->set(self::FEDORA_INDEXING_QUEUE, $form_state->getValue(self::FEDORA_INDEXING_QUEUE))
       ->save();
 
     parent::submitForm($form, $form_state);

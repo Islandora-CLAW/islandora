@@ -1,2 +1,4 @@
 broker_url: 'http://localhost:61613'
 triplestore_index_queue: '/islandora/triplestore/index'
+fedora_rest_endpoint: 'http://localhost:8080/fcrepo/rest'
+fedora_indexing_queue: 'islandora/indexing/fedora'
