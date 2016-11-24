@@ -1,0 +1,34 @@
+{
+  "name": "drupal/islandora",
+  "description": "A client for interacting with a Fedora 4 server using CLAW microservices.",
+  "type": "drupal-module",
+  "homepage": "https://github.com/islandora-claw/islandora",
+  "support": {
+    "issues": "https://github.com/islandora-claw/CLAW/issues",
+    "irc": "irc://irc.freenode.net/islandora"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^4.8",
+    "drupal/coder": "*",
+    "sebastian/phpcpd": "*"
+  },
+  "license": "GPL-2.0+",
+  "authors": [
+    {
+      "name": "Islandora Foundation",
+      "email": "community@islandora.ca",
+      "role": "Owner"
+
+    },
+    {
+      "name": "Daniel Lamb",
+      "email": "dlamb@islandora.ca",
+      "role": "Maintainer"
+    },
+    {
+      "name": "Diego Pino",
+      "email": "dpino@krayon.cl",
+      "role": "Maintainer"
+    }
+  ]
+}

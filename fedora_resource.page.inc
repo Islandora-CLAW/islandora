@@ -14,8 +14,8 @@
  * file that was distributed with this source code.
  *
  * @author Diego Pino Navarro <dpino@metro.org> https://github.com/diegopino
- *
  */
+
 use Drupal\Core\Render\Element;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
@@ -41,16 +41,16 @@ function template_preprocess_fedora_resource(array &$variables) {
 }
 
 /**
-* Prepares variables for a custom entity type creation list templates.
-*
-* Default template: fedora_resource-content-add-list.html.twig.
-*
-* @param array $variables
-*   An associative array containing:
-*   - content: An array of fedora_resource-types.
-*
-* @see block_content_add_page()
-*/
+ * Prepares variables for a custom entity type creation list templates.
+ *
+ * Default template: fedora_resource-content-add-list.html.twig.
+ *
+ * @param array $variables
+ *   An associative array containing:
+ *   - content: An array of fedora_resource-types.
+ *
+ * @see block_content_add_page()
+ */
 function template_preprocess_fedora_resource_content_add_list(&$variables) {
   $variables['types'] = array();
   $query = \Drupal::request()->query->all();
@@ -60,11 +60,11 @@ function template_preprocess_fedora_resource_content_add_list(&$variables) {
         'fedora_resource_type' => $type->id(),
       ), array('query' => $query))),
       'description' => array(
-      '#markup' => $type->label(),
+        '#markup' => $type->label(),
       ),
       'title' => $type->label(),
       'localized_options' => array(
-      'query' => $query,
+        'query' => $query,
       ),
     );
   }

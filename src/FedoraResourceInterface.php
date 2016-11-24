@@ -14,8 +14,6 @@ use Drupal\user\EntityOwnerInterface;
  */
 interface FedoraResourceInterface extends ContentEntityInterface, EntityChangedInterface, EntityOwnerInterface {
 
-  // Add get/set methods for your configuration properties here.
-
   /**
    * Gets the Fedora resource type.
    *
@@ -76,7 +74,8 @@ interface FedoraResourceInterface extends ContentEntityInterface, EntityChangedI
    * Sets the published status of a Fedora resource.
    *
    * @param bool $published
-   *   TRUE to set this Fedora resource to published, FALSE to set it to unpublished.
+   *   TRUE to set this Fedora resource to published, FALSE to set it to
+   *   unpublished.
    *
    * @return \Drupal\islandora\FedoraResourceInterface
    *   The called Fedora resource entity.
@@ -110,11 +109,12 @@ interface FedoraResourceInterface extends ContentEntityInterface, EntityChangedI
   /**
    * Get the parent entity.
    *
-   * @param \Drupal\islandora\FedoraResourceInterface $parent
-   *    The parent entity
+   * @param \Drupal\Core\Entity\EntityTypeInterface $entity
+   *    The parent entity.
    *
    * @return \Drupal\islandora\FedoraResourceInterface
    *    The called Fedora resource entity.
    */
   public function setParent(EntityTypeInterface $entity);
+
 }

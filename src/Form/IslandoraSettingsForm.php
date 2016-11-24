@@ -1,9 +1,5 @@
 <?php
 
-/**
- * @file
- * Settings form for Islandora.
- */
 namespace Drupal\islandora\Form;
 
 use Drupal\Core\Form\ConfigFormBase;
@@ -86,5 +82,5 @@ class IslandoraSettingsForm extends ConfigFormBase {
 
     parent::submitForm($form, $form_state);
   }
-}
 
+}

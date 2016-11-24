@@ -25,7 +25,7 @@ function islandora_help($route_name, RouteMatchInterface $route_match) {
     case 'help.page.islandora':
       $output = '';
       $output .= '<h3>' . t('About') . '</h3>';
-      $output .= '<p>' . t('') . '</p>';
+      $output .= '<p>' . t('This is a placeholder for future help text about Islandora.') . '</p>';
       return $output;
 
     default:
@@ -51,8 +51,8 @@ function islandora_theme() {
 }
 
 /**
-* Implements hook_theme_suggestions_HOOK().
-*/
+ * Implements hook_theme_suggestions_HOOK().
+ */
 function islandora_theme_suggestions_fedora_resource(array $variables) {
   $suggestions = array();
   $entity = $variables['elements']['#fedora_resource'];

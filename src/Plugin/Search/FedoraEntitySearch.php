@@ -1,8 +1,4 @@
-<?
-/**
- * @file
- * Contains \Drupal\islandora\Plugin\Search\FedoraEntitySearch.
- */
+<?php
 
 namespace Drupal\islandora\Plugin\Search;
 
@@ -510,7 +506,7 @@ class FedoraResourceSearch extends ConfigurableSearchPluginBase implements Acces
   /**
    * Indexes a single contact.
    *
-   * @param \Drupal\content_entity_example\ContactInterface $entity
+   * @param \Drupal\islandora\FedoraResourceInterface $entity
    *   The contact to index.
    */
   protected function indexFedoraResource(FedoraResourceInterface $entity) {
@@ -674,7 +670,6 @@ class FedoraResourceSearch extends ConfigurableSearchPluginBase implements Acces
       $filters[] = 'name:' . $value;
       $advanced = TRUE;
     }
-
 
     // Advanced form, keywords fields.
     if ($form_state->getValue('or') != '') {

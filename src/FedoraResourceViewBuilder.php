@@ -1,19 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: dpino
- * Date: 8/16/16
- * Time: 11:49 PM
- */
 
 namespace Drupal\islandora;
-
 
 use Drupal\node\NodeViewBuilder;
 
 /**
- * Class FedoraResourceViewBuilder
- * view builder handler.
+ * Class FedoraResourceViewBuilder view builder handler.
  *
  * @TODO this should manage how fedora_resource are build to be viewed.
  *

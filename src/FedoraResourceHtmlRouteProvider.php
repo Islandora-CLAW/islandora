@@ -44,11 +44,11 @@ class FedoraResourceHtmlRouteProvider extends AdminHtmlRouteProvider implements 
       $collection->add("entity.{$entity_type_id}.uuid", $uuid_route);
     }
 
-
     return $collection;
   }
 
-  /** Gets the UUID route.
+  /**
+   * Gets the UUID route.
    *
    * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
    *   The entity type.

@@ -171,9 +171,10 @@ class FedoraResourceEntityInlineForm extends EntityInlineForm implements InlineF
       $form_display->validateFormValues($entity, $entity_form, $form_state);
       $entity->setValidationRequired(FALSE);
 
-      foreach($form_state->getErrors() as $name => $message) {
+      foreach ($form_state->getErrors() as $name => $message) {
         // $name may be unknown in $form_state and
-        // $form_state->setErrorByName($name, $message) may suppress the error message.
+        // $form_state->setErrorByName($name, $message)
+        // may suppress the error message.
         $form_state->setError($triggering_element, $message);
       }
     }
@@ -221,7 +222,12 @@ class FedoraResourceEntityInlineForm extends EntityInlineForm implements InlineF
     // Invoke all specified builders for copying form values to entity fields.
     if (isset($entity_form['#entity_builders'])) {
       foreach ($entity_form['#entity_builders'] as $function) {
-        call_user_func_array($function, [$entity->getEntityTypeId(), $entity, &$entity_form, &$form_state]);
+        call_user_func_array($function, [
+          $entity->getEntityTypeId(),
+          $entity,
+          &$entity_form,
+          &$form_state,
+        ]);
       }
     }
   }
@@ -232,14 +238,15 @@ class FedoraResourceEntityInlineForm extends EntityInlineForm implements InlineF
    * After field_attach_submit() has run and the form has been closed, the form
    * state still contains field data in $form_state->get('field'). Unless that
    * data is removed, the next form with the same #parents (reopened add form,
-   * for example) will contain data (i.e. uploaded files) from the previous form.
+   * for example) will contain data (i.e. uploaded files) from the previous
+   * form.
    *
-   * @param $entity_form
+   * @param array $entity_form
    *   The entity form.
-   * @param $form_state
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The form state of the parent form.
    */
-  public static function submitCleanFormState(&$entity_form, FormStateInterface $form_state) {
+  public static function submitCleanFormState(array &$entity_form, FormStateInterface $form_state) {
     $info = \Drupal::entityTypeManager()->getDefinition($entity_form['#entity_type']);
     if (!$info->get('field_ui_base_route')) {
       // The entity type is not fieldable, nothing to cleanup.
