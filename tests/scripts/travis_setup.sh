@@ -79,11 +79,3 @@ drush cr
 # The shebang in this file is a bogeyman that is haunting the web test cases.
 rm /home/travis/.phpenv/rbenv.d/exec/hhvm-switcher.bash
 sleep 20
-
-# Install drupal-console
-cd $HOME
-composer global require drupal/coder
-composer global require 'sebastian/phpcpd=*'
-export PATH="\$PATH:$HOME/.composer/vendor/bin"
-
-$HOME/.composer/vendor/bin/phpcs --config-set installed_paths ~/.composer/vendor/drupal/coder/coder_sniffer
