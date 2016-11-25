@@ -18,13 +18,10 @@ branches:
 
 before_install:
   - export ISLANDORA_DIR=$TRAVIS_BUILD_DIR
-  - echo 'always_populate_raw_post_data = 1' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
 
 install:
 #  - $TRAVIS_BUILD_DIR/tests/scripts/travis_setup.sh
   - composer install
-  - php vendor/bin/phpcs --config-set installed_paths vendor/drupal/coder/coder_sniffer
-
 
 script:
   - $ISLANDORA_DIR/tests/scripts/line_endings.sh .
