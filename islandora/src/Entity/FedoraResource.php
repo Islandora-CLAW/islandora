@@ -223,21 +223,30 @@ class FedoraResource extends ContentEntityBase implements FedoraResourceInterfac
    * {@inheritdoc}
    */
   public function hasParent() {
-    return ($this->get('fedora_has_parent') !== NULL);
+    return ($this->get('fedora_has_parent')->first() !== NULL);
   }
 
   /**
    * {@inheritdoc}
    */
   public function getParent() {
-    return $this->get('fedora_has_parent')->getEntity();
+    return $this->get('fedora_has_parent')
+      ->first()
+      ->get('entity')
+      ->getTarget()
+      ->getValue();
   }
 
   /**
    * {@inheritdoc}
    */
   public function getParentId() {
-    return $this->get('fedora_has_parent')->getEntity()->id();
+    return $this->get('fedora_has_parent')
+      ->first()
+      ->get('entity')
+      ->getTarget()
+      ->getValue()
+      ->id();
   }
 
   /**
@@ -316,7 +325,7 @@ class FedoraResource extends ContentEntityBase implements FedoraResourceInterfac
       ->setRevisionable(TRUE)
       ->setSetting('target_type', 'fedora_resource')
       ->setSetting('handler', 'default')
-      ->setDefaultValueCallback('Drupal\islandora\Entity\FedoraResource::getFedoraRoot')
+      ->setDefaultValue(NULL)
       ->setTranslatable(TRUE)
       ->setDisplayOptions('view', array(
         'label' => 'hidden',
