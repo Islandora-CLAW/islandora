@@ -1,0 +1,44 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - islandora.fedora_resource_type.non_rdf_source
+  module:
+    - islandora
+id: fedora_resource_type._non_rdf_source
+targetEntityType: fedora_resource
+bundle: non_rdf_source
+types:
+  - 'schema:Thing'
+  - 'ldp:RDFSource'
+  - 'ldp:Container'
+fieldMappings:
+  title:
+    properties:
+      - 'dc11:title'
+      - 'rdf:label'
+  created:
+    properties:
+      - 'schema:dateCreated'
+    datatype_callback:
+      callable: 'Drupal\rdf\CommonDataConverter::dateIso8601Value'
+  changed:
+    properties:
+      - 'schema:dateModified'
+    datatype_callback:
+      callable: 'Drupal\rdf\CommonDataConverter::dateIso8601Value'
+  rdf_type:
+    properties:
+      - 'rdf:type'
+  uid:
+    properties:
+      - 'schema:author'
+    mapping_type: rel
+  fedora_has_parent:
+    properties:
+      - 'fedora:hasParent'
+    mapping_type: rel
+  ldp_contains:
+    properties:
+      - 'ldp:contains'
+    mapping_type: rel
