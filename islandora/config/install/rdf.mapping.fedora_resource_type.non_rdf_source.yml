@@ -5,7 +5,7 @@ dependencies:
     - islandora.fedora_resource_type.non_rdf_source
   module:
     - islandora
-id: fedora_resource_type._non_rdf_source
+id: fedora_resource_type.non_rdf_source
 targetEntityType: fedora_resource
 bundle: non_rdf_source
 types:
