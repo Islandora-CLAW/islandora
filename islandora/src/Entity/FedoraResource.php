@@ -124,6 +124,18 @@ class FedoraResource extends ContentEntityBase implements FedoraResourceInterfac
   /**
    * {@inheritdoc}
    */
+  public function preSave(EntityStorageInterface $storage) {
+    parent::preSave($storage);
+
+    // Increment the vclock.
+    if (!$this->isNew()) {
+      $this->set("vclock", $this->get("vclock")->value + 1);
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function postSave(EntityStorageInterface $storage, $update = TRUE) {
     parent::postSave($storage, $update);
 
@@ -264,6 +276,13 @@ class FedoraResource extends ContentEntityBase implements FedoraResourceInterfac
   /**
    * {@inheritdoc}
    */
+  public function getVclock() {
+    return $this->get('vclock')->value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
     $fields['id'] = BaseFieldDefinition::create('integer')
       ->setLabel(t('ID'))
@@ -283,6 +302,11 @@ class FedoraResource extends ContentEntityBase implements FedoraResourceInterfac
       ->setLabel(t('UUID'))
       ->setDescription(t('The UUID of the Fedora resource entity.'))
       ->setReadOnly(TRUE);
+    $fields['vclock'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Vector Clock'))
+      ->setDescription(t('Simple accumulator used for causality tracking'))
+      ->setDefaultValue(0)
+      ->setSetting('unsigned', TRUE);
 
     $fields['user_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Authored by'))
