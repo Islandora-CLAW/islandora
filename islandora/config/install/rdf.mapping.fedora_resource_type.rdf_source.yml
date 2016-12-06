@@ -30,6 +30,9 @@ fieldMappings:
   rdf_type:
     properties:
       - 'rdf:type'
+  vclock:
+    properties:
+      - 'islandora:vclock'
   uid:
     properties:
       - 'schema:author'
