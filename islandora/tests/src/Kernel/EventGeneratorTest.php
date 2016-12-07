@@ -4,7 +4,6 @@ namespace Drupal\Tests\islandora\Kernel;
 
 use Drupal\islandora\Entity\FedoraResource;
 use Drupal\islandora\EventGenerator\EventGenerator;
-use Drupal\KernelTests\KernelTestBase;
 use Drupal\simpletest\UserCreationTrait;
 
 /**
@@ -12,7 +11,7 @@ use Drupal\simpletest\UserCreationTrait;
  *
  * @group islandora
  */
-class EventGeneratorTest extends KernelTestBase {
+class EventGeneratorTest extends IslandoraKernelTestBase {
 
   use UserCreationTrait {
     createUser as drupalCreateUser;
@@ -42,35 +41,8 @@ class EventGeneratorTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
-    'system',
-    'user',
-    'field',
-    'filter',
-    'block',
-    'node',
-    'path',
-    'text',
-    'options',
-    'inline_entity_form',
-    'serialization',
-    'rest',
-    'rdf',
-    'jsonld',
-    'islandora'
-  ];
-
-  /**
-   * {@inheritdoc}
-   */
   public function setUp() {
     parent::setUp();
-
-    // Bootstrap minimal Drupal environment to run the tests.
-    $this->installSchema('system', 'sequences');
-    $this->installEntitySchema('user');
-    $this->installConfig('filter');
-    $this->installEntitySchema('fedora_resource');
 
     // Create a test user.
     $this->user = $this->drupalCreateUser();
