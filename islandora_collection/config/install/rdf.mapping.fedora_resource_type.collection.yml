@@ -21,6 +21,9 @@ fieldMappings:
   field_memberof:
     properties:
       - 'pcdm:memberOf'
+  uuid:
+    properties:
+      - 'nfo:uuid'
   name:
     properties:
       - 'schema:name'
