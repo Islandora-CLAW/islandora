@@ -3,16 +3,16 @@ mysql -u root -e 'create database drupal;'
 mysql -u root -e "GRANT ALL PRIVILEGES ON drupal.* To 'drupal'@'localhost' IDENTIFIED BY 'drupal';"
 
 # Java (Oracle)
-sudo apt-get install -y software-properties-common
-sudo apt-get install -y python-software-properties
-sudo add-apt-repository -y ppa:webupd8team/java
-sudo apt-get update
-echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections
-echo debconf shared/accepted-oracle-license-v1-1 seen true | sudo debconf-set-selections
-sudo apt-get install -y oracle-java8-installer
-sudo update-java-alternatives -s java-8-oracle
-sudo apt-get install -y oracle-java8-set-default
-export JAVA_HOME=/usr/lib/jvm/java-8-oracle
+#sudo apt-get install -y software-properties-common
+#sudo apt-get install -y python-software-properties
+#sudo add-apt-repository -y ppa:webupd8team/java
+#sudo apt-get update
+#echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections
+#echo debconf shared/accepted-oracle-license-v1-1 seen true | sudo debconf-set-selections
+#sudo apt-get install -y oracle-java8-installer
+#sudo update-java-alternatives -s java-8-oracle
+#sudo apt-get install -y oracle-java8-set-default
+#export JAVA_HOME=/usr/lib/jvm/java-8-oracle
 
 # phpcpd
 #sudo apt-get install -y phpcpd
@@ -46,6 +46,7 @@ drush en -y syslog
 drush en -y serialization
 drush en -y basic_auth
 drush en -y rest
+drush en -y simpletest
 
 drush dl rdfui --dev
 drush en -y rdfui
@@ -70,6 +71,8 @@ drush en -y search_api
 cd $HOME/drupal/modules
 git clone https://github.com/DiegoPino/claw-jsonld.git
 drush en -y jsonld
+
+drush en -y islandora
 
 drush -y dl bootstrap
 drush -y en bootstrap

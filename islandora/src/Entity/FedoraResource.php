@@ -340,7 +340,7 @@ class FedoraResource extends ContentEntityBase implements FedoraResourceInterfac
       ->setLabel(t('LDP Contains'))
       ->setDescription(t('Contains Fedora Resource.'))
       ->setRevisionable(TRUE)
-      ->setSetting('target_type', 'fedora_resource_type')
+      ->setSetting('target_type', 'fedora_resource')
       ->setSetting('handler', 'default')
       ->setTranslatable(TRUE)
       ->setDisplayOptions('view', array(

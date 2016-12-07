@@ -7,8 +7,6 @@ dependencies:
   enforced:
     module:
       - islandora_collection
-  module:
-    - text
 id: fedora_resource.collection.field_description
 field_name: field_description
 entity_type: fedora_resource
@@ -19,7 +17,5 @@ required: false
 translatable: false
 default_value: {  }
 default_value_callback: ''
-settings:
-  display_summary: false
-field_type: text_with_summary
-
+settings: {  }
+field_type: string_long

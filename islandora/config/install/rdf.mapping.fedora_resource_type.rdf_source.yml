@@ -6,7 +6,7 @@ dependencies:
   module:
     - islandora
 id: fedora_resource_type.rdf_source
-targetEntityType: fedora_resource_type
+targetEntityType: fedora_resource
 bundle: rdf_source
 types:
   - 'schema:Thing'
@@ -33,4 +33,12 @@ fieldMappings:
   uid:
     properties:
       - 'schema:author'
+    mapping_type: rel
+  fedora_has_parent:
+    properties:
+      - 'fedora:hasParent'
+    mapping_type: rel
+  ldp_contains:
+    properties:
+      - 'ldp:contains'
     mapping_type: rel

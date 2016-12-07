@@ -6,3 +6,5 @@ services:
     tags:
       - { name: paramconverter }
     arguments: ['@entity.manager']
+  islandora.eventgenerator:
+    class: Drupal\islandora\EventGenerator\EventGenerator
