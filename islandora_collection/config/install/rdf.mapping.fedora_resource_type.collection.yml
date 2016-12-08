@@ -37,6 +37,12 @@ fieldMappings:
       - 'schema:dateModified'
     datatype_callback:
       callable: 'Drupal\rdf\CommonDataConverter::dateIso8601Value'
+  rdf_type:
+    properties:
+      - 'rdf:type'
+  vclock:
+    properties:
+      - 'islandora:vclock'
   uid:
     properties:
       - 'schema:author'
