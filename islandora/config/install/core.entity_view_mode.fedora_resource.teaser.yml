@@ -1,0 +1,10 @@
+uuid: 0efc20d3-0bd6-4606-842f-b87548de1924
+langcode: en
+status: true
+dependencies:
+  module:
+    - islandora
+id: fedora_resource.teaser
+label: Teaser
+targetEntityType: fedora_resource
+cache: true
