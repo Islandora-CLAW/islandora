@@ -120,7 +120,7 @@ interface FedoraResourceInterface extends ContentEntityInterface, EntityChangedI
   /**
    * Gets the vector clock of this entity.
    *
-   * @return in
+   * @return int
    *   The vector clock, used for determining causality.
    */
   public function getVclock();
