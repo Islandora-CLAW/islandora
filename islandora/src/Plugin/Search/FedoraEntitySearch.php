@@ -719,7 +719,7 @@ class FedoraResourceSearch extends ConfigurableSearchPluginBase implements Acces
    *   Array of default form values for the advanced search form, including
    *   a modified 'keys' element for the bare search keywords.
    */
-  protected function parseAdvancedDefaults($f, $keys) {
+  protected function parseAdvancedDefaults(array $f, $keys) {
     $defaults = array();
 
     // Split out the advanced search parameters.
