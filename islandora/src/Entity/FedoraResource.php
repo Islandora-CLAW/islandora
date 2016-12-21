@@ -325,7 +325,7 @@ class FedoraResource extends ContentEntityBase implements FedoraResourceInterfac
       ->setRevisionable(TRUE)
       ->setSetting('target_type', 'fedora_resource')
       ->setSetting('handler', 'default')
-      ->setDefaultValue('Drupal\islandora\Entity\FedoraResource::getFedoraRoot')
+      ->setDefaultValueCallback('Drupal\islandora\Entity\FedoraResource::getFedoraRoot')
       ->setTranslatable(TRUE)
       ->setDisplayOptions('view', array(
         'label' => 'hidden',
