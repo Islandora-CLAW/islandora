@@ -10,8 +10,7 @@ targetEntityType: fedora_resource
 bundle: non_rdf_source
 types:
   - 'schema:Thing'
-  - 'ldp:RDFSource'
-  - 'ldp:Container'
+  - 'ldp:NonRDFSource'
 fieldMappings:
   title:
     properties:
