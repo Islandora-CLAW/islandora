@@ -267,7 +267,7 @@ class FedoraResource extends ContentEntityBase implements FedoraResourceInterfac
    */
   public static function getFedoraRoot() {
     // Just stub code, we need to figure out what "root is" in this context.
-    return array('root');
+    return NULL;
   }
 
   /**
@@ -325,7 +325,7 @@ class FedoraResource extends ContentEntityBase implements FedoraResourceInterfac
       ->setRevisionable(TRUE)
       ->setSetting('target_type', 'fedora_resource')
       ->setSetting('handler', 'default')
-      ->setDefaultValue(NULL)
+      ->setDefaultValue('Drupal\islandora\Entity\FedoraResource::getFedoraRoot')
       ->setTranslatable(TRUE)
       ->setDisplayOptions('view', array(
         'label' => 'hidden',
