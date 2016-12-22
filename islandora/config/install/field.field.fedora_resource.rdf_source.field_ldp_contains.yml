@@ -18,11 +18,8 @@ default_value_callback: ''
 settings:
   handler: 'default:fedora_resource'
   handler_settings:
-    target_bundles:
-      rdf_source: rdf_source
-      non_rdf_source: non_rdf_source
-    sort:
-      field: _none
-    auto_create: false
-    auto_create_bundle: non_rdf_source
+    view:
+      view_name: bundles_of_fedora
+      display_name: entity_reference_1
+      arguments: {  }
 field_type: entity_reference
