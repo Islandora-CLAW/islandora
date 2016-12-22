@@ -1,0 +1,18 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - islandora
+id: fedora_resource.field_ldp_contains
+field_name: field_ldp_contains
+entity_type: fedora_resource
+type: entity_reference
+settings:
+  target_type: fedora_resource
+module: core
+locked: false
+cardinality: -1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

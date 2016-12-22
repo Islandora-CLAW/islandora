@@ -1,0 +1,28 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.fedora_resource.rdf_source.field_ldp_contains
+    - islandora.fedora_resource_type.non_rdf_source
+    - islandora.fedora_resource_type.rdf_source
+id: fedora_resource.rdf_source.field_ldp_contains
+field_name: field_ldp_contains
+entity_type: fedora_resource
+bundle: rdf_source
+label: ldp:contains
+description: 'Contains Fedora Resource.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:fedora_resource'
+  handler_settings:
+    target_bundles:
+      rdf_source: rdf_source
+      non_rdf_source: non_rdf_source
+    sort:
+      field: _none
+    auto_create: false
+    auto_create_bundle: non_rdf_source
+field_type: entity_reference
