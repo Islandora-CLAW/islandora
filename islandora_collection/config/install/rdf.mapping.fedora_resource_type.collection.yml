@@ -23,7 +23,7 @@ fieldMappings:
       - 'pcdm:memberOf'
   uuid:
     properties:
-      - 'nfo:uuid'
+      - 'islandora:hasURN'
   name:
     properties:
       - 'schema:name'
