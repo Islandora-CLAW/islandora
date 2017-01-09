@@ -1,4 +1,5 @@
 <?php
+
 namespace Drupal\islandora\Plugin\views\wizard;
 
 use Drupal\views\Plugin\views\wizard\WizardPluginBase;
@@ -18,20 +19,24 @@ class FedoraResource extends WizardPluginBase {
 
   /**
    * Set the created column.
+   *
+   * @var string
    */
   protected $createdColumn = 'fedora_resource_field_data-created';
 
   /**
-   * Overrides Drupal\views\Plugin\views\wizard\WizardPluginBase::getAvailableSorts().
+   * Override base method.
+   *
+   * Drupal\views\Plugin\views\wizard\WizardPluginBase::getAvailableSorts().
    *
    * @return array
    *   An array whose keys are the available sort options and whose
    *   corresponding values are human readable labels.
    */
   public function getAvailableSorts() {
-    // You can't execute functions in properties, so override the method
+    // You can't execute functions in properties, so override the method.
     return array(
-      'fedora_resource_field_data-name:ASC' => $this->t('Name')
+      'fedora_resource_field_data-name:ASC' => $this->t('Name'),
     );
   }
 
@@ -91,23 +96,25 @@ class FedoraResource extends WizardPluginBase {
     $display_options = parent::blockDisplayOptions($form, $form_state);
     $row_plugin = $form_state->getValue(array('block', 'style', 'row_plugin'));
     $row_options = $form_state->getValue(array('block', 'style', 'row_options'), array());
-    $this->display_options_row($display_options, $row_plugin, $row_options);
+    $this->displayOptionsRow($display_options, $row_plugin, $row_options);
     return $display_options;
   }
 
   /**
    * Set the row style and row style plugins to the display_options.
    */
-  protected  function display_options_row(&$display_options, $row_plugin, $row_options) {
+  protected  function displayOptionsRow(&$display_options, $row_plugin, $row_options) {
     switch ($row_plugin) {
       case 'full_posts':
         $display_options['row']['type'] = 'entity:fedora_resource';
         $display_options['row']['options']['view_mode'] = 'full';
         break;
+
       case 'teasers':
         $display_options['row']['type'] = 'entity:fedora_resource';
         $display_options['row']['options']['view_mode'] = 'teaser';
         break;
+
       case 'titles_linked':
       case 'titles':
         $display_options['row']['type'] = 'fields';
@@ -119,4 +126,5 @@ class FedoraResource extends WizardPluginBase {
         break;
     }
   }
+
 }
