@@ -17,7 +17,7 @@ types:
 fieldMappings:
   field_description:
     properties:
-      - 'schema:text'
+      - 'dc:description'
   field_memberof:
     properties:
       - 'pcdm:memberOf'
@@ -26,7 +26,7 @@ fieldMappings:
       - 'islandora:hasURN'
   name:
     properties:
-      - 'schema:name'
+      - 'dc:title'
   created:
     properties:
       - 'schema:dateCreated'
