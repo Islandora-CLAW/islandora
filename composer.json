@@ -22,7 +22,7 @@
     "drupal/inline_entity_form": "^1.0@beta",
     "drupal/rules": "^3.0@alpha",
     "drupal/search_api": "^1.0@beta",
-    "drupal/claw-jsonld": "dev-master"
+    "islandora/claw-jsonld": "dev-8.x-1.x"
   },
   "require-dev": {
     "phpunit/phpunit": "^4.8",
