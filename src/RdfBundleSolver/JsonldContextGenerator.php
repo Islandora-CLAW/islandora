@@ -81,9 +81,12 @@ class JsonldContextGenerator implements JsonldContextGeneratorInterface {
   public function getContext($ids = 'fedora_resource.rdf_source') {
     $cid = JsonldContextGenerator::CACHE_BASE_CID . $ids;
     $cache = $this->cache->get($cid);
+    $data = '';
     if (!$cache) {
       $rdfMapping = RdfMapping::load($ids);
-      $data = $this->writeCache($rdfMapping, $cid);
+      if ($rdfMapping) {
+          $data = $this->writeCache($rdfMapping, $cid);
+      }
     }
     else {
       $data = $cache->data;
