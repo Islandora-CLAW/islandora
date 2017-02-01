@@ -23,4 +23,4 @@ services:
     arguments: ['@database']
   islandora.jsonldcontextgenerator:
     class: Drupal\islandora\RdfBundleSolver\JsonldContextGenerator
-    arguments: ['@entity_field.manager','@entity_type.bundle.info','@entity_type.manager', '@cache.backend.database']
+    arguments: ['@entity_field.manager','@entity_type.bundle.info','@entity_type.manager', '@cache.default']
