@@ -3,8 +3,6 @@
 namespace Drupal\islandora\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\Entity\ContentEntityInterface;
-use Drupal\system\Tests\DrupalKernel\ContentNegotiationTest;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -14,16 +12,19 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class FedoraResourceJsonLdContextController extends ControllerBase {
 
-    public function content($bundle, Request $request) {
+  /**
+   * Displays JSON-LD Context for a fedora_resource bundle.
+   */
+  public function content($bundle, Request $request) {
 
-        $context = \Drupal::service('islandora.jsonldcontextgenerator')->getContext('fedora_resource.'.$bundle);
-        $build = array(
-            '#type' => 'markup',
-            '#prefix' => '<pre>',
-            '#suffix' => '</pre>',
-            '#markup' => $context,
-        );
-        return $build;
-    }
+    $context = \Drupal::service('islandora.jsonldcontextgenerator')->getContext('fedora_resource.' . $bundle);
+    $build = array(
+      '#type' => 'markup',
+      '#prefix' => '<pre>',
+      '#suffix' => '</pre>',
+      '#markup' => $context,
+    );
+    return $build;
+  }
 
 }
