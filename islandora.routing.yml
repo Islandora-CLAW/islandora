@@ -1,17 +1,4 @@
-# Islandora Routing definition
-entity.fedora_resource_type.rdftest:
-  path: '/fedora_resource/{fedora_resource}/rdf'
-  defaults:
-    _controller: '\Drupal\node\Controller\NodePreviewController::view'
-    _title_callback: '\Drupal\node\Controller\NodePreviewController::title'
-  requirements:
-    _node_preview_access: '{node_preview}'
-  options:
-    parameters:
-      node_preview:
-        type: 'node_preview'
-
-# Menu list of Islandora configuration forms 
+# Menu list of Islandora configuration forms
 system.admin_config_islandora:
   path: '/admin/config/islandora'
   defaults:
@@ -28,3 +15,15 @@ system.islandora_settings:
     _title: 'Islandora Settings'
   requirements:
     _permission: 'administer site configuration'
+
+# Islandora JSON-LD Routing definition
+entity.fedora_resource_type.jsonldcontext:
+  path: '/fedora_resource_context/{bundle}'
+  defaults:
+    _controller: '\Drupal\islandora\Controller\FedoraResourceJsonLdContextController::content'
+  requirements:
+     _permission: 'access content'
+  options:
+    parameters:
+      bundle:
+        type: entity:{fedora_resource}:{fedora_resource_type}
