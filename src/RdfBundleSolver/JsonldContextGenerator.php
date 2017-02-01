@@ -85,7 +85,7 @@ class JsonldContextGenerator implements JsonldContextGeneratorInterface {
     if (!$cache) {
       $rdfMapping = RdfMapping::load($ids);
       if ($rdfMapping) {
-          $data = $this->writeCache($rdfMapping, $cid);
+        $data = $this->writeCache($rdfMapping, $cid);
       }
     }
     else {
