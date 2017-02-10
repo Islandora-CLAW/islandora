@@ -19,6 +19,9 @@ interface JsonldContextGeneratorInterface {
    *
    * @return string
    *    A JSON-LD @context as string.
+   *
+   * @throws \Exception
+   *    If no RDF mapping has no rdf:type assigned.
    */
   public function generateContext(RdfMappingInterface $mapping);
 
@@ -28,10 +31,13 @@ interface JsonldContextGeneratorInterface {
    * This method should be invoked if caching and speed is required.
    *
    * @param string $ids
-   *   In the form of "entity_type.bundle_name".
+   *    In the form of "entity_type.bundle_name".
    *
    * @return string
-   *   A JSON-LD @context as string.
+   *    A JSON-LD @context as string.
+   *
+   * @throws \Exception
+   *    If no RDF mapping exists.
    */
   public function getContext($ids);
 

@@ -21,6 +21,9 @@ services:
   islandora.versioncounter:
     class: Drupal\islandora\VersionCounter\VersionCounter
     arguments: ['@database']
+  logger.channel.islandora:
+      parent: logger.channel_base
+      arguments: ['islandora']
   islandora.jsonldcontextgenerator:
     class: Drupal\islandora\RdfBundleSolver\JsonldContextGenerator
-    arguments: ['@entity_field.manager','@entity_type.bundle.info','@entity_type.manager', '@cache.default']
+    arguments: ['@entity_field.manager','@entity_type.bundle.info','@entity_type.manager', '@cache.default', '@logger.channel.islandora']
