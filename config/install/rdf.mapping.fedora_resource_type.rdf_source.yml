@@ -17,7 +17,7 @@ types:
   - 'ldp:RDFSource'
   - 'ldp:Container'
 fieldMappings:
-  title:
+  name:
     properties:
       - 'dc11:title'
       - 'rdf:label'
@@ -37,7 +37,7 @@ fieldMappings:
   vclock:
     properties:
       - 'islandora:vclock'
-  uid:
+  user_id:
     properties:
       - 'schema:author'
     mapping_type: rel

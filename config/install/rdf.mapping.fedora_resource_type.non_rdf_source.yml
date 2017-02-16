@@ -16,7 +16,7 @@ types:
   - 'schema:Thing'
   - 'ldp:NonRDFSource'
 fieldMappings:
-  title:
+  name:
     properties:
       - 'dc11:title'
       - 'rdf:label'
@@ -33,7 +33,7 @@ fieldMappings:
   rdf_type:
     properties:
       - 'rdf:type'
-  uid:
+  user_id:
     properties:
       - 'schema:author'
     mapping_type: rel
