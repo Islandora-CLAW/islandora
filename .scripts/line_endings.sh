@@ -1,7 +1,7 @@
 #!/bin/bash
 
 RETURN=0
-FILES=`find -L $1 -name "*.info" -o -name "*.txt" -o -name "*.md"`
+FILES=`find -L $1 -name "*"`
 echo "Testing for files with DOS line endings..."
 for FILE in $FILES
 do
