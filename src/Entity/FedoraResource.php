@@ -292,7 +292,7 @@ class FedoraResource extends ContentEntityBase implements FedoraResourceInterfac
    */
   protected static function getInboundReferences(FedoraResourceInterface $entity) {
     // TODO: Not use static loading.
-    $query = $query = \Drupal::entityQuery('fedora_resource');
+    $query = \Drupal::entityQuery('fedora_resource');
     $query->condition('fedora_has_parent', $entity->id());
     return $query->execute();
   }
