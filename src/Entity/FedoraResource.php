@@ -124,15 +124,15 @@ class FedoraResource extends ContentEntityBase implements FedoraResourceInterfac
     parent::postDelete($storage, $entities);
 
     // This removes references to deleted parents. But this could be
-    // used to remove child nodes instead.
+    // used to remove child entities instead.
     foreach ($entities as $entity) {
       if ($entity->getEntityType()->getBundleEntityType() == 'fedora_resource_type') {
         $references = self::getInboundReferences($entity);
         if ($references) {
-          $nodes = $storage->loadMultiple($references);
-          foreach ($nodes as $node) {
-            $node->removeParent();
-            $node->save();
+          $ref_entities = $storage->loadMultiple($references);
+          foreach ($ref_entities as $ref_entity) {
+            $ref_entity->removeParent();
+            $ref_entity->save();
           }
         }
       }
@@ -288,7 +288,7 @@ class FedoraResource extends ContentEntityBase implements FedoraResourceInterfac
    *   The entity to find inbound references for.
    *
    * @return array
-   *   An array of node ids
+   *   An array of entity ids
    */
   protected static function getInboundReferences(FedoraResourceInterface $entity) {
     // TODO: Not use static loading.
