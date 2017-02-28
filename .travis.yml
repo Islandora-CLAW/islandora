@@ -19,8 +19,9 @@ before_install:
 
 install:
   - $SCRIPT_DIR/travis_setup.sh
+  - git -C "$TRAVIS_BUILD_DIR" checkout -b travis-testing
   - cd $DRUPAL_DIR; composer config repositories.local path "$TRAVIS_BUILD_DIR"
-  - composer require "islandora/islandora:dev-$TRAVIS_COMMIT as dev-8.x-1.x" --prefer-source
+  - composer require "islandora/islandora:dev-travis-testing as dev-8.x-1.x" --prefer-source
   - cd web; drush en -y islandora
 
 script:
