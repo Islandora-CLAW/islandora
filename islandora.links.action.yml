@@ -8,4 +8,3 @@ entity.fedora_resource_type.add_form:
   title: 'Add Fedora resource type'
   appears_on:
     - entity.fedora_resource_type.collection
-

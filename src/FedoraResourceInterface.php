@@ -86,7 +86,7 @@ interface FedoraResourceInterface extends ContentEntityInterface, EntityChangedI
    * Does the entity have a parent entity?
    *
    * @return bool
-   *    Whether a parent entity was set.
+   *   Whether a parent entity was set.
    */
   public function hasParent();
 
@@ -94,7 +94,7 @@ interface FedoraResourceInterface extends ContentEntityInterface, EntityChangedI
    * Gets the id of the parent entity.
    *
    * @return int
-   *    The id of the parent Fedora resource entity.
+   *   The id of the parent Fedora resource entity.
    */
   public function getParentId();
 
@@ -102,7 +102,7 @@ interface FedoraResourceInterface extends ContentEntityInterface, EntityChangedI
    * Get the parent entity.
    *
    * @return \Drupal\islandora\FedoraResourceInterface
-   *    The actual entity of the parent Fedora resource.
+   *   The actual entity of the parent Fedora resource.
    */
   public function getParent();
 
@@ -110,10 +110,10 @@ interface FedoraResourceInterface extends ContentEntityInterface, EntityChangedI
    * Get the parent entity.
    *
    * @param \Drupal\Core\Entity\EntityTypeInterface $entity
-   *    The parent entity.
+   *   The parent entity.
    *
    * @return \Drupal\islandora\FedoraResourceInterface
-   *    The called Fedora resource entity.
+   *   The called Fedora resource entity.
    */
   public function setParent(EntityTypeInterface $entity);
 

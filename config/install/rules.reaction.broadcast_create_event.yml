@@ -54,4 +54,3 @@ expression:
             rules_tokens: {  }
         provides_mapping: {  }
         action_id: islandora_broadcast
-

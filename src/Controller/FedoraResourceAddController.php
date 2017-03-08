@@ -86,7 +86,7 @@ class FedoraResourceAddController extends ControllerBase {
   /**
    * Presents the creation form for fedora_resource entities of given type.
    *
-   * @param EntityInterface $fedora_resource_type
+   * @param \Drupal\Core\Entity\EntityInterface $fedora_resource_type
    *   The custom bundle to add.
    * @param \Symfony\Component\HttpFoundation\Request $request
    *   The current request object.
@@ -104,7 +104,7 @@ class FedoraResourceAddController extends ControllerBase {
   /**
    * Provides the page title for this controller.
    *
-   * @param EntityInterface $fedora_resource_type
+   * @param \Drupal\Core\Entity\EntityInterface $fedora_resource_type
    *   The custom bundle/type being added.
    *
    * @return string

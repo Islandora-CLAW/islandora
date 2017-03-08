@@ -16,4 +16,3 @@ dependencies:
   - rules
   - search_api
   - jwt
-version: '8.x-1.x-dev'

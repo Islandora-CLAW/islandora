@@ -97,7 +97,7 @@ class BroadcasterTest extends IslandoraKernelTestBase {
   /**
    * Utility function to create a broadcaster action from a Stomp prophecy.
    *
-   * @param StatefulStomp $stomp
+   * @param \Stomp\StatefulStomp $stomp
    *   Stomp instance or prophecy.
    *
    * @return \Drupal\islandora\Plugin\RulesAction\Broadcaster

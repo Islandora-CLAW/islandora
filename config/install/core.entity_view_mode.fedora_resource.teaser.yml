@@ -11,4 +11,3 @@ id: fedora_resource.teaser
 label: Teaser
 targetEntityType: fedora_resource
 cache: true
-

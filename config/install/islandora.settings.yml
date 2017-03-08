@@ -3,4 +3,3 @@ fedora_rest_endpoint: 'http://localhost:8080/fcrepo/rest'
 _core:
   default_config_hash: nDZDR2rrpXXQ-D_7BYrdDFAXYOsB5hgH6vCAMV5I3w8
 broadcast_queue: islandora-connector-broadcast
-

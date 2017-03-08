@@ -49,4 +49,3 @@ fieldMappings:
     properties:
       - 'ldp:contains'
     mapping_type: rel
-

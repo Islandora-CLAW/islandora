@@ -21,7 +21,7 @@ class StompFactory {
    * @return \Stomp\StatefulStomp
    *   Stomp client.
    */
-  static public function create(ConfigFactoryInterface $config) {
+  public static function create(ConfigFactoryInterface $config) {
     // Get broker url from config.
     $settings = $config->get(IslandoraSettingsForm::CONFIG_NAME);
     $brokerUrl = $settings->get(IslandoraSettingsForm::BROKER_URL);

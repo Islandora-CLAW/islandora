@@ -1,20 +1,24 @@
 **GitHub Issue**: (link)
 
-* Other Relevant Links (Google Groups discussion, related pull requests, Release pull requests, etc.)
+* Other Relevant Links (Google Groups discussion, related pull requests,
+ Release pull requests, etc.)
 
 # What does this Pull Request do?
 
-A brief description of what the intended result of the PR will be and/or what problem it solves.
+A brief description of what the intended result of the PR will be and/or what
+ problem it solves.
 
 # What's new?
-A in-depth description of the changes made by this PR. Technical details and possible side effects.
+A in-depth description of the changes made by this PR. Technical details and
+ possible side effects.
 
 * Changes x feature to such that y
 * Added x
 * Removed y
 * Does this change require documentation to be updated? 
 * Does this change add any new dependencies? 
-* Does this change require any other modifications to be made to the repository (ie. Regeneration activity, etc.)? 
+* Does this change require any other modifications to be made to the repository
+ (ie. Regeneration activity, etc.)? 
 * Could this change impact execution of existing code?
 
 # How should this be tested?
@@ -26,7 +30,8 @@ A description of what steps someone could take to:
 * Good testing instructions help get your PR completed faster.
 
 # Additional Notes:
-Any additional information that you think would be helpful when reviewing this PR.
+Any additional information that you think would be helpful when reviewing this
+ PR.
 
 # Interested parties
 Tag (@ mention) interested parties or, if unsure, @Islandora-CLAW/committers
