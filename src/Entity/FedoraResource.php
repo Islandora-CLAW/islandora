@@ -225,8 +225,7 @@ class FedoraResource extends ContentEntityBase implements FedoraResourceInterfac
    * {@inheritdoc}
    */
   public function hasParent() {
-    $parent = $this->get('fedora_has_parent')->first();
-    return (!is_null($parent));
+    return (!$this->get('fedora_has_parent')->isEmpty());
   }
 
   /**
@@ -255,7 +254,7 @@ class FedoraResource extends ContentEntityBase implements FedoraResourceInterfac
   /**
    * {@inheritdoc}
    */
-  public function setParent(EntityTypeInterface $entity) {
+  public function setParent(FedoraResourceInterface $entity) {
     $this->set('fedora_has_parent', $entity);
     return $this;
   }

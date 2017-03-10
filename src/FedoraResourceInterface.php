@@ -4,7 +4,6 @@ namespace Drupal\islandora;
 
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityChangedInterface;
-use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\user\EntityOwnerInterface;
 
 /**
@@ -109,12 +108,12 @@ interface FedoraResourceInterface extends ContentEntityInterface, EntityChangedI
   /**
    * Get the parent entity.
    *
-   * @param \Drupal\Core\Entity\EntityTypeInterface $entity
-   *   The parent entity.
+   * @param \Drupal\islandora\FedoraResourceInterface $entity
+   *    The parent entity.
    *
    * @return \Drupal\islandora\FedoraResourceInterface
    *   The called Fedora resource entity.
    */
-  public function setParent(EntityTypeInterface $entity);
+  public function setParent(FedoraResourceInterface $entity);
 
 }
