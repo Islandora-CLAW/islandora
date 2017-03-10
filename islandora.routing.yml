@@ -27,3 +27,12 @@ entity.fedora_resource_type.jsonldcontext:
     parameters:
       bundle:
         type: entity:{fedora_resource}:{fedora_resource_type}
+
+fedora_resource_type.patch:
+  path: '/fedora_resource/{fedora_resource}'
+  defaults:
+    _controller: '\Drupal\islandora\Controller\FedoraResourcePatchController::process'
+  methods: [PATCH]
+  formats: ['jsonld']
+  requirements:
+    _permission: 'edit fedora resource entities'

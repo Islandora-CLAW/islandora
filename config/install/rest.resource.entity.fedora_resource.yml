@@ -22,3 +22,11 @@ configuration:
       - xml
     supported_auth:
       - jwt_auth
+      - basic_auth
+      - cookie
+  PATCH:
+    supported_formats:
+      - jsonld
+    supported_auth:
+      - jwt_auth
+      - cookie
