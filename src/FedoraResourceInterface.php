@@ -109,11 +109,11 @@ interface FedoraResourceInterface extends ContentEntityInterface, EntityChangedI
    * Get the parent entity.
    *
    * @param \Drupal\islandora\FedoraResourceInterface $entity
-   *    The parent entity.
+   *   The parent entity.
    *
    * @return \Drupal\islandora\FedoraResourceInterface
    *   The called Fedora resource entity.
    */
   public function setParent(FedoraResourceInterface $entity);
-
+  
 }
