@@ -115,5 +115,5 @@ interface FedoraResourceInterface extends ContentEntityInterface, EntityChangedI
    *   The called Fedora resource entity.
    */
   public function setParent(FedoraResourceInterface $entity);
-  
+
 }

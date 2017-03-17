@@ -281,7 +281,7 @@ class FedoraResource extends ContentEntityBase implements FedoraResourceInterfac
   }
 
   /**
-   * Get all the objects that have $entity as a fedora_has_parent
+   * Get all the objects that have $entity as a fedora_has_parent.
    *
    * @param \Drupal\islandora\FedoraResourceInterface $entity
    *   The entity to find inbound references for.
