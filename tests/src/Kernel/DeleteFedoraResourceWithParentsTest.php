@@ -65,6 +65,7 @@ class DeleteFedoraResourceWithParentsTest extends IslandoraKernelTestBase {
       "uid" => $this->user->get('uid'),
       "name" => "Test Child",
       "langcode" => "und",
+      "fedora_has_parent" => $this->parentEntity,
       "status" => 1,
     ]);
     $this->childEntity->save();
@@ -76,23 +77,15 @@ class DeleteFedoraResourceWithParentsTest extends IslandoraKernelTestBase {
    * @covers \Drupal\islandora\Entity\FedoraResource::postDelete
    */
   public function testCleanUpParents() {
-
     $child_id = $this->childEntity->id();
-
-    $this->assertTrue($this->childEntity->get('fedora_has_parent')->isEmpty(), "Should not have a parent.");
-
-    $this->childEntity->set('fedora_has_parent', $this->parentEntity)->save();
-
-    $this->assertFalse($this->childEntity->get('fedora_has_parent')->isEmpty(), "Now we are missing a parent.");
-
-    // This sees the changes from the postDelete, $this->childEntity doesn't.
+    // Load the child entity.
     $new_child = FedoraResource::load($child_id);
-
-    $this->assertFalse($new_child->get('fedora_has_parent')->isEmpty(), "Now we are missing a parent.");
-
+    // Verify it has a parent.
+    $this->assertFalse($new_child->get('fedora_has_parent')->isEmpty(), "Should have a parent.");
+    // Delete the parent entity.
     $this->parentEntity->delete();
-
-    $this->assertTrue($new_child->get('fedora_has_parent')->isEmpty(), "Child should not have a parent.");
+    // Verify we don't have a parent anymore.
+    $this->assertTrue($new_child->get('fedora_has_parent')->isEmpty(), "Should not have a parent.");
 
   }
 
