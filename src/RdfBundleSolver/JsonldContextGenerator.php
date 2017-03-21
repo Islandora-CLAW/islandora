@@ -104,11 +104,11 @@ class JsonldContextGenerator implements JsonldContextGeneratorInterface {
       }
       else {
         $msg = t("Can't generate JSON-LD Context for @ids without RDF Mapping present.",
-          array('@ids' => $ids));
+          ['@ids' => $ids]);
         $this->logger->warning("@msg",
-          array(
+          [
             '@msg' => $msg,
-          ));
+          ]);
         throw new \Exception($msg);
       }
     }
@@ -143,11 +143,11 @@ class JsonldContextGenerator implements JsonldContextGeneratorInterface {
     // rdfmapping object but has no rdf:type.
     if (empty($bundle_rdf_mappings['types'])) {
       $msg = t("Can't generate JSON-LD Context without at least one rdf:type for Entity type @entity_type, Bundle @bundle_name combo.",
-        array('@entity_type' => $entity_type_id, ' @bundle_name' => $bundle));
+        ['@entity_type' => $entity_type_id, ' @bundle_name' => $bundle]);
       $this->logger->warning("@msg",
-        array(
+        [
           '@msg' => $msg,
-        ));
+        ]);
       throw new \Exception($msg);
     }
 
@@ -195,8 +195,8 @@ class JsonldContextGenerator implements JsonldContextGeneratorInterface {
    *   Piece of JSON-LD context that supports this field
    */
   private function getFieldsRdf(RdfMappingInterface $rdfMapping, $field_name, FieldDefinitionInterface $fieldDefinition, array $allRdfNameSpaces) {
-    $termDefinition = array();
-    $fieldContextFragment = array();
+    $termDefinition = [];
+    $fieldContextFragment = [];
     $fieldRDFMapping = $rdfMapping->getPreparedFieldMapping($field_name);
     if (!empty($fieldRDFMapping)) {
       // If one ore more properties, all will share same datatype so
@@ -209,10 +209,10 @@ class JsonldContextGenerator implements JsonldContextGeneratorInterface {
       $reltype = isset($fieldRDFMapping['mapping_type']) ? $fieldRDFMapping['mapping_type'] : 'property';
 
       if (isset($fieldRDFMapping['datatype']) && ($reltype == 'property')) {
-        $termDefinition = array('@type' => $fieldRDFMapping['datatype']);
+        $termDefinition = ['@type' => $fieldRDFMapping['datatype']];
       }
       if (!isset($fieldRDFMapping['datatype']) && ($reltype != 'property')) {
-        $termDefinition = array('@type' => '@id');
+        $termDefinition = ['@type' => '@id'];
       }
 
       // This should respect user provided mapping and fill rest with defaults.
@@ -252,16 +252,16 @@ class JsonldContextGenerator implements JsonldContextGeneratorInterface {
   protected function writeCache(RdfMappingInterface $rdfMapping, $cid) {
 
     // This is how an empty json encoded @context looks like.
-    $data = json_encode(array('@context' => ''), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+    $data = json_encode(['@context' => ''], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     try {
       $data = $this->generateContext($rdfMapping);
       $this->cache->set($cid, $data, Cache::PERMANENT, $rdfMapping->getCacheTagsToInvalidate());
     }
     catch (\Exception $e) {
       $this->logger->warning("@msg",
-        array(
+        [
           '@msg' => $e->getMessage(),
-        ));
+        ]);
     }
 
     return $data;
@@ -278,7 +278,7 @@ class JsonldContextGenerator implements JsonldContextGeneratorInterface {
    */
   protected function entityBundleIdsSplitter($ids) {
     list($entity_type_id, $bundle_id) = explode(".", $ids, 2);
-    return array('entityTypeId' => $entity_type_id, 'bundleId' => $bundle_id);
+    return ['entityTypeId' => $entity_type_id, 'bundleId' => $bundle_id];
   }
 
   /**
@@ -300,9 +300,9 @@ class JsonldContextGenerator implements JsonldContextGeneratorInterface {
     list($prefix, $rest) = array_pad(explode(":", $iri, 2), 2, '');
     if ((substr($rest, 0, 2) == "//") || ($prefix == $iri)) {
       // Means this was never a compacted IRI.
-      return array('prefix' => NULL, 'term' => $iri);
+      return ['prefix' => NULL, 'term' => $iri];
     }
-    return array('prefix' => $prefix, 'term' => $rest);
+    return ['prefix' => $prefix, 'term' => $rest];
   }
 
   /**
@@ -325,97 +325,97 @@ class JsonldContextGenerator implements JsonldContextGeneratorInterface {
     // pieces and mapping only that as a whole.
     // Default mapping to return in case no $field_type matches
     // field_mappings array keys.
-    $default_mapping = array(
+    $default_mapping = [
       "@type" => "xsd:string",
-    );
+    ];
 
-    $field_mappings = array(
-      "comment" => array(
+    $field_mappings = [
+      "comment" => [
         "@type" => "xsd:string",
-      ),
-      "datetime" => array(
+      ],
+      "datetime" => [
         "@type" => "xsd:dateTime",
-      ),
-      "file" => array(
+      ],
+      "file" => [
         "@type" => "@id",
-      ),
-      "image" => array(
+      ],
+      "image" => [
         "@type" => "@id",
-      ),
-      "link" => array(
+      ],
+      "link" => [
         "@type" => "xsd:anyURI",
-      ),
-      "list_float" => array(
+      ],
+      "list_float" => [
         "@type" => "xsd:float",
         "@container" => "@list",
-      ),
-      "list_integer" => array(
+      ],
+      "list_integer" => [
         "@type" => "xsd:int",
         "@container" => "@list",
-      ),
-      "list_string" => array(
+      ],
+      "list_string" => [
         "@type" => "xsd:string",
         "@container" => "@list",
-      ),
-      "path" => array(
+      ],
+      "path" => [
         "@type" => "xsd:anyURI",
-      ),
-      "text" => array(
+      ],
+      "text" => [
         "@type" => "xsd:string",
-      ),
-      "text_with_summary" => array(
+      ],
+      "text_with_summary" => [
         "@type" => "xsd:string",
-      ),
-      "text_long" => array(
+      ],
+      "text_long" => [
         "@type" => "xsd:string",
-      ),
-      "uuid" => array(
+      ],
+      "uuid" => [
         "@type" => "xsd:string",
-      ),
-      "uri" => array(
+      ],
+      "uri" => [
         "@type" => "xsd:anyURI",
-      ),
-      "language" => array(
+      ],
+      "language" => [
         "@type" => "xsd:language",
-      ),
-      "string_long" => array(
+      ],
+      "string_long" => [
         "@type" => "xsd:string",
-      ),
-      "changed" => array(
+      ],
+      "changed" => [
         "@type" => "xsd:dateTime",
-      ),
+      ],
       "map" => "xsd:",
-      "boolean" => array(
+      "boolean" => [
         "@type" => "xsd:boolean",
-      ),
-      "email" => array(
+      ],
+      "email" => [
         "@type" => "xsd:string",
-      ),
-      "integer" => array(
+      ],
+      "integer" => [
         "@type" => "xsd:int",
-      ),
-      "decimal" => array(
+      ],
+      "decimal" => [
         "@type" => "xsd:decimal",
-      ),
-      "created" => array(
+      ],
+      "created" => [
         "@type" => "xsd:dateTime",
-      ),
-      "float" => array(
+      ],
+      "float" => [
         "@type" => "xsd:float",
-      ),
-      "entity_reference" => array(
+      ],
+      "entity_reference" => [
         "@type" => "@id",
-      ),
-      "timestamp" => array(
+      ],
+      "timestamp" => [
         "@type" => "xsd:dateTime",
-      ),
-      "string" => array(
+      ],
+      "string" => [
         "@type" => "xsd:string",
-      ),
-      "password" => array(
+      ],
+      "password" => [
         "@type" => "xsd:string",
-      ),
-    );
+      ],
+    ];
 
     return array_key_exists($field_type, $field_mappings) ? $field_mappings[$field_type] : $default_mapping;
 

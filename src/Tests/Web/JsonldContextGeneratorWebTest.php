@@ -30,11 +30,11 @@ class JsonldContextGeneratorWebTest extends IslandoraWebTestBase {
    */
   public function setUp() {
     parent::setUp();
-    $this->user = $this->drupalCreateUser(array(
+    $this->user = $this->drupalCreateUser([
       'administer site configuration',
       'view published fedora resource entities',
       'access content',
-    )
+    ]
     );
     // Login.
     $this->drupalLogin($this->user);
