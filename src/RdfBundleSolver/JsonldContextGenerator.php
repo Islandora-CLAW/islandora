@@ -70,6 +70,12 @@ class JsonldContextGenerator implements JsonldContextGeneratorInterface {
    *   The entity manager.
    * @param \Drupal\Core\Entity\EntityTypeBundleInfoInterface $bundle_info
    *   The language manager.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_manager
+   *   The Entity Type Manager.
+   * @param \Drupal\Core\Cache\CacheBackendInterface $cache_backend
+   *   Caching Backend.
+   * @param \Psr\Log\LoggerInterface $logger_channel
+   *   Our Logging Channel.
    */
   public function __construct(EntityFieldManagerInterface $entity_field_manager, EntityTypeBundleInfoInterface $bundle_info, EntityTypeManagerInterface $entity_manager, CacheBackendInterface $cache_backend, LoggerInterface $logger_channel) {
     $this->entityFieldManager = $entity_field_manager;
@@ -176,17 +182,17 @@ class JsonldContextGenerator implements JsonldContextGeneratorInterface {
   /**
    * Gets the correct piece of @context for a given entity field.
    *
-   * @param RdfMappingInterface $rdfMapping
-   *    Rdf mapping object.
+   * @param \Drupal\rdf\RdfMappingInterface $rdfMapping
+   *   Rdf mapping object.
    * @param string $field_name
-   *    The name of the field.
-   * @param FieldDefinitionInterface $fieldDefinition
-   *    The definition of the field.
+   *   The name of the field.
+   * @param \Drupal\Core\Field\FieldDefinitionInterface $fieldDefinition
+   *   The definition of the field.
    * @param array $allRdfNameSpaces
-   *    Every RDF prefixed namespace in this Drupal.
+   *   Every RDF prefixed namespace in this Drupal.
    *
    * @return array
-   *    Piece of JSON-LD context that supports this field
+   *   Piece of JSON-LD context that supports this field
    */
   private function getFieldsRdf(RdfMappingInterface $rdfMapping, $field_name, FieldDefinitionInterface $fieldDefinition, array $allRdfNameSpaces) {
     $termDefinition = array();
@@ -235,8 +241,8 @@ class JsonldContextGenerator implements JsonldContextGeneratorInterface {
   /**
    * Writes JSON-LD @context cache per Entity_type bundle combo.
    *
-   * @param RdfMappingInterface $rdfMapping
-   *    Rdf mapping object.
+   * @param \Drupal\rdf\RdfMappingInterface $rdfMapping
+   *   Rdf mapping object.
    * @param string $cid
    *   Name of the cache bin to use.
    *
@@ -265,10 +271,10 @@ class JsonldContextGenerator implements JsonldContextGeneratorInterface {
    * Absurdly simple exploder for a joint entityType and Bundle ids string.
    *
    * @param string $ids
-   *    A string with containing entity id and bundle joined by a dot.
+   *   A string with containing entity id and bundle joined by a dot.
    *
    * @return array
-   *    And array with the entity type and the bundle id
+   *   And array with the entity type and the bundle id
    */
   protected function entityBundleIdsSplitter($ids) {
     list($entity_type_id, $bundle_id) = explode(".", $ids, 2);
@@ -282,10 +288,10 @@ class JsonldContextGenerator implements JsonldContextGeneratorInterface {
    * http://json-ld.org/spec/ED/json-ld-syntax/20120522/#dfn-prefix.
    *
    * @param string $iri
-   *    IRIs are strings.
+   *   IRIs are strings.
    *
    * @return array
-   *    If $iri is a compacted iri, prefix and term as separate
+   *   If $iri is a compacted iri, prefix and term as separate
    *    array members, if not, unmodified $iri in term position
    *    and null prefix.
    */
@@ -306,10 +312,10 @@ class JsonldContextGenerator implements JsonldContextGeneratorInterface {
    * configEntity way in the future.
    *
    * @param string $field_type
-   *    As provided by \Drupal\Core\Field\FieldDefinitionInterface::getType().
+   *   As provided by \Drupal\Core\Field\FieldDefinitionInterface::getType().
    *
    * @return array
-   *    A json-ld term definition if there is a match
+   *   A json-ld term definition if there is a match
    *    or array("@type" => "xsd:string") in case of no match.
    */
   protected function getTermContextFromField($field_type) {

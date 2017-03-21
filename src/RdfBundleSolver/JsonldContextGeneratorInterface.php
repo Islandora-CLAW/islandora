@@ -15,10 +15,10 @@ interface JsonldContextGeneratorInterface {
    * Generates an JSON-LD Context string based on an RdfMapping object.
    *
    * @param \Drupal\rdf\Entity\RdfMapping|RdfMappingInterface $mapping
-   *    An RDF Mapping Object.
+   *   An RDF Mapping Object.
    *
    * @return string
-   *    A JSON-LD @context as string.
+   *   A JSON-LD @context as string.
    *
    * @throws \Exception
    *    If no RDF mapping has no rdf:type assigned.
@@ -31,10 +31,10 @@ interface JsonldContextGeneratorInterface {
    * This method should be invoked if caching and speed is required.
    *
    * @param string $ids
-   *    In the form of "entity_type.bundle_name".
+   *   In the form of "entity_type.bundle_name".
    *
    * @return string
-   *    A JSON-LD @context as string.
+   *   A JSON-LD @context as string.
    *
    * @throws \Exception
    *    If no RDF mapping exists.
