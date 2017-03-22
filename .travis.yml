@@ -21,18 +21,10 @@ install:
   - git -C "$TRAVIS_BUILD_DIR" checkout -b travis-testing
   - cd $DRUPAL_DIR; composer config repositories.local path "$TRAVIS_BUILD_DIR"
   - composer require "islandora/islandora:dev-travis-testing as dev-8.x-1.x" --prefer-source
-  - cd web; drush en -y islandora
+  - cd web; drush --uri=127.0.0.1:8282 en -y islandora
 
 script:
   - $SCRIPT_DIR/line_endings.sh $TRAVIS_BUILD_DIR
   - phpcs --standard=Drupal --ignore=*.md --extensions=php,module,inc,install,test,profile,theme,css,info $TRAVIS_BUILD_DIR
   - phpcpd --names *.module,*.inc,*.test,*.php $TRAVIS_BUILD_DIR
-  - php core/scripts/run-tests.sh --url http://127.0.0.1:8081 --verbose --php `which php` islandora
-
-notifications:
-  irc:
-    channels:
-      - "irc.freenode.org#islandora"
-    on_success: change
-    on_failure: always
-    skip_join: true
+  - php core/scripts/run-tests.sh --url http://127.0.0.1:8282 --verbose --php `which php` --module "islandora"
