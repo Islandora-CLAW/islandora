@@ -1,0 +1,20 @@
+{
+  "require-dev": {
+    "phpunit/phpunit": "3.7.*",
+    "mockery/mockery": "0.9.*"
+  },
+  "autoload": {
+    "psr-0": {
+      "Drupal\\Component\\": "../lib/",
+      "Drupal\\Core\\": "../lib/",
+      "ServiceContainer": "../lib/",
+      "Drupal": "../lib/",
+      "Symfony\\Component\\DependencyInjection": "../lib/",
+      "Psr": "../lib/"
+    },
+    "psr-4": {
+      "Drupal\\service_container\\": "../src/",
+      "Drupal\\Tests\\service_container\\": "src/"
+    }
+  }
+}
