@@ -75,4 +75,12 @@ class VersionCounter implements VersionCounterInterface {
       ->execute();
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function isValid($uuid, $test_value) {
+    $current = $this->get($uuid);
+    return ($current === $test_value ? 1 : 0);
+  }
+
 }

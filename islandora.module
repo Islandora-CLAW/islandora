@@ -122,3 +122,12 @@ function islandora_fedora_resource_delete(EntityInterface $entity) {
   $versionCounter = \Drupal::service('islandora.versioncounter');
   $versionCounter->delete($entity->uuid());
 }
+
+/**
+ * Implements hook_rest_resource_alter().
+ */
+function islandora_rest_resource_alter(&$definitions) {
+  if (isset($definitions['entity:fedora_resource'])) {
+    $definitions['entity:fedora_resource']['class'] = 'Drupal\islandora\Plugin\rest\resource\FedoraResourceEntity';
+  }
+}
