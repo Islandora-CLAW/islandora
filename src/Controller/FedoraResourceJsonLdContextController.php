@@ -79,7 +79,7 @@ class FedoraResourceJsonLdContextController extends ControllerBase {
       $response->addCacheableDependency($meta);
     }
     catch (\Exception $e) {
-      $response = new Response($e->getMessage(), 401);
+      $response = new Response($e->getMessage(), 400);
     }
 
     return $response;
