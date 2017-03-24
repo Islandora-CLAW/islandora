@@ -190,7 +190,7 @@ class FedoraResourceSearch extends ConfigurableSearchPluginBase implements Acces
    * @param \Drupal\Core\Language\LanguageManagerInterface $language_manager
    *   The language manager.
    * @param \Drupal\Core\Render\RendererInterface $renderer
-   *   Renderer.
+   *   The renderer.
    * @param \Drupal\Core\Session\AccountInterface $account
    *   The $account object to use for checking for access to advanced search.
    */

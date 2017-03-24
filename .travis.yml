@@ -11,6 +11,7 @@ matrix:
 branches:
   only:
     - /^8.x/
+    - codecov
 
 before_install:
   - export SCRIPT_DIR=$TRAVIS_BUILD_DIR/.scripts
@@ -27,7 +28,12 @@ script:
   - $SCRIPT_DIR/line_endings.sh $TRAVIS_BUILD_DIR
   - phpcs --standard=Drupal --ignore=*.md --extensions=php,module,inc,install,test,profile,theme,css,info $TRAVIS_BUILD_DIR
   - phpcpd --names *.module,*.inc,*.test,*.php $TRAVIS_BUILD_DIR
-  - php core/scripts/run-tests.sh --verbose --php `which php` islandora
+  - php core/scripts/run-tests.sh --verbose --xml "/opt/drupal/clover.xml" --php `which php` islandora
+  - cat /opt/drupal/clover.xml
+
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
 
 notifications:
   irc:
