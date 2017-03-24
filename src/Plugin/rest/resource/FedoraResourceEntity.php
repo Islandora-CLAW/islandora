@@ -2,12 +2,17 @@
 
 namespace Drupal\islandora\Plugin\rest\resource;
 
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityStorageException;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\islandora\IslandoraConstants;
 use Drupal\islandora\VersionCounter\VersionCounter;
 use Drupal\rest\ModifiedResourceResponse;
 use Drupal\rest\Plugin\rest\resource\EntityResource;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -21,6 +26,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  *   id = "fedora_resource",
  *   label = @Translation("Fedora Resource"),
  *   serialization_class = "Drupal\islandora\Entity\FedoraResource",
+ *   deriver = "Drupal\rest\Plugin\Deriver\EntityDeriver",
  *   uri_paths = {
  *     "canonical" = "/fedora_resource/{id}",
  *     "https://www.drupal.org/link-relations/create" = "/entity/fedora_resource"
@@ -28,6 +34,56 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  * )
  */
 class FedoraResourceEntity extends EntityResource {
+
+  /**
+   * A database connection.
+   *
+   * @var \Drupal\Core\Database\Connection
+   */
+  protected $database;
+
+  /**
+   * Constructs a Drupal\rest\Plugin\rest\resource\EntityResource object.
+   *
+   * @param array $configuration
+   *   A configuration array containing information about the plugin instance.
+   * @param string $plugin_id
+   *   The plugin_id for the plugin instance.
+   * @param mixed $plugin_definition
+   *   The plugin implementation definition.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager.
+   * @param array $serializer_formats
+   *   The available serialization formats.
+   * @param \Psr\Log\LoggerInterface $logger
+   *   A logger instance.
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   *   The config factory.
+   * @param \Drupal\Core\Database\Connection $database
+   *   A database connection.
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager, array $serializer_formats, LoggerInterface $logger, ConfigFactoryInterface $config_factory, Connection $database) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition, $entity_type_manager, $serializer_formats, $logger, $config_factory);
+    $this->database = $database;
+  }
+
+  /**
+   * {@inheritdoc}
+   *
+   * But passing additional database Connection.
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('entity_type.manager'),
+      $container->getParameter('serializer.formats'),
+      $container->get('logger.factory')->get('rest'),
+      $container->get('config.factory'),
+      $container->get('database')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -47,9 +103,14 @@ class FedoraResourceEntity extends EntityResource {
       throw new BadRequestHttpException('No ' . IslandoraConstants::ISLANDORA_VCLOCK_HEADER . ' header provided.');
     }
     else {
-      $uuid = $entity->uuid();
-      $counter = new VersionCounter();
-      if ($counter->isValid($uuid, $request->headers->get(IslandoraConstants::ISLANDORA_VCLOCK_HEADER) === 0)) {
+      $uuid = $original_entity->uuid();
+      $counter = new VersionCounter($this->database);
+      $header = $request->headers->get(IslandoraConstants::ISLANDORA_VCLOCK_HEADER);
+      if (is_array($header)) {
+        $header = reset($header);
+      }
+      if ($counter->isValid($uuid, $header) === 0) {
+        // Note: this message is not displayed.
         throw new ConflictHttpException(IslandoraConstants::ISLANDORA_VCLOCK_HEADER . ' value does not match.');
       }
     }
@@ -57,7 +118,12 @@ class FedoraResourceEntity extends EntityResource {
     // Overwrite the received properties.
     $entity_keys = $entity->getEntityType()->getKeys();
     foreach ($entity->_restSubmittedFields as $field_name) {
-      $field = $entity->get($field_name);
+      try {
+        $field = $entity->get($field_name);
+      }
+      catch (\InvalidArgumentException $e) {
+        throw new BadRequestHttpException($e->getMessage(), $e);
+      }
 
       // Entity key fields need special treatment: together they uniquely
       // identify the entity. Therefore it does not make sense to modify any of
