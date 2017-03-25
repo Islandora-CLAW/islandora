@@ -16,4 +16,9 @@ class IslandoraConstants {
    */
   const ISLANDORA_VCLOCK_HEADER = "X-Islandora-Vclock";
 
+  /**
+   * The header value for Drupal entity bundles.
+   */
+  const ISLANDORA_BUNDLE_HEADER = "X-Islandora-Bundle";
+
 }

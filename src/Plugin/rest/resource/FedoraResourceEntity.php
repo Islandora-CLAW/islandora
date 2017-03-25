@@ -18,9 +18,14 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\Routing\Route;
 
 /**
- * Defines a Fedora RestResource handler.
+ * Defines a FedoraResource Rest plugin.
+ *
+ * Class FedoraResourceEntity.
+ *
+ * @package Drupal\islandora\Plugin\rest\resource
  *
  * @RestResource(
  *   id = "fedora_resource",
@@ -43,6 +48,13 @@ class FedoraResourceEntity extends EntityResource {
   protected $database;
 
   /**
+   * The current request.
+   *
+   * @var \Symfony\Component\HttpFoundation\Request
+   */
+  protected $request;
+
+  /**
    * Constructs a Drupal\rest\Plugin\rest\resource\EntityResource object.
    *
    * @param array $configuration
@@ -62,9 +74,10 @@ class FedoraResourceEntity extends EntityResource {
    * @param \Drupal\Core\Database\Connection $database
    *   A database connection.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager, array $serializer_formats, LoggerInterface $logger, ConfigFactoryInterface $config_factory, Connection $database) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager, array $serializer_formats, LoggerInterface $logger, ConfigFactoryInterface $config_factory, Connection $database, Request $request) {
     parent::__construct($configuration, $plugin_id, $plugin_definition, $entity_type_manager, $serializer_formats, $logger, $config_factory);
     $this->database = $database;
+    $this->request = $request;
   }
 
   /**
@@ -81,14 +94,15 @@ class FedoraResourceEntity extends EntityResource {
       $container->getParameter('serializer.formats'),
       $container->get('logger.factory')->get('rest'),
       $container->get('config.factory'),
-      $container->get('database')
+      $container->get('database'),
+      $container->get('request_stack')->getCurrentRequest()
     );
   }
 
   /**
    * {@inheritdoc}
    */
-  public function patch(EntityInterface $original_entity, EntityInterface $entity = NULL, Request $request) {
+  public function patch(EntityInterface $original_entity, EntityInterface $entity = NULL) {
     if ($entity == NULL) {
       throw new BadRequestHttpException('No entity content received.');
     }
@@ -99,13 +113,13 @@ class FedoraResourceEntity extends EntityResource {
     if (!$original_entity->access('update')) {
       throw new AccessDeniedHttpException();
     }
-    if (!$request->headers->has(IslandoraConstants::ISLANDORA_VCLOCK_HEADER)) {
+    if (!$this->request->headers->has(IslandoraConstants::ISLANDORA_VCLOCK_HEADER)) {
       throw new BadRequestHttpException('No ' . IslandoraConstants::ISLANDORA_VCLOCK_HEADER . ' header provided.');
     }
     else {
       $uuid = $original_entity->uuid();
       $counter = new VersionCounter($this->database);
-      $header = $request->headers->get(IslandoraConstants::ISLANDORA_VCLOCK_HEADER);
+      $header = $this->request->headers->get(IslandoraConstants::ISLANDORA_VCLOCK_HEADER);
       if (is_array($header)) {
         $header = reset($header);
       }
@@ -159,6 +173,30 @@ class FedoraResourceEntity extends EntityResource {
     catch (EntityStorageException $e) {
       throw new HttpException(500, 'Internal Server Error', $e);
     }
+  }
+
+  /**
+   * Gets the base route for a particular method.
+   *
+   * @param string $canonical_path
+   *   The canonical path for the resource.
+   * @param string $method
+   *   The HTTP method to be used for the route.
+   *
+   * @return \Symfony\Component\Routing\Route
+   *   The created base route.
+   */
+  protected function getBaseRoute($canonical_path, $method) {
+    return new Route($canonical_path, array(
+      '_controller' => 'Drupal\islandora\Plugin\rest\FedoraRestRequestHandler::handle',
+    ),
+      $this->getBaseRouteRequirements($method),
+      array(),
+      '',
+      array(),
+      // The HTTP method is a requirement for this route.
+      array($method)
+    );
   }
 
 }
