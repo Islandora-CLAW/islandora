@@ -18,7 +18,6 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use Symfony\Component\Routing\Route;
 
 /**
  * Defines a FedoraResource Rest plugin.
@@ -176,27 +175,15 @@ class FedoraResourceEntity extends EntityResource {
   }
 
   /**
-   * Gets the base route for a particular method.
-   *
-   * @param string $canonical_path
-   *   The canonical path for the resource.
-   * @param string $method
-   *   The HTTP method to be used for the route.
-   *
-   * @return \Symfony\Component\Routing\Route
-   *   The created base route.
+   * {@inheritdoc}
    */
   protected function getBaseRoute($canonical_path, $method) {
-    return new Route($canonical_path, array(
-      '_controller' => 'Drupal\islandora\Plugin\rest\FedoraRestRequestHandler::handle',
-    ),
-      $this->getBaseRouteRequirements($method),
-      array(),
-      '',
-      array(),
-      // The HTTP method is a requirement for this route.
-      array($method)
-    );
+    $route = parent::getBaseRoute($canonical_path, $method);
+    // Just for PATCH for now.
+    if (strtolower($method) == "patch") {
+      $route->setDefault('_controller', 'Drupal\islandora\Plugin\rest\FedoraRestRequestHandler::handle');
+    }
+    return $route;
   }
 
 }

@@ -7,7 +7,7 @@ system.admin_config_islandora:
   requirements:
     _permission: 'access administration pages'
 
-# Core Islandora configuration form 
+# Core Islandora configuration form
 system.islandora_settings:
   path: '/admin/config/islandora/core'
   defaults:
@@ -28,11 +28,3 @@ entity.fedora_resource_type.jsonldcontext:
       bundle:
         type: entity:{fedora_resource}:{fedora_resource_type}
 
-fedora_resource_type.patch:
-  path: '/fedora_resource/{fedora_resource}'
-  defaults:
-    _controller: '\Drupal\islandora\Controller\FedoraResourcePatchController::process'
-  methods: [PATCH]
-  formats: ['jsonld']
-  requirements:
-    _permission: 'edit fedora resource entities'
