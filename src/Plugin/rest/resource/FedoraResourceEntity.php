@@ -3,12 +3,11 @@
 namespace Drupal\islandora\Plugin\rest\resource;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityStorageException;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\islandora\IslandoraConstants;
-use Drupal\islandora\VersionCounter\VersionCounter;
+use Drupal\islandora\VersionCounter\VersionCounterInterface;
 use Drupal\rest\ModifiedResourceResponse;
 use Drupal\rest\Plugin\rest\resource\EntityResource;
 use Psr\Log\LoggerInterface;
@@ -42,9 +41,9 @@ class FedoraResourceEntity extends EntityResource {
   /**
    * A database connection.
    *
-   * @var \Drupal\Core\Database\Connection
+   * @var \Drupal\islandora\VersionCounter\VersionCounterInterface
    */
-  protected $database;
+  protected $versionCounter;
 
   /**
    * The current request.
@@ -70,19 +69,21 @@ class FedoraResourceEntity extends EntityResource {
    *   A logger instance.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The config factory.
-   * @param \Drupal\Core\Database\Connection $database
-   *   A database connection.
+   * @param \Drupal\islandora\VersionCounter\VersionCounterInterface $version_counter
+   *   A version counter.
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The current request.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager, array $serializer_formats, LoggerInterface $logger, ConfigFactoryInterface $config_factory, Connection $database, Request $request) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager, array $serializer_formats, LoggerInterface $logger, ConfigFactoryInterface $config_factory, VersionCounterInterface $version_counter, Request $request) {
     parent::__construct($configuration, $plugin_id, $plugin_definition, $entity_type_manager, $serializer_formats, $logger, $config_factory);
-    $this->database = $database;
+    $this->versionCounter = $version_counter;
     $this->request = $request;
   }
 
   /**
    * {@inheritdoc}
    *
-   * But passing additional database Connection.
+   * But passing additional VersionCounter and Request.
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     return new static(
@@ -93,7 +94,7 @@ class FedoraResourceEntity extends EntityResource {
       $container->getParameter('serializer.formats'),
       $container->get('logger.factory')->get('rest'),
       $container->get('config.factory'),
-      $container->get('database'),
+      $container->get('islandora.versioncounter'),
       $container->get('request_stack')->getCurrentRequest()
     );
   }
@@ -117,12 +118,11 @@ class FedoraResourceEntity extends EntityResource {
     }
     else {
       $uuid = $original_entity->uuid();
-      $counter = new VersionCounter($this->database);
       $header = $this->request->headers->get(IslandoraConstants::ISLANDORA_VCLOCK_HEADER);
       if (is_array($header)) {
         $header = reset($header);
       }
-      if ($counter->isValid($uuid, $header) === 0) {
+      if ($this->versionCounter->get($uuid) !== $header) {
         // Note: this message is not displayed.
         throw new ConflictHttpException(IslandoraConstants::ISLANDORA_VCLOCK_HEADER . ' value does not match.');
       }

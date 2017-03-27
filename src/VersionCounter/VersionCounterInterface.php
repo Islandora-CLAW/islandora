@@ -56,17 +56,4 @@ interface VersionCounterInterface {
    */
   public function delete($uuid);
 
-  /**
-   * Test the current version count against an external value.
-   *
-   * @param string $uuid
-   *   Entity UUID.
-   * @param int $test_value
-   *   Test version count value.
-   *
-   * @return int
-   *   Returns 1 on match. Otherwise returns 0.
-   */
-  public function isValid($uuid, $test_value);
-
 }
