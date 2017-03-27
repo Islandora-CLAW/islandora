@@ -97,7 +97,6 @@ class JsonldContextGeneratorTest extends KernelTestBase {
   public function testGetContextException() {
     // This should throw the expected Exception.
     $newFedoraEntity = $this->drupalCreateFedoraContentType();
-    $this->pass($newFedoraEntity->id);
     $this->theJsonldContextGenerator->getContext('fedora_resource.' . $newFedoraEntity->id());
 
   }
