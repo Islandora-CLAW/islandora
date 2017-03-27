@@ -89,7 +89,7 @@ class FedoraRestRequestHandler extends RequestHandler {
         catch (UnexpectedValueException $e) {
           $error['error'] = $e->getMessage();
           $content = $serializer->serialize($error, $format);
-          return new Response($content, 400, array('Content-Type' => $request->getMimeType($format)));
+          return new Response($content, 400, ['Content-Type' => $request->getMimeType($format)]);
         }
       }
       else {
@@ -100,7 +100,7 @@ class FedoraRestRequestHandler extends RequestHandler {
     // Determine the request parameters that should be passed to the resource
     // plugin.
     $route_parameters = $route_match->getParameters();
-    $parameters = array();
+    $parameters = [];
     // Filter out all internal parameters starting with "_".
     foreach ($route_parameters as $key => $parameter) {
       if ($key{0} !== '_') {
@@ -110,7 +110,7 @@ class FedoraRestRequestHandler extends RequestHandler {
 
     // Invoke the operation on the resource plugin.
     $format = $this->getResponseFormat($route_match, $request);
-    $response = call_user_func_array(array($resource, $method), array_merge($parameters, array($unserialized, $request)));
+    $response = call_user_func_array([$resource, $method], array_merge($parameters, [$unserialized, $request]));
 
     return $response instanceof ResourceResponseInterface ?
       $this->renderResponse($request, $response, $serializer, $format, $resource_config) :

@@ -164,7 +164,7 @@ class FedoraResourceEntity extends EntityResource {
     $this->validate($original_entity);
     try {
       $original_entity->save();
-      $this->logger->notice('Updated entity %type with ID %id.', array('%type' => $original_entity->getEntityTypeId(), '%id' => $original_entity->id()));
+      $this->logger->notice('Updated entity %type with ID %id.', ['%type' => $original_entity->getEntityTypeId(), '%id' => $original_entity->id()]);
 
       // Return the updated entity in the response body.
       return new ModifiedResourceResponse($original_entity, 200);
