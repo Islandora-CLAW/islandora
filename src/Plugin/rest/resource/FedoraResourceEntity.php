@@ -39,7 +39,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 class FedoraResourceEntity extends EntityResource {
 
   /**
-   * A database connection.
+   * A version counter service.
    *
    * @var \Drupal\islandora\VersionCounter\VersionCounterInterface
    */
