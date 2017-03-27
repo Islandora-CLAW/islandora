@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\islandora\RdfBundleSolver;
+namespace Drupal\islandora\JsonldContextGenerator;
 
 use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
@@ -17,7 +17,7 @@ use Psr\Log\LoggerInterface;
  *
  * Class JsonldContextGenerator.
  *
- * @package Drupal\islandora\RdfBundleSolver
+ * @package Drupal\islandora\JsonldContextGenerator
  */
 class JsonldContextGenerator implements JsonldContextGeneratorInterface {
 

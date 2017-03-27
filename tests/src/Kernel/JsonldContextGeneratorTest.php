@@ -2,14 +2,14 @@
 
 namespace Drupal\Tests\islandora\Kernel;
 
-use Drupal\islandora\RdfBundleSolver\JsonldContextGenerator;
+use Drupal\islandora\JsonldContextGenerator\JsonldContextGenerator;
 use Drupal\KernelTests\KernelTestBase;
 
 /**
  * Tests the Json-LD context Generator methods and simple integration.
  *
  * @group islandora
- * @coversDefaultClass \Drupal\islandora\RdfBundleSolver\JsonldContextGenerator
+ * @coversDefaultClass \Drupal\islandora\JsonldContextGenerator\JsonldContextGenerator
  */
 class JsonldContextGeneratorTest extends KernelTestBase {
 
@@ -42,7 +42,7 @@ class JsonldContextGeneratorTest extends KernelTestBase {
   /**
    * The JsonldContextGenerator we are testing.
    *
-   * @var \Drupal\islandora\RdfBundleSolver\JsonldContextGeneratorInterface
+   * @var \Drupal\islandora\JsonldContextGenerator\JsonldContextGeneratorInterface
    */
   protected $theJsonldContextGenerator;
 
@@ -76,7 +76,7 @@ class JsonldContextGeneratorTest extends KernelTestBase {
   }
 
   /**
-   * @covers \Drupal\islandora\RdfBundleSolver\JsonldContextGenerator::getContext
+   * @covers \Drupal\islandora\JsonldContextGenerator\JsonldContextGenerator::getContext
    */
   public function testGetContext() {
     // Test with known asserts.
@@ -92,7 +92,7 @@ class JsonldContextGeneratorTest extends KernelTestBase {
    * Tests Exception in case of no rdf type.
    *
    * @expectedException \Exception
-   * @covers \Drupal\islandora\RdfBundleSolver\JsonldContextGenerator::getContext
+   * @covers \Drupal\islandora\JsonldContextGenerator\JsonldContextGenerator::getContext
    */
   public function testGetContextException() {
     // This should throw the expected Exception.
@@ -102,7 +102,7 @@ class JsonldContextGeneratorTest extends KernelTestBase {
   }
 
   /**
-   * @covers \Drupal\islandora\RdfBundleSolver\JsonldContextGenerator::generateContext
+   * @covers \Drupal\islandora\JsonldContextGenerator\JsonldContextGenerator::generateContext
    */
   public function testGenerateContext() {
     // Test with known asserts.
@@ -119,7 +119,7 @@ class JsonldContextGeneratorTest extends KernelTestBase {
    * Tests Exception in case of no rdf type.
    *
    * @expectedException \Exception
-   * @covers \Drupal\islandora\RdfBundleSolver\JsonldContextGenerator::generateContext
+   * @covers \Drupal\islandora\JsonldContextGenerator\JsonldContextGenerator::generateContext
    */
   public function testGenerateContextException() {
     // This should throw the expected Exception.

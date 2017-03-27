@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\islandora\RdfBundleSolver;
+namespace Drupal\islandora\JsonldContextGenerator;
 
 use Drupal\rdf\RdfMappingInterface;
 

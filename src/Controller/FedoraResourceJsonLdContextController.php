@@ -4,7 +4,7 @@ namespace Drupal\islandora\Controller;
 
 use Drupal\Core\Cache\CacheableJsonResponse;
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\islandora\RdfBundleSolver\JsonldContextGeneratorInterface;
+use Drupal\islandora\JsonldContextGenerator\JsonldContextGeneratorInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,14 +22,14 @@ class FedoraResourceJsonLdContextController extends ControllerBase {
   /**
    * Injected JsonldContextGenerator.
    *
-   * @var \Drupal\islandora\RdfBundleSolver\JsonldContextGeneratorInterface
+   * @var \Drupal\islandora\JsonldContextGenerator\JsonldContextGeneratorInterface
    */
   private $jsonldContextGenerator;
 
   /**
    * FedoraResourceJsonLdContextController constructor.
    *
-   * @param \Drupal\islandora\RdfBundleSolver\JsonldContextGeneratorInterface $jsonld_context_generator
+   * @param \Drupal\islandora\JsonldContextGenerator\JsonldContextGeneratorInterface $jsonld_context_generator
    *   Injected JsonldContextGenerator.
    */
   public function __construct(JsonldContextGeneratorInterface $jsonld_context_generator) {
