@@ -15,7 +15,7 @@ trait FedoraContentTypeCreationTrait {
    *
    * @param array $values
    *   An array of settings to change from the defaults.
-   *   Example: 'type' => 'foo'.
+   *   Example: 'id' => 'some_bundle'.
    *
    * @return \Drupal\islandora\Entity\FedoraResourceType
    *   Created content type.
@@ -32,8 +32,8 @@ trait FedoraContentTypeCreationTrait {
       $id = $values['type'];
     }
     $values += [
-      'type' => $id,
-      'name' => $id,
+      'id' => $id,
+      'label' => $id,
     ];
     $type = FedoraResourceType::create($values);
     $type->save();
