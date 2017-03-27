@@ -1,0 +1,22 @@
+{
+    "@type": [
+      "http://www.w3.org/ns/ldp#RDFSource",
+      "http://www.w3.org/ns/ldp#Container"
+    ],
+    "http://purl.org/dc/elements/1.1/title": [
+      {
+        "@value": "This is a RDF Source"
+      }
+    ],
+    "http://schema.org/dateCreated": [
+      {
+        "@value": "2017-02-16T20:26:06+00:00"
+      }
+    ],
+    "http://schema.org/dateModified": [
+      {
+        "@value": "2017-02-16T20:26:06+00:00"
+      }
+    ]
+}
+

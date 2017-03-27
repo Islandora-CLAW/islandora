@@ -28,3 +28,11 @@ system.islandora_settings:
     _title: 'Islandora Settings'
   requirements:
     _permission: 'administer site configuration'
+
+# POST request for FedoraResource entities
+islandora.post:
+  path: 'fedora_resource'
+  defaults: { _controller: '\Drupal\islandora\Controller\FedoraResourcePOSTController::processPost' }
+  methods:  [POST]
+  requirements:
+    _access: 'TRUE'
