@@ -27,4 +27,3 @@ entity.fedora_resource_type.jsonldcontext:
     parameters:
       bundle:
         type: entity:{fedora_resource}:{fedora_resource_type}
-
