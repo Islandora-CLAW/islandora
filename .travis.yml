@@ -13,11 +13,12 @@ branches:
     - /^8.x/
 
 before_install:
-  - export SCRIPT_DIR=$TRAVIS_BUILD_DIR/.scripts
+  - export SCRIPT_DIR=$HOME/CLAW/.scripts
   - export DRUPAL_DIR=/opt/drupal
 
 install:
-  - $SCRIPT_DIR/travis_setup.sh
+  - git clone https://github.com/Islandora-CLAW/CLAW.git $HOME/CLAW
+  - $SCRIPT_DIR/travis_setup_drupal.sh
   - git -C "$TRAVIS_BUILD_DIR" checkout -b travis-testing
   - cd $DRUPAL_DIR; composer config repositories.local path "$TRAVIS_BUILD_DIR"
   - composer require "islandora/islandora:dev-travis-testing as dev-8.x-1.x" --prefer-source
