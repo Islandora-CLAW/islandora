@@ -21,7 +21,7 @@ install:
   - $SCRIPT_DIR/travis_setup_drupal.sh
   - git -C "$TRAVIS_BUILD_DIR" checkout -b travis-testing
   - cd $DRUPAL_DIR; composer config repositories.local path "$TRAVIS_BUILD_DIR"
-  - composer require "islandora/islandora:dev-travis-testing as dev-8.x-1.x" --prefer-source
+  - composer require "islandora/islandora:dev-travis-testing as dev-8.x-1.x" --prefer-source --update-with-dependencies
   - cd web; drush --uri=127.0.0.1:8282 en -y islandora
 
 script:
