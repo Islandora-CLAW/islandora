@@ -4,7 +4,7 @@ namespace Drupal\islandora\Controller;
 
 use Drupal\Core\Cache\CacheableJsonResponse;
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\islandora\JsonldContextGenerator\JsonldContextGeneratorInterface;
+use Drupal\jsonld\ContextGenerator\JsonldContextGeneratorInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,14 +22,14 @@ class FedoraResourceJsonLdContextController extends ControllerBase {
   /**
    * Injected JsonldContextGenerator.
    *
-   * @var \Drupal\islandora\JsonldContextGenerator\JsonldContextGeneratorInterface
+   * @var \Drupal\jsonld\ContextGenerator\JsonldContextGeneratorInterface
    */
   private $jsonldContextGenerator;
 
   /**
    * FedoraResourceJsonLdContextController constructor.
    *
-   * @param \Drupal\islandora\JsonldContextGenerator\JsonldContextGeneratorInterface $jsonld_context_generator
+   * @param \Drupal\jsonld\ContextGenerator\JsonldContextGeneratorInterface $jsonld_context_generator
    *   Injected JsonldContextGenerator.
    */
   public function __construct(JsonldContextGeneratorInterface $jsonld_context_generator) {
@@ -43,10 +43,10 @@ class FedoraResourceJsonLdContextController extends ControllerBase {
    *   The App Container.
    *
    * @return static
-   *   An instance of our islandora.jsonldcontextgenerator service.
+   *   An instance of our jsonld.contextgenerator service.
    */
   public static function create(ContainerInterface $container) {
-    return new static($container->get('islandora.jsonldcontextgenerator'));
+    return new static($container->get('jsonld.contextgenerator'));
   }
 
   /**
