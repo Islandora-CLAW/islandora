@@ -98,7 +98,7 @@ class EventGenerator implements EventGeneratorInterface {
       return;
     }
 
-    if ($file === null) {
+    if ($file === NULL) {
       \Drupal::logger('islandora')->debug(
         "'field_image' or 'field_file' is null in Media entity {$entity->id()}"
       );
