@@ -40,3 +40,28 @@ function islandora_schema() {
   ];
   return $schema;
 }
+
+/**
+ * Implements hook_install().
+ */
+function islandora_install() {
+  if (\Drupal::moduleHandler()->moduleExists('rest')) {
+    $rest_resource_config_storage = \Drupal::service('entity_type.manager')->getStorage('rest_resource_config');
+    $rest_resource_config = $rest_resource_config_storage->load('entity.node');
+
+    if ($rest_resource_config) {
+      $configuration = $rest_resource_config->get('configuration');
+
+      if (!in_array('jsonld', $configuration['formats'])) {
+        $configuration['formats'][] = 'jsonld';
+      }
+
+      if (!in_array('jwt_auth', $configuration['authentication'])) {
+        $configuration['authentication'][] = 'jwt_auth';
+      }
+
+      $rest_resource_config->set('configuration', $configuration);
+      $rest_resource_config->save(TRUE);
+    }
+  }
+}
