@@ -116,3 +116,47 @@ function islandora_node_delete(EntityInterface $entity) {
   $versionCounter = \Drupal::service('islandora.versioncounter');
   $versionCounter->delete($entity->uuid());
 }
+
+/**
+ * Implements hook_node_view_alter().
+ */
+function islandora_node_view_alter(&$build, EntityInterface $entity) {
+  // Return if memberof field does not exist.
+  if ($entity->hasField('field_memberof') == false) {
+    return;
+  }
+
+  // Return if memberof field has no values.
+  $collection_members = $entity->get('field_memberof')->getValue();
+  if (count($collection_members) == 0) {
+    return;
+  }
+
+  // Loop through each member and add to the collection_links.
+  $collection_links =  [];
+  foreach ($collection_members as &$member_info) {
+    $collection_id = $member_info['target_id'];
+    $collection_entity = $entity->load($collection_id);
+
+    // If collection entity does not exist, skip.
+    if ($collection_entity == NULL) {
+      continue;
+    }
+
+    // If entity bundle type is not Collection, skip.
+    $collection_entity_bundle = $collection_entity->bundle();
+    if ($collection_entity_bundle != "islandora_collection") {
+      continue;
+    }
+
+    $collection_entity_url = $collection_entity->url('canonical', ['absolute' => TRUE]);
+    array_push($collection_links, "<" . $collection_entity_url . ">; rel='collection'");
+  }
+
+  if (count($collection_links) > 0) {
+    $collection_links_str = implode(", ", $collection_links);
+    $build['#attached']['http_header'] = [
+      ['Link', $collection_links_str],
+    ];
+  }
+}
