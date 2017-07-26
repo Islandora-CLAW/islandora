@@ -122,7 +122,7 @@ function islandora_node_delete(EntityInterface $entity) {
  */
 function islandora_node_view_alter(&$build, EntityInterface $entity) {
   // Return if memberof field does not exist.
-  if ($entity->hasField('field_memberof') == false) {
+  if ($entity->hasField('field_memberof') == FALSE) {
     return;
   }
 
@@ -133,8 +133,8 @@ function islandora_node_view_alter(&$build, EntityInterface $entity) {
   }
 
   // Loop through each member and add to the collection_links.
-  $collection_links =  [];
-  foreach ($collection_members as &$member_info) {
+  $collection_links = [];
+  foreach ($collection_members as $member_info) {
     $collection_id = $member_info['target_id'];
     $collection_entity = $entity->load($collection_id);
 
