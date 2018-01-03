@@ -9,6 +9,9 @@ dependencies:
     - rest
     - serialization
     - user
+  enforced:
+    module:
+      - islandora
 _core:
   default_config_hash: e7XqQa-N16XDqeDTA7Ohgx6iLb6mIQ1RUs0krFFIbAw
 id: file_checksum

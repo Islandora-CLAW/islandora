@@ -14,8 +14,10 @@
  * @author Diego Pino Navarro <dpino@metro.org> https://github.com/diegopino
  */
 
-use Drupal\Core\Database\IntegrityConstraintViolationException;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\islandora\ContextProvider\NodeContextProvider;
+use Drupal\islandora\ContextProvider\MediaContextProvider;
+use Drupal\islandora\ContextProvider\FileContextProvider;
 use Drupal\Core\Routing\RouteMatchInterface;
 
 /**
@@ -82,81 +84,108 @@ function islandora_rdf_namespaces() {
 }
 
 /**
- * Implements hook_ENTITY_TYPE_insert().
+ * Implements hook_entity_insert().
  */
-function islandora_node_insert(EntityInterface $entity) {
-  // Creates a record in the db to track the number of changes to the entity.
-  $versionCounter = \Drupal::service('islandora.versioncounter');
-  try {
-    $versionCounter->create($entity->uuid());
+function islandora_entity_insert(EntityInterface $entity) {
+  switch ($entity->getEntityType()->id()) {
+    case "node":
+      $provider = new NodeContextProvider($entity);
+      break;
+
+    case "media":
+      $provider = new MediaContextProvider($entity);
+      break;
+
+    case "file":
+      $provider = new FileContextProvider($entity);
+      break;
+
+    default:
+      $provider = NULL;
+      break;
   }
-  catch (IntegrityConstraintViolationException $e) {
-    \Drupal::logger('islandora')->error(
-      'Attempted to create duplicate entry for @uuid in version counter ' .
-      'table. This should never happen.',
-      ['@uuid' => $entity->uuid()]
-    );
+
+  if ($provider) {
+    $context_manager = \Drupal::service('context.manager');
+    $provided = $provider->getRuntimeContexts([]);
+    $context_manager->evaluateContexts($provided);
+
+    foreach ($context_manager->getActiveReactions('index') as $reaction) {
+      $reaction->execute($entity);
+    }
   }
 }
 
 /**
- * Implements hook_ENTITY_TYPE_update().
+ * Implements hook_entity_update().
  */
-function islandora_node_update(EntityInterface $entity) {
-  // Increments the number of changes to the entity.
-  $versionCounter = \Drupal::service('islandora.versioncounter');
-  $versionCounter->increment($entity->uuid());
+function islandora_entity_update(EntityInterface $entity) {
+  switch ($entity->getEntityType()->id()) {
+    case "node":
+      $provider = new NodeContextProvider($entity);
+      break;
+
+    case "media":
+      $provider = new MediaContextProvider($entity);
+      break;
+
+    case "file":
+      $provider = new FileContextProvider($entity);
+      break;
+
+    default:
+      $provider = NULL;
+      break;
+  }
+
+  if ($provider) {
+    $context_manager = \Drupal::service('context.manager');
+    $provided = $provider->getRuntimeContexts([]);
+    $context_manager->evaluateContexts($provided);
+
+    foreach ($context_manager->getActiveReactions('index') as $reaction) {
+      $reaction->execute($entity);
+    }
+  }
 }
 
 /**
- * Implements hook_ENTITY_TYPE_update().
+ * Implements hook_entity_delete().
  */
-function islandora_node_delete(EntityInterface $entity) {
-  // Deletes the record in the db to track the number of changes to the entity.
-  $versionCounter = \Drupal::service('islandora.versioncounter');
-  $versionCounter->delete($entity->uuid());
+function islandora_entity_delete(EntityInterface $entity) {
+  switch ($entity->getEntityType()->id()) {
+    case "node":
+      $provider = new NodeContextProvider($entity);
+      break;
+
+    case "media":
+      $provider = new MediaContextProvider($entity);
+      break;
+
+    case "file":
+      $provider = new FileContextProvider($entity);
+      break;
+
+    default:
+      $provider = NULL;
+      break;
+  }
+
+  if ($provider) {
+    $context_manager = \Drupal::service('context.manager');
+    $provided = $provider->getRuntimeContexts([]);
+    $context_manager->evaluateContexts($provided);
+
+    foreach ($context_manager->getActiveReactions('delete') as $reaction) {
+      $reaction->execute($entity);
+    }
+  }
 }
 
 /**
  * Implements hook_node_view_alter().
  */
-function islandora_node_view_alter(&$build, EntityInterface $entity) {
-  // Return if memberof field does not exist.
-  if ($entity->hasField('field_memberof') == FALSE) {
-    return;
-  }
-
-  // Return if memberof field has no values.
-  $collection_members = $entity->get('field_memberof')->getValue();
-  if (count($collection_members) == 0) {
-    return;
-  }
-
-  // Loop through each member and add to the collection_links.
-  $collection_links = [];
-  foreach ($collection_members as $member_info) {
-    $collection_id = $member_info['target_id'];
-    $collection_entity = $entity->load($collection_id);
-
-    // If collection entity does not exist, skip.
-    if ($collection_entity == NULL) {
-      continue;
-    }
-
-    // If entity bundle type is not Collection, skip.
-    $collection_entity_bundle = $collection_entity->bundle();
-    if ($collection_entity_bundle != "islandora_collection") {
-      continue;
-    }
-
-    $collection_entity_url = $collection_entity->url('canonical', ['absolute' => TRUE]);
-    array_push($collection_links, "<" . $collection_entity_url . ">; rel='collection'");
-  }
-
-  if (count($collection_links) > 0) {
-    $collection_links_str = implode(", ", $collection_links);
-    $build['#attached']['http_header'] = [
-      ['Link', $collection_links_str],
-    ];
-  }
+function islandora_entity_view_alter(&$build, EntityInterface $entity) {
+  \Drupal::service('islandora.view_alter.related_link_header')
+    ->alter($build, $entity);
 }

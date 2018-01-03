@@ -1,0 +1,16 @@
+uuid: 4340c20a-d314-4cbf-a26f-c36d7180ede5
+langcode: en
+status: true
+dependencies:
+  module:
+    - islandora
+  enforced:
+    module:
+      - islandora
+id: delete_node_from_triplestore
+label: 'Delete Node from Triplestore'
+type: node
+plugin: emit_node_event
+configuration:
+  queue: 'islandora-indexing-triplestore-delete'
+  event: delete

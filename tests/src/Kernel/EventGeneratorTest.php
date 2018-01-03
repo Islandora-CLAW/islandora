@@ -3,6 +3,9 @@
 namespace Drupal\Tests\islandora\Kernel;
 
 use Drupal\islandora\EventGenerator\EventGenerator;
+use Drupal\node\Entity\Node;
+use Drupal\node\Entity\NodeType;
+use Drupal\simpletest\UserCreationTrait;
 
 /**
  * Tests the EventGenerator default implementation.
@@ -10,7 +13,9 @@ use Drupal\islandora\EventGenerator\EventGenerator;
  * @group islandora
  * @coversDefaultClass \Drupal\islandora\EventGenerator\EventGenerator
  */
-class EventGeneratorTest extends EventGeneratorTestBase {
+class EventGeneratorTest extends IslandoraKernelTestBase {
+
+  use UserCreationTrait;
 
   /**
    * The EventGenerator to test.
@@ -20,10 +25,43 @@ class EventGeneratorTest extends EventGeneratorTestBase {
   protected $eventGenerator;
 
   /**
+   * User entity.
+   *
+   * @var \Drupal\user\UserInterface
+   */
+  protected $user;
+
+  /**
+   * Fedora resource entity.
+   *
+   * @var \Drupal\node\Entity\NodeInterface
+   */
+  protected $entity;
+
+  /**
    * {@inheritdoc}
    */
   public function setUp() {
     parent::setUp();
+
+    // Create a test user.
+    $this->user = $this->createUser(['administer nodes']);
+
+    $test_type = NodeType::create([
+      'type' => 'test_type',
+      'label' => 'Test Type',
+    ]);
+    $test_type->save();
+
+    // Create a test entity.
+    $this->entity = Node::create([
+      "type" => "test_type",
+      "uid" => $this->user->get('uid'),
+      "title" => "Test Fixture",
+      "langcode" => "und",
+      "status" => 1,
+    ]);
+    $this->entity->save();
 
     // Create the event generator so we can test it.
     $this->eventGenerator = new EventGenerator();

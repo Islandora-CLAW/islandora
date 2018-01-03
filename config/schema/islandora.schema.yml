@@ -11,3 +11,48 @@ islandora.settings:
     broadcast_queue:
       type: string 
       label: 'Queue that handles distributing messages amongst multiple recipients'
+
+action.configuration.emit_node_event:
+  type: mapping
+  label: 'Emit a Node event to a queue/topic'
+  mapping:
+    queue:
+      type: text
+      label: 'Queue'
+    event:
+      type: text
+      label: 'Event Type'
+
+action.configuration.emit_media_event:
+  type: mapping
+  label: 'Emit a Media event to a queue/topic'
+  mapping:
+    queue:
+      type: text
+      label: 'Queue'
+    event:
+      type: text
+      label: 'Event Type'
+
+action.configuration.emit_file_event:
+  type: mapping
+  label: 'Emit a Flie event to a queue/topic'
+  mapping:
+    queue:
+      type: text
+      label: 'Queue'
+    event:
+      type: text
+      label: 'Event Type'
+
+condition.plugin.is_node:
+  type: condition.plugin
+  mapping:
+
+condition.plugin.is_media:
+  type: condition.plugin
+  mapping:
+
+condition.plugin.is_file:
+  type: condition.plugin
+  mapping:

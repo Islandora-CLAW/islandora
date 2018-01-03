@@ -13,10 +13,11 @@ dependencies:
   - options
   - inline_entity_form
   - jsonld
-  - rules
   - search_api
   - jwt
   - media_entity_image
   - rest 
   - filehash
   - basic_auth
+  - context
+  - action

@@ -1,0 +1,35 @@
+d: c14bfcb1-7e62-4a3c-98e9-0cdbadbe5c45
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - islandora
+  module:
+    - islandora
+name: media
+label: Media
+group: Islandora
+description: 'Reactions for all Media'
+requireAllConditions: false
+disabled: false
+conditions:
+  is_media:
+    id: is_media
+    negate: 0
+    uuid: 2e291ec1-11ee-4c36-ba7e-cb05128bf27d
+    context_mapping:
+      media: '@islandora.media_route_context_provider:media'
+reactions:
+  index:
+    id: index
+    actions:
+      index_media_in_fedora: index_media_in_fedora
+      index_media_in_triplestore: index_media_in_triplestore
+    saved: false
+  delete:
+    id: delete
+    actions:
+      delete_media_from_triplestore: delete_media_from_triplestore
+    saved: false
+weight: 0
