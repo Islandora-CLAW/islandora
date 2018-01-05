@@ -1,0 +1,16 @@
+uuid: 526d2857-de6f-472d-87e2-d8726db72301
+langcode: en
+status: true
+dependencies:
+  module:
+    - islandora
+  enforced:
+    module:
+      - islandora
+id: index_file_in_fedora
+label: 'Index File in Fedora'
+type: file
+plugin: emit_file_event
+configuration:
+  queue: 'islandora-indexing-fcrepo-file'
+  event: update

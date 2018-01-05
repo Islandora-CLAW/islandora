@@ -1,0 +1,16 @@
+uuid: 23ad55f4-301b-4ffb-b542-4cf2c0c291d8
+langcode: en
+status: true
+dependencies:
+  module:
+    - islandora
+  enforced:
+    module:
+      - islandora
+id: delete_node_from_fedora
+label: 'Delete Node from Fedora'
+type: node
+plugin: emit_node_event
+configuration:
+  queue: 'islandora-indexing-fcrepo-delete'
+  event: delete

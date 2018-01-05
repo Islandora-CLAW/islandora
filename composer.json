@@ -16,7 +16,7 @@
   ],
   "require": {
     "drupal/inline_entity_form": "^1.0@beta",
-    "drupal/rules": "3.x-dev",
+    "drupal/context": "^4.0",
     "drupal/search_api": "^1.0@beta",
     "islandora/jsonld": "dev-8.x-1.x",
     "stomp-php/stomp-php": "4.*",

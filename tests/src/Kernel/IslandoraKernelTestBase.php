@@ -28,8 +28,8 @@ abstract class IslandoraKernelTestBase extends KernelTestBase {
     'basic_auth',
     'hal',
     'rdf',
-    'typed_data',
-    'rules',
+    'action',
+    'context',
     'jsonld',
     'views',
     'key',
@@ -53,8 +53,8 @@ abstract class IslandoraKernelTestBase extends KernelTestBase {
     $this->installSchema('node', 'node_access');
     $this->installEntitySchema('user');
     $this->installEntitySchema('node');
+    $this->installEntitySchema('context');
     $this->installConfig('filter');
-    $this->installSchema('islandora', 'islandora_version_count');
   }
 
 }

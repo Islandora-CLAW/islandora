@@ -1,0 +1,16 @@
+uuid: 76d619dd-54f1-4047-8e89-54d5f1a7c16a
+langcode: en
+status: true
+dependencies:
+  module:
+    - islandora
+  enforced:
+    module:
+      - islandora
+id: delete_file_from_fedora
+label: 'Delete File from Fedora'
+type: file
+plugin: emit_file_event
+configuration:
+  queue: 'islandora-indexing-fcrepo-delete'
+  event: delete

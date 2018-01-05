@@ -33,9 +33,11 @@ class VersionCounter implements VersionCounterInterface {
    */
   public function create($uuid) {
     $this->database->insert('islandora_version_count')
-      ->fields([
-        'uuid' => $uuid,
-      ])
+      ->fields(
+            [
+              'uuid' => $uuid,
+            ]
+        )
       ->execute();
   }
 
