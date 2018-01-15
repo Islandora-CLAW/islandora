@@ -3,6 +3,7 @@
 namespace Drupal\Tests\islandora\Functional;
 
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Url;
 use Drupal\Tests\BrowserTestBase;
 use Drupal\Tests\TestFileCreationTrait;
 
@@ -56,6 +57,25 @@ class IslandoraFunctionalTestBase extends BrowserTestBase {
     ]);
     $hello_world->save();
 
+    // Enable the json REST endpoint for files.
+    $file_json = $this->container->get('entity_type.manager')->getStorage('rest_resource_config')->create([
+      'id' => 'entity.file',
+      'granularity' => 'resource',
+      'configuration' => [
+        'methods' => [
+          'GET',
+        ],
+        'formats' => [
+          'json',
+        ],
+        'authentication' => [
+          'cookie',
+        ],
+      ],
+    ]);
+    $file_json->save();
+
+    $this->container->get('router.builder')->rebuild();
   }
 
   /**
@@ -94,7 +114,7 @@ class IslandoraFunctionalTestBase extends BrowserTestBase {
     $file = current($this->getTestFiles('image'));
     $values = [
       'name[0][value]' => 'Test Media',
-      'files[field_image_0]' => drupal_realpath($file->uri),
+      'files[field_image_0]' => \Drupal::service('file_system')->realpath($file->uri),
     ];
     $this->drupalPostForm('media/add/tn', $values, t('Save and publish'));
     $values = [
@@ -102,8 +122,21 @@ class IslandoraFunctionalTestBase extends BrowserTestBase {
     ];
     $this->getSession()->getPage()->fillField('edit-field-image-0-alt', 'alt text');
     $this->getSession()->getPage()->pressButton(t('Save and publish'));
-    $this->assertResponse(200);
-    return $this->getUrl();
+    $this->assertSession()->statusCodeEquals(200);
+    $results = $this->container->get('entity_type.manager')->getStorage('file')->loadByProperties(['filename' => $file->filename]);
+    $file_entity = reset($results);
+    $file_url = $file_entity->url('canonical', ['absolute' => TRUE]);
+    $rest_url = Url::fromRoute('rest.entity.file.GET.json', ['file' => $file_entity->id()])
+      ->setAbsolute()
+      ->toString();
+    $rest_url .= "?_format=json";
+    return [
+      'media' => $this->getUrl(),
+      'file' => [
+        'file' => $file_url,
+        'rest' => $rest_url,
+      ],
+    ];
   }
 
   /**
@@ -111,7 +144,7 @@ class IslandoraFunctionalTestBase extends BrowserTestBase {
    */
   protected function postNodeAddForm($bundle_id, $values, $button_text) {
     $this->drupalPostForm("node/add/$bundle_id", $values, t('@text', ['@text' => $button_text]));
-    $this->assertResponse(200);
+    $this->assertSession()->statusCodeEquals(200);
   }
 
   /**
@@ -119,7 +152,7 @@ class IslandoraFunctionalTestBase extends BrowserTestBase {
    */
   protected function postEntityEditForm($entity_url, $values, $button_text) {
     $this->drupalPostForm("$entity_url/edit", $values, t('@text', ['@text' => $button_text]));
-    $this->assertResponse(200);
+    $this->assertSession()->statusCodeEquals(200);
   }
 
   /**
@@ -144,7 +177,7 @@ class IslandoraFunctionalTestBase extends BrowserTestBase {
   }
 
   /**
-   * Checks if the collection link header contains the correct uri.
+   * Checks if the correct link header exists for an Entity.
    *
    * @param string $rel
    *   The expected relation type of the link header.
@@ -152,16 +185,41 @@ class IslandoraFunctionalTestBase extends BrowserTestBase {
    *   The entity whose uri is expected in the link header.
    * @param string $title
    *   The expected title of the link header.
+   * @param string $type
+   *   The expected mimetype for the link header.
    *
    * @return int
    *   The number of times the correct header appears.
    */
-  protected function validateLinkHeader($rel, EntityInterface $entity, $title = '') {
-    $entity_url = $entity->url('canonical', ['absolute' => TRUE]);
+  protected function validateLinkHeaderWithEntity($rel, EntityInterface $entity, $title = '', $type = '') {
+    $entity_url = $entity->toUrl('canonical', ['absolute' => TRUE])
+      ->toString();
+    return $this->validateLinkHeaderWithUrl($rel, $entity_url, $title, $type);
+  }
+
+  /**
+   * Checks if the correct link header exists for a string URI.
+   *
+   * @param string $rel
+   *   The expected relation type of the link header.
+   * @param string $url
+   *   The uri is expected in the link header.
+   * @param string $title
+   *   The expected title of the link header.
+   * @param string $type
+   *   The expected mimetype for the link header.
+   *
+   * @return int
+   *   The number of times the correct header appears.
+   */
+  protected function validateLinkHeaderWithUrl($rel, $url, $title = '', $type = '') {
 
     $regex = '/<(.*)>; rel="' . preg_quote($rel) . '"';
     if (!empty($title)) {
       $regex .= '; title="' . preg_quote($title) . '"';
+    }
+    if (!empty($type)) {
+      $regex .= '; type="' . preg_quote($type, '/') . '"';
     }
     $regex .= '/';
 
@@ -173,7 +231,7 @@ class IslandoraFunctionalTestBase extends BrowserTestBase {
       $split = explode(',', $link_headers);
       foreach ($split as $link_header) {
         $matches = [];
-        if (preg_match($regex, $link_header, $matches) && $matches[1] == $entity_url) {
+        if (preg_match($regex, $link_header, $matches) && $matches[1] == $url) {
           $count++;
         }
       }

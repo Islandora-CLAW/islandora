@@ -119,11 +119,11 @@ class RelatedLinkHeaderTest extends IslandoraFunctionalTestBase {
     // for both the referenced node and media entity.
     $this->drupalGet('node/' . $this->referencer->id());
     $this->assertTrue(
-      $this->validateLinkHeader('related', $this->referenced, 'Referenced Entity') == 1,
+      $this->validateLinkHeaderWithEntity('related', $this->referenced, 'Referenced Entity') == 1,
       "Malformed related link header"
     );
     $this->assertTrue(
-      $this->validateLinkHeader('related', $this->media, 'Media Entity') == 1,
+      $this->validateLinkHeaderWithEntity('related', $this->media, 'Media Entity') == 1,
       "Malformed related link header"
     );
 
@@ -135,11 +135,11 @@ class RelatedLinkHeaderTest extends IslandoraFunctionalTestBase {
     // for both the referenced node and media entity.
     $this->drupalGet('node/' . $this->referencer->id());
     $this->assertTrue(
-      $this->validateLinkHeader('related', $this->referenced, 'Referenced Entity') == 1,
+      $this->validateLinkHeaderWithEntity('related', $this->referenced, 'Referenced Entity') == 1,
       "Malformed related link header"
     );
     $this->assertTrue(
-      $this->validateLinkHeader('related', $this->media, 'Media Entity') == 0,
+      $this->validateLinkHeaderWithEntity('related', $this->media, 'Media Entity') == 0,
       "Anonymous should not be able to see media link header"
     );
   }
