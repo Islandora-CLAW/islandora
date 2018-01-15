@@ -18,6 +18,11 @@ services:
     arguments: ['@entity_type.manager', '@current_user']
     tags:
       - { name: event_subscriber }
+  islandora.media_link_header_subscriber:
+    class: Drupal\islandora\EventSubscriber\MediaLinkHeaderSubscriber
+    arguments: ['@entity_field.manager', '@current_route_match', '@entity_type.manager']
+    tags:
+      - { name: event_subscriber }
   islandora.node_link_header_subscriber:
     class: Drupal\islandora\EventSubscriber\NodeLinkHeaderSubscriber
     arguments: ['@entity_field.manager', '@current_route_match']
