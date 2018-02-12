@@ -30,7 +30,7 @@ class MediaLinkHeaderTest extends IslandoraFunctionalTestBase {
       "Malformed 'describes' link header"
     );
     $this->assertTrue(
-      $this->validateLinkHeaderWithUrl('edit-media', $urls['file']['rest'], '', 'application/json') == 1,
+      $this->validateLinkHeaderWithUrl('edit-media', $urls['file']['rest'], '', '') == 1,
       "Malformed 'edit-media' link header"
     );
   }

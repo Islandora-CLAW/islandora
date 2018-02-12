@@ -44,7 +44,8 @@ class MediaSourceUpdateTest extends IslandoraFunctionalTestBase {
     $this->drupalLogin($account);
 
     // Make a media and give it a png.
-    $url = $this->createThumbnailWithFile();
+    $urls = $this->createThumbnailWithFile();
+    $url = $urls['media'];
 
     // Hack out the guzzle client.
     $client = $this->getSession()->getDriver()->getClient()->getClient();

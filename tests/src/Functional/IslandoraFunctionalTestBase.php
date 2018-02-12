@@ -57,24 +57,6 @@ class IslandoraFunctionalTestBase extends BrowserTestBase {
     ]);
     $hello_world->save();
 
-    // Enable the json REST endpoint for files.
-    $file_json = $this->container->get('entity_type.manager')->getStorage('rest_resource_config')->create([
-      'id' => 'entity.file',
-      'granularity' => 'resource',
-      'configuration' => [
-        'methods' => [
-          'GET',
-        ],
-        'formats' => [
-          'json',
-        ],
-        'authentication' => [
-          'cookie',
-        ],
-      ],
-    ]);
-    $file_json->save();
-
     $this->container->get('router.builder')->rebuild();
   }
 
@@ -126,7 +108,7 @@ class IslandoraFunctionalTestBase extends BrowserTestBase {
     $results = $this->container->get('entity_type.manager')->getStorage('file')->loadByProperties(['filename' => $file->filename]);
     $file_entity = reset($results);
     $file_url = $file_entity->url('canonical', ['absolute' => TRUE]);
-    $rest_url = Url::fromRoute('rest.entity.file.GET.json', ['file' => $file_entity->id()])
+    $rest_url = Url::fromRoute('islandora.media_source_update', ['media' => $file_entity->id()])
       ->setAbsolute()
       ->toString();
     $rest_url .= "?_format=json";
