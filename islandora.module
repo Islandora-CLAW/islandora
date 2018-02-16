@@ -181,3 +181,13 @@ function islandora_entity_delete(EntityInterface $entity) {
     }
   }
 }
+
+/**
+ * Implements hook_jsonld_alter_normalized_array().
+ */
+function islandora_jsonld_alter_normalized_array(EntityInterface $entity, array &$normalized, array $context) {
+  $context_manager = \Drupal::service('context.manager');
+  foreach ($context_manager->getActiveReactions('\Drupal\islandora\ContextReaction\NormalizerAlterReaction') as $reaction) {
+    $reaction->execute($entity, $normalized, $context);
+  }
+}

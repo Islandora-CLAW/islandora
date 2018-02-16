@@ -4,7 +4,7 @@ namespace Drupal\islandora\Plugin\ContextReaction;
 
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\jsonld\ContextReaction\NormalizerAlterReaction;
+use Drupal\islandora\ContextReaction\NormalizerAlterReaction;
 use Drupal\jsonld\Normalizer\NormalizerBase;
 
 /**
