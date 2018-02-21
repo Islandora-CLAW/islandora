@@ -11,7 +11,7 @@ use Drupal\jsonld\Normalizer\NormalizerBase;
  * Map URI to predicate context reaction.
  *
  * @ContextReaction(
- *   id = "map_uri_predicate",
+ *   id = "islandora_map_uri_predicate",
  *   label = @Translation("Map URI to predicate")
  * )
  */
