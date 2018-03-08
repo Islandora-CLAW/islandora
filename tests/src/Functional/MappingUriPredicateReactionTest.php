@@ -66,7 +66,7 @@ class MappingUriPredicateReactionTest extends IslandoraFunctionalTestBase {
     $this->drupalLogin($account);
 
     $context_name = 'test';
-    $reaction_id = 'map_uri_predicate';
+    $reaction_id = 'islandora_map_uri_predicate';
 
     $this->postNodeAddForm('test_type',
       ['title[0][value]' => 'Test Node'],
