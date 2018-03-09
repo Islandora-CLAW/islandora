@@ -7,7 +7,7 @@ system.admin_config_islandora:
   requirements:
     _permission: 'access administration pages'
 
-# Core Islandora configuration form 
+# Core Islandora configuration form
 system.islandora_settings:
   path: '/admin/config/islandora/core'
   defaults:
@@ -15,14 +15,6 @@ system.islandora_settings:
     _title: 'Islandora Settings'
   requirements:
     _permission: 'administer site configuration'
-
-# Islandora JSON-LD Routing definition
-islandora.jsonldcontext:
-  path: '/context/{entity_type}/{bundle}'
-  defaults:
-    _controller: '\Drupal\islandora\Controller\JsonLdContextController::content'
-  requirements:
-     _permission: 'access content'
 
 islandora.media_source_update:
   path: '/media/{media}/source'
