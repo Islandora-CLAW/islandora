@@ -78,7 +78,6 @@ class MediaLinkHeaderSubscriber extends LinkHeaderSubscriber implements EventSub
         $edit_media_url = Url::fromRoute('islandora.media_source_update', ['media' => $referencedEntity->id()])
           ->setAbsolute()
           ->toString();
-        $edit_media_url .= '?_format=json';
         $links[] = "<$file_url>; rel=\"describes\"; type=\"{$referencedEntity->getMimeType()}\"";
         $links[] = "<$edit_media_url>; rel=\"edit-media\"";
       }

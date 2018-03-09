@@ -111,7 +111,6 @@ class IslandoraFunctionalTestBase extends BrowserTestBase {
     $rest_url = Url::fromRoute('islandora.media_source_update', ['media' => $file_entity->id()])
       ->setAbsolute()
       ->toString();
-    $rest_url .= "?_format=json";
     return [
       'media' => $this->getUrl(),
       'file' => [
