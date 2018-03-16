@@ -15,13 +15,15 @@ branches:
 before_install:
   - export SCRIPT_DIR=$HOME/CLAW/.scripts
   - export DRUPAL_DIR=/opt/drupal
+  - export COMPOSER_PATH="/home/travis/.phpenv/versions/$TRAVIS_PHP_VERSION/bin/composer"
 
 install:
   - git clone https://github.com/Islandora-CLAW/CLAW.git $HOME/CLAW
   - $SCRIPT_DIR/travis_setup_drupal.sh
   - git -C "$TRAVIS_BUILD_DIR" checkout -b travis-testing
-  - cd $DRUPAL_DIR; composer config repositories.local path "$TRAVIS_BUILD_DIR"
-  - composer require "islandora/islandora:dev-travis-testing as dev-8.x-1.x" --prefer-source --update-with-dependencies
+  - cd $DRUPAL_DIR;
+  - php -dmemory_limit=-1 $COMPOSER_PATH config repositories.local path "$TRAVIS_BUILD_DIR"
+  - php -dmemory_limit=-1 $COMPOSER_PATH require "islandora/islandora:dev-travis-testing as dev-8.x-1.x" --prefer-source --update-with-dependencies
   - cd web; drush --uri=127.0.0.1:8282 en -y islandora
 
 script:
