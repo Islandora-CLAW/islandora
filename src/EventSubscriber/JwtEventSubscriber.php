@@ -89,12 +89,13 @@ class JwtEventSubscriber implements EventSubscriberInterface {
     // Standard claims, validated at JWT validation time.
     $event->addClaim('iat', time());
     $event->addClaim('exp', strtotime('+2 hour'));
+    $event->addClaim('webid', $this->currentUser->id());
+    $event->addClaim('iss', $base_secure_url);
 
     // Islandora claims we need to validate.
-    $event->addClaim('uid', $this->currentUser->id());
-    $event->addClaim('name', $this->currentUser->getAccountName());
+    $event->addClaim('sub', $this->currentUser->getAccountName());
     $event->addClaim('roles', $this->currentUser->getRoles(FALSE));
-    $event->addClaim('url', $base_secure_url);
+
   }
 
   /**
@@ -106,10 +107,10 @@ class JwtEventSubscriber implements EventSubscriberInterface {
   public function validate(JwtAuthValidateEvent $event) {
     $token = $event->getToken();
 
-    $uid = $token->getClaim('uid');
-    $name = $token->getClaim('name');
+    $uid = $token->getClaim('webid');
+    $name = $token->getClaim('sub');
     $roles = $token->getClaim('roles');
-    $url = $token->getClaim('url');
+    $url = $token->getClaim('iss');
     if ($uid === NULL || $name === NULL || $roles === NULL || $url === NULL) {
       $event->invalidate("Expected data missing from payload.");
       return;
@@ -132,7 +133,7 @@ class JwtEventSubscriber implements EventSubscriberInterface {
    */
   public function loadUser(JwtAuthValidEvent $event) {
     $token = $event->getToken();
-    $uid = $token->getClaim('uid');
+    $uid = $token->getClaim('webid');
     $user = $this->userStorage->load($uid);
     $event->setUser($user);
   }

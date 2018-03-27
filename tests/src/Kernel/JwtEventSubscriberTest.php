@@ -53,7 +53,7 @@ class JwtEventSubscriberTest extends IslandoraKernelTestBase {
     $validateEvent = new JwtAuthValidateEvent($jwt);
     $subscriber->validate($validateEvent);
 
-    $this->assert($validateEvent->isValid(), "Generated tokens must be valid.");
+    $this->assertTrue($validateEvent->isValid(), "Generated tokens must be valid.");
   }
 
   /**
@@ -70,7 +70,7 @@ class JwtEventSubscriberTest extends IslandoraKernelTestBase {
 
     $subscriber->validate($event);
 
-    assert(!$event->isValid(), "Malformed event must be invalidated");
+    $this->assertFalse($event->isValid(), "Malformed event must be invalidated");
   }
 
   /**
@@ -92,13 +92,13 @@ class JwtEventSubscriberTest extends IslandoraKernelTestBase {
     $validateEvent = new JwtAuthValidateEvent($jwt);
     $subscriber->validate($validateEvent);
 
-    assert(!$validateEvent->isValid(), "Event must be invalidated when user cannot be loaded.");
+    $this->assertFalse($validateEvent->isValid(), "Event must be invalidated when user cannot be loaded.");
   }
 
   /**
    * @covers \Drupal\islandora\EventSubscriber\JwtEventSubscriber::validate
    */
-  public function testInvliadatesBadAccount() {
+  public function testInvalidatesBadAccount() {
     $anotherUser = $this->createUser();
 
     // Mock user entity storage, loads the wrong user.
@@ -117,7 +117,7 @@ class JwtEventSubscriberTest extends IslandoraKernelTestBase {
     $validateEvent = new JwtAuthValidateEvent($jwt);
     $subscriber->validate($validateEvent);
 
-    assert(!$validateEvent->isValid(), "Event must be invalidated when users don't align.");
+    $this->assertFalse($validateEvent->isValid(), "Event must be invalidated when users don't align.");
   }
 
   /**
@@ -135,7 +135,7 @@ class JwtEventSubscriberTest extends IslandoraKernelTestBase {
     $validEvent = new JwtAuthValidEvent($jwt);
     $subscriber->loadUser($validEvent);
 
-    $this->assert($validEvent->getUser()->id() == $this->user->id(), "Correct user must be loaded to valid event.");
+    $this->assertEquals($this->user->id(), $validEvent->getUser()->id(), "Correct user must be loaded to valid event.");
   }
 
 }
