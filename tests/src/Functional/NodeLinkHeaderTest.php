@@ -49,18 +49,6 @@ class NodeLinkHeaderTest extends IslandoraFunctionalTestBase {
   public function setUp() {
     parent::setUp();
 
-    // Create a test content type with an entity reference field.
-    $test_type_with_reference = $this->container->get('entity_type.manager')->getStorage('node_type')->create([
-      'type' => 'test_type_with_reference',
-      'label' => 'Test Type With Reference',
-    ]);
-    $test_type_with_reference->save();
-
-    // Add two entity reference fields.
-    // One for nodes and one for media.
-    $this->createEntityReferenceField('node', 'test_type_with_reference', 'field_reference', 'Referenced Entity', 'node', 'default', [], 2);
-    $this->createEntityReferenceField('node', 'test_type_with_reference', 'field_media', 'Media Entity', 'media', 'default', [], 2);
-
     $this->other = $this->container->get('entity_type.manager')->getStorage('node')->create([
       'type' => 'test_type',
       'title' => 'Test object w/o entity reference field',
@@ -83,7 +71,7 @@ class NodeLinkHeaderTest extends IslandoraFunctionalTestBase {
     $this->referencer = $this->container->get('entity_type.manager')->getStorage('node')->create([
       'type' => 'test_type_with_reference',
       'title' => 'Referencer',
-      'field_reference' => [$this->referenced->id()],
+      'field_node' => [$this->referenced->id()],
       'field_media' => [$this->media->id()],
     ]);
     $this->referencer->save();
@@ -119,11 +107,11 @@ class NodeLinkHeaderTest extends IslandoraFunctionalTestBase {
     // for both the referenced node and media entity.
     $this->drupalGet('node/' . $this->referencer->id());
     $this->assertTrue(
-      $this->validateLinkHeaderWithEntity('related', $this->referenced, 'Referenced Entity') == 1,
+      $this->validateLinkHeaderWithEntity('related', $this->referenced, 'Referenced Node') == 1,
       "Malformed related link header"
     );
     $this->assertTrue(
-      $this->validateLinkHeaderWithEntity('related', $this->media, 'Media Entity') == 1,
+      $this->validateLinkHeaderWithEntity('related', $this->media, 'Referenced Media') == 1,
       "Malformed related link header"
     );
 
@@ -164,11 +152,11 @@ class NodeLinkHeaderTest extends IslandoraFunctionalTestBase {
     // for both the referenced node bun not the media entity b/c permissions.
     $this->drupalGet('node/' . $this->referencer->id());
     $this->assertTrue(
-      $this->validateLinkHeaderWithEntity('related', $this->referenced, 'Referenced Entity') == 1,
+      $this->validateLinkHeaderWithEntity('related', $this->referenced, 'Referenced Node') == 1,
       "Malformed related link header"
     );
     $this->assertTrue(
-      $this->validateLinkHeaderWithEntity('related', $this->media, 'Media Entity') == 0,
+      $this->validateLinkHeaderWithEntity('related', $this->media, 'Referenced Media') == 0,
       "Anonymous should not be able to see media link header"
     );
   }

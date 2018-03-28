@@ -36,15 +36,6 @@ abstract class LinkHeaderSubscriber implements EventSubscriberInterface {
   protected $entityFieldManager;
 
   /**
-   * The route match object.
-   *
-   * @var \Drupal\Core\Routing\RouteMatchInterface
-   */
-  protected $routeMatch;
-
-  /**
-   * Constructor.
-   *
    * The access manager.
    *
    * @var \Drupal\Core\Access\AccessManagerInterface
@@ -59,28 +50,37 @@ abstract class LinkHeaderSubscriber implements EventSubscriberInterface {
   protected $account;
 
   /**
+   * The route match object.
+   *
+   * @var \Drupal\Core\Routing\RouteMatchInterface
+   */
+  protected $routeMatch;
+
+  /**
    * Constructor.
    *
    * @param \Drupal\Core\Entity\EntityTypeManager $entity_type_manager
    *   The entity type manager.
    * @param \Drupal\Core\Entity\EntityFieldManager $entity_field_manager
    *   The entity field manager.
-   * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
-   *   The route match object.
    * @param \Drupal\Core\Access\AccessManagerInterface $access_manager
    *   The access manager.
    * @param \Drupal\Core\Session\AccountInterface $account
    *   The current user.
+   * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
+   *   The route match object.
    */
   public function __construct(
     EntityTypeManager $entity_type_manager,
     EntityFieldManager $entity_field_manager,
-    RouteMatchInterface $route_match,
     AccessManagerInterface $access_manager,
-    AccountInterface $account
+    AccountInterface $account,
+    RouteMatchInterface $route_match
   ) {
     $this->entityTypeManager = $entity_type_manager;
     $this->entityFieldManager = $entity_field_manager;
+    $this->accessManager = $access_manager;
+    $this->account = $account;
     $this->routeMatch = $route_match;
     $this->accessManager = $access_manager;
     $this->account = $account;
@@ -183,7 +183,7 @@ abstract class LinkHeaderSubscriber implements EventSubscriberInterface {
         if ($referencedEntity->access('view')) {
           $entity_url = $referencedEntity->url('canonical', ['absolute' => TRUE]);
           $field_label = $field_definition->label();
-          $links[] = "<$entity_url>; rel=\"related\"; title=\"$field_label\"";
+          $links[] = "<$entity_url>; rel=\"related\"; title=\"$field_label\"; field=\"{$field_name}\"";
         }
       }
     }
@@ -209,9 +209,9 @@ abstract class LinkHeaderSubscriber implements EventSubscriberInterface {
     $route_name = $this->routeMatch->getRouteName();
 
     if ($rest_resource_config) {
-      $configuration = $rest_resource_config->get('configuration');
+      $formats = $rest_resource_config->getFormats("GET");
 
-      foreach ($configuration['GET']['supported_formats'] as $format) {
+      foreach ($formats as $format) {
         switch ($format) {
           case 'json':
             $mime = 'application/json';

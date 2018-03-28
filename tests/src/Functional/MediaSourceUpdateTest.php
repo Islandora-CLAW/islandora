@@ -47,40 +47,12 @@ class MediaSourceUpdateTest extends IslandoraFunctionalTestBase {
       ->setAbsolute()
       ->toString();
 
-    $image = file_get_contents(__DIR__ . '/../../static/test.jpeg');
+    $image = file_get_contents(__DIR__ . '/../../fixtures/test.jpeg');
 
     // Update without Content-Type header should fail with 400.
     $options = [
       'auth' => [$account->getUsername(), $account->pass_raw],
       'http_errors' => FALSE,
-      'headers' => [
-        'Content-Disposition' => 'attachment; filename="test.jpeg"',
-      ],
-      'body' => $image,
-    ];
-    $response = $client->request('PUT', $media_update_url, $options);
-    $this->assertTrue($response->getStatusCode() == 400, "Expected 400, received {$response->getStatusCode()}");
-
-    // Update without Content-Disposition header should fail with 400.
-    $options = [
-      'auth' => [$account->getUsername(), $account->pass_raw],
-      'http_errors' => FALSE,
-      'headers' => [
-        'Content-Type' => 'image/jpeg',
-      ],
-      'body' => $image,
-    ];
-    $response = $client->request('PUT', $media_update_url, $options);
-    $this->assertTrue($response->getStatusCode() == 400, "Expected 400, received {$response->getStatusCode()}");
-
-    // Update with malformed Content-Disposition header should fail with 400.
-    $options = [
-      'auth' => [$account->getUsername(), $account->pass_raw],
-      'http_errors' => FALSE,
-      'headers' => [
-        'Content-Type' => 'image/jpeg',
-        'Content-Disposition' => 'garbage; filename="test.jpeg"',
-      ],
       'body' => $image,
     ];
     $response = $client->request('PUT', $media_update_url, $options);
@@ -92,7 +64,6 @@ class MediaSourceUpdateTest extends IslandoraFunctionalTestBase {
       'http_errors' => FALSE,
       'headers' => [
         'Content-Type' => 'image/jpeg',
-        'Content-Disposition' => 'attachment; filename="test.jpeg"',
       ],
     ];
     $response = $client->request('PUT', $media_update_url, $options);
@@ -104,7 +75,6 @@ class MediaSourceUpdateTest extends IslandoraFunctionalTestBase {
       'http_errors' => FALSE,
       'headers' => [
         'Content-Type' => 'image/jpeg',
-        'Content-Disposition' => 'attachment; filename="test.jpeg"',
       ],
       'body' => $image,
     ];
@@ -132,7 +102,7 @@ class MediaSourceUpdateTest extends IslandoraFunctionalTestBase {
     $this->assertTrue($updated_mimetype == "image/jpeg", "Invalid mimetype.  Expected image/jpeg, received $updated_mimetype");
     $this->assertTrue($updated_width == 295, "Invalid width.  Expected 295, received $updated_width");
     $this->assertTrue($updated_height == 70, "Invalid height.  Expected 70, received $updated_height");
-    $this->assertTrue($updated_image == file_get_contents(__DIR__ . '/../../static/test.jpeg'), "Updated image not the same as PUT body.");
+    $this->assertTrue($updated_image == file_get_contents(__DIR__ . '/../../fixtures/test.jpeg'), "Updated image not the same as PUT body.");
   }
 
 }

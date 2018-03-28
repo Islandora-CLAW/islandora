@@ -4,7 +4,7 @@ namespace Drupal\islandora\EventGenerator;
 
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Action\ConfigurableActionBase;
-use Drupal\Core\Entity\EntityStorageInterface;
+use Drupal\Core\Entity\EntityTypeManager;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Session\AccountInterface;
@@ -27,11 +27,11 @@ abstract class EmitEvent extends ConfigurableActionBase implements ContainerFact
   protected $account;
 
   /**
-   * User storage.
+   * Entity type manager.
    *
-   * @var \Drupal\Core\Entity\EntityStorageInterface
+   * @var \Drupal\Core\Entity\EntityTypeManager
    */
-  protected $userStorage;
+  protected $entityTypeManager;
 
   /**
    * Event generator service.
@@ -65,8 +65,8 @@ abstract class EmitEvent extends ConfigurableActionBase implements ContainerFact
    *   The plugin implementation definition.
    * @param \Drupal\Core\Session\AccountInterface $account
    *   Current user.
-   * @param \Drupal\Core\Entity\EntityStorageInterface $user_storage
-   *   User storage.
+   * @param \Drupal\Core\Entity\EntityTypeManager $entity_type_manager
+   *   Entity type manager.
    * @param \Drupal\islandora\EventGenerator\EventGeneratorInterface $event_generator
    *   EventGenerator service to serialize AS2 events.
    * @param \Stomp\StatefulStomp $stomp
@@ -79,14 +79,14 @@ abstract class EmitEvent extends ConfigurableActionBase implements ContainerFact
     $plugin_id,
     $plugin_definition,
     AccountInterface $account,
-    EntityStorageInterface $user_storage,
+    EntityTypeManager $entity_type_manager,
     EventGeneratorInterface $event_generator,
     StatefulStomp $stomp,
     JwtAuth $auth
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->account = $account;
-    $this->userStorage = $user_storage;
+    $this->entityTypeManager = $entity_type_manager;
     $this->eventGenerator = $event_generator;
     $this->stomp = $stomp;
     $this->auth = $auth;
@@ -101,7 +101,7 @@ abstract class EmitEvent extends ConfigurableActionBase implements ContainerFact
       $plugin_id,
       $plugin_definition,
       $container->get('current_user'),
-      $container->get('entity_type.manager')->getStorage('user'),
+      $container->get('entity_type.manager'),
       $container->get('islandora.eventgenerator'),
       $container->get('islandora.stomp'),
       $container->get('jwt.authentication.jwt')
@@ -126,21 +126,12 @@ abstract class EmitEvent extends ConfigurableActionBase implements ContainerFact
       return;
     }
 
-    // Generate the event message.
-    $user = $this->userStorage->load($this->account->id());
-
-    if ($this->configuration['event'] == 'create') {
-      $message = $this->eventGenerator->generateCreateEvent($entity, $user);
-    }
-    elseif ($this->configuration['event'] == 'update') {
-      $message = $this->eventGenerator->generateUpdateEvent($entity, $user);
-    }
-    elseif ($this->configuration['event'] == 'delete') {
-      $message = $this->eventGenerator->generateDeleteEvent($entity, $user);
-    }
-
-    // Transform message from string into a proper message object.
-    $message = new Message($message, ['Authorization' => "Bearer $token"]);
+    // Generate event as stomp message.
+    $user = $this->entityTypeManager->getStorage('user')->load($this->account->id());
+    $message = new Message(
+      $this->eventGenerator->generateEvent($entity, $user, $this->configuration),
+      ['Authorization' => "Bearer $token"]
+    );
 
     // Send the message.
     try {
@@ -171,7 +162,7 @@ abstract class EmitEvent extends ConfigurableActionBase implements ContainerFact
   public function defaultConfiguration() {
     return [
       'queue' => '',
-      'event' => 'create',
+      'event' => 'Create',
     ];
   }
 
@@ -193,9 +184,10 @@ abstract class EmitEvent extends ConfigurableActionBase implements ContainerFact
       '#default_value' => $this->configuration['event'],
       '#description' => t('Type of event to emit'),
       '#options' => [
-        'create' => t('Create'),
-        'update' => t('Update'),
-        'delete' => t('Delete'),
+        'Create' => t('Create'),
+        'Update' => t('Update'),
+        'Delete' => t('Delete'),
+        'Generate Derivative' => t('Generate Derivative'),
       ],
     ];
     return $form;

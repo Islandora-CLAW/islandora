@@ -4,9 +4,11 @@ namespace Drupal\islandora\MediaSource;
 
 use Drupal\Component\Render\PlainTextOutput;
 use Drupal\Core\Entity\EntityTypeManager;
+use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StreamWrapper\StreamWrapperManager;
 use Drupal\Core\Utility\Token;
+use Drupal\file\FileInterface;
 use Drupal\media_entity\MediaInterface;
 use Drupal\node\NodeInterface;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -41,6 +43,13 @@ class MediaSourceService {
   protected $streamWrapperManager;
 
   /**
+   * Language manager.
+   *
+   * @var \Drupal\Core\Language\LanguageManagerInterface
+   */
+  protected $languageManager;
+
+  /**
    * Token service.
    *
    * @var \Drupal\Core\Utility\Token
@@ -56,6 +65,8 @@ class MediaSourceService {
    *   The current user.
    * @param \Drupal\Core\StreamWrapper\StreamWrapperManager $stream_wrapper_manager
    *   Stream wrapper manager.
+   * @param \Drupal\Core\Language\LanguageManagerInterface $language_manager
+   *   Language manager.
    * @param \Drupal\Core\Utility\Token $token
    *   Token service.
    */
@@ -63,11 +74,13 @@ class MediaSourceService {
     EntityTypeManager $entity_type_manager,
     AccountInterface $account,
     StreamWrapperManager $stream_wrapper_manager,
+    LanguageManagerInterface $language_manager,
     Token $token
   ) {
     $this->entityTypeManager = $entity_type_manager;
     $this->account = $account;
     $this->streamWrapperManager = $stream_wrapper_manager;
+    $this->languageManager = $language_manager;
     $this->token = $token;
   }
 
@@ -103,19 +116,13 @@ class MediaSourceService {
    *   New file contents as a resource.
    * @param string $mimetype
    *   New mimetype of contents.
-   * @param string $content_length
-   *   New size of contents.
-   * @param string $filename
-   *   New filename for contents.
    *
    * @throws HttpException
    */
   public function updateSourceField(
     MediaInterface $media,
     $resource,
-    $mimetype,
-    $content_length,
-    $filename
+    $mimetype
   ) {
     // Get the source field for the media type.
     $source_field = $this->getSourceFieldName($media->bundle());
@@ -128,44 +135,60 @@ class MediaSourceService {
     $files = $media->get($source_field)->referencedEntities();
     $file = reset($files);
 
-    // Set relevant fields on file.
-    $file->setMimeType($mimetype);
-    $file->setFilename($filename);
-    $file->setSize($content_length);
-
-    // Validate file extension.
-    $bundle = $media->bundle();
-    $source_field_config = $this->entityTypeManager->getStorage('field_config')->load("media.$bundle.$source_field");
-    $valid_extensions = $source_field_config->getSetting('file_extensions');
-    $errors = file_validate_extensions($file, $valid_extensions);
-
-    if (!empty($errors)) {
-      throw new BadRequestHttpException("Invalid file extension.  Valid types are :$valid_extensions");
-    }
-
-    // Copy the contents over using streams.
-    $uri = $file->getFileUri();
-    $file_stream_wrapper = $this->streamWrapperManager->getViaUri($uri);
-    $path = "";
-    $file_stream_wrapper->stream_open($uri, 'w', STREAM_REPORT_ERRORS, $path);
-    $file_stream = $file_stream_wrapper->stream_cast(STREAM_CAST_AS_STREAM);
-    if (stream_copy_to_stream($resource, $file_stream) === FALSE) {
-      throw new HttpException(500, "The file could not be copied into $uri");
-    }
-    $file->save();
+    // Update it.
+    $this->updateFile($file, $resource, $mimetype);
 
     // Set fields provided by type plugin and mapped in bundle configuration
     // for the media.
     foreach ($media->bundle->entity->field_map as $source => $destination) {
       if ($media->hasField($destination) && $value = $media->getType()->getField($media, $source)) {
         $media->set($destination, $value);
+        // Ensure width and height are updated on File reference when it's an
+        // image. Otherwise you run into scaling problems when updating images
+        // with different sizes.
+        if ($source == 'width' || $source == 'height') {
+          $media->get($source_field)->first()->set($source, $value);
+        }
       }
+    }
+
+    $media->save();
+  }
+
+  /**
+   * Updates a File's binary contents on disk.
+   *
+   * @param \Drupal\file\FileInterface $file
+   *   File to update.
+   * @param resource $resource
+   *   Stream holding the new contents.
+   * @param string $mimetype
+   *   Mimetype of new contents.
+   */
+  protected function updateFile(FileInterface $file, $resource, $mimetype = NULL) {
+    $uri = $file->getFileUri();
+    $file_stream_wrapper = $this->streamWrapperManager->getViaUri($uri);
+    $path = "";
+    $file_stream_wrapper->stream_open($uri, 'w', STREAM_REPORT_ERRORS, $path);
+    $file_stream = $file_stream_wrapper->stream_cast(STREAM_CAST_AS_STREAM);
+    $content_length = stream_copy_to_stream($resource, $file_stream);
+
+    if ($content_length === FALSE) {
+      throw new HttpException(500, "Request body could not be copied to $uri");
+    }
+
+    if ($content_length === 0) {
+      // Clean up the newly created, empty file.
+      $file_stream_wrapper->unlink($uri);
+      throw new BadRequestHttpException("The request contents are empty.");
+    }
+
+    if (!empty($mimetype)) {
+      $file->setMimeType($mimetype);
     }
 
     // Flush the image cache for the image so thumbnails get regenerated.
     image_path_flush($uri);
-
-    $media->save();
   }
 
   /**
@@ -181,8 +204,6 @@ class MediaSourceService {
    *   New file contents as a resource.
    * @param string $mimetype
    *   New mimetype of contents.
-   * @param string $content_length
-   *   New size of contents.
    * @param string $filename
    *   New filename for contents.
    *
@@ -194,14 +215,20 @@ class MediaSourceService {
     $bundle,
     $resource,
     $mimetype,
-    $content_length,
     $filename
   ) {
     if (!$node->hasField($field)) {
       throw new NotFoundHttpException();
     }
 
-    if (!$node->get($field)->isEmpty()) {
+    // Filter out any bad references before confirming it is empty.
+    $node->get($field)->filter(function ($elem) {
+      $value = $elem->getValue();
+      $mid = $value['target_id'];
+      return $this->entityTypeManager->getStorage('media')->load($mid);
+    });
+
+    if ($node->get($field)->count()) {
       throw new ConflictHttpException();
     }
 
@@ -228,7 +255,6 @@ class MediaSourceService {
       'uri' => $destination,
       'filename' => $filename,
       'filemime' => $mimetype,
-      'filesize' => $content_length,
       'status' => FILE_STATUS_PERMANENT,
     ]);
 
@@ -245,16 +271,8 @@ class MediaSourceService {
       throw new HttpException(500, "The destination directory does not exist, could not be created, or is not writable");
     }
 
-    // Copy the contents over using streams.
-    $uri = $file->getFileUri();
-    $file_stream_wrapper = $this->streamWrapperManager->getViaUri($uri);
-    $path = "";
-    $file_stream_wrapper->stream_open($uri, 'w', STREAM_REPORT_ERRORS, $path);
-    $file_stream = $file_stream_wrapper->stream_cast(STREAM_CAST_AS_STREAM);
-    if (stream_copy_to_stream($resource, $file_stream) === FALSE) {
-      throw new HttpException(500, "The file could not be copied into $uri");
-    }
-
+    // Copy over the file content.
+    $this->updateFile($file, $resource, $mimetype);
     $file->save();
 
     // Construct the Media.
@@ -262,6 +280,7 @@ class MediaSourceService {
       'bundle' => $bundle,
       'uid' => $this->account->id(),
       'name' => $filename,
+      'langcode' => $this->languageManager->getDefaultLanguage()->getId(),
       "$source_field" => [
         'target_id' => $file->id(),
       ],
@@ -270,22 +289,10 @@ class MediaSourceService {
       $media_struct[$source_field]['alt'] = $filename;
     }
     $media = $this->entityTypeManager->getStorage('media')->create($media_struct);
-
-    // Set fields provided by type plugin and mapped in bundle configuration
-    // for the media.
-    foreach ($media->bundle->entity->field_map as $source => $destination) {
-      if ($media->hasField($destination) && $value = $media->getType()->getField($media, $source)) {
-        $media->set($destination, $value);
-      }
-    }
-
-    // Flush the image cache for the image so thumbnails get regenerated.
-    image_path_flush($uri);
-
     $media->save();
 
     // Update the Node.
-    $node->get($field)->appendItem($media);
+    $node->set($field, $media);
     $node->save();
 
     // Return the created media.

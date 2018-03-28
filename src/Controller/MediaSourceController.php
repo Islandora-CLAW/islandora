@@ -89,24 +89,6 @@ class MediaSourceController extends ControllerBase {
       throw new BadRequestHttpException("Missing Content-Type header");
     }
 
-    $content_length = $request->headers->get('Content-Length', 0);
-
-    if ($content_length <= 0) {
-      throw new BadRequestHttpException("Missing Content-Length");
-    }
-
-    $content_disposition = $request->headers->get('Content-Disposition', "");
-
-    if (empty($content_disposition)) {
-      throw new BadRequestHttpException("Missing Content-Disposition header");
-    }
-
-    $matches = [];
-    if (!preg_match('/attachment; filename="(.*)"/', $content_disposition, $matches)) {
-      throw new BadRequestHttpException("Malformed Content-Disposition header");
-    }
-    $filename = $matches[1];
-
     // Since we update both the Media and its File, do this in a transaction.
     $transaction = $this->database->startTransaction();
 
@@ -115,9 +97,7 @@ class MediaSourceController extends ControllerBase {
       $this->service->updateSourceField(
         $media,
         $request->getContent(TRUE),
-        $content_type,
-        $content_length,
-        $filename
+        $content_type
       );
 
       return new Response("", 204);
@@ -161,12 +141,6 @@ class MediaSourceController extends ControllerBase {
       throw new BadRequestHttpException("Missing Content-Type header");
     }
 
-    $content_length = $request->headers->get('Content-Length', 0);
-
-    if ($content_length <= 0) {
-      throw new BadRequestHttpException("Missing Content-Length");
-    }
-
     $content_disposition = $request->headers->get('Content-Disposition', "");
 
     if (empty($content_disposition)) {
@@ -190,7 +164,6 @@ class MediaSourceController extends ControllerBase {
         $bundle,
         $request->getContent(TRUE),
         $content_type,
-        $content_length,
         $filename
       );
 
