@@ -42,20 +42,12 @@ class IsReferencedMediaTest extends IslandoraFunctionalTestBase {
   public function setUp() {
     parent::setUp();
 
-    // Create a test content type with a media reference field.
-    $test_type_with_reference = $this->container->get('entity_type.manager')->getStorage('node_type')->create([
-      'type' => 'test_type_with_reference',
-      'label' => 'Test Type With Reference',
-    ]);
-    $test_type_with_reference->save();
-    $this->createEntityReferenceField('node', 'test_type_with_reference', 'field_media', 'Media Entity', 'media', 'default', [], 2);
-
     $another_test_type_with_reference = $this->container->get('entity_type.manager')->getStorage('node_type')->create([
       'type' => 'another_test_type_with_reference',
       'label' => 'Another Test Type With Reference',
     ]);
     $another_test_type_with_reference->save();
-    $this->createEntityReferenceField('node', 'another_test_type_with_reference', 'field_media', 'Media Entity', 'media', 'default', [], 2);
+    $this->createEntityReferenceField('node', 'another_test_type_with_reference', 'field_media', 'Referenced Media', 'media', 'default', [], 2);
 
     // Create the media.
     $media_bundle = $this->drupalCreateMediaBundle();

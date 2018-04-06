@@ -39,8 +39,20 @@ class IsFileTest extends IslandoraFunctionalTestBase {
 
     // Add a new Thumbnail media and confirm Hello World! is printed to the
     // screen for the file upload.
-    $this->createThumbnailWithFile();
+    $file = current($this->getTestFiles('image'));
+    $values = [
+      'name[0][value]' => 'Test Media',
+      'files[field_image_0]' => \Drupal::service('file_system')->realpath($file->uri),
+    ];
+    $this->drupalPostForm('media/add/tn', $values, t('Save and publish'));
     $this->assertSession()->pageTextContains("Hello World!");
+
+    $values = [
+      'field_image[0][alt]' => 'Alternate text',
+    ];
+    $this->getSession()->getPage()->fillField('edit-field-image-0-alt', 'alt text');
+    $this->getSession()->getPage()->pressButton(t('Save and publish'));
+    $this->assertSession()->statusCodeEquals(200);
 
     // Stash the media's url.
     $url = $this->getUrl();

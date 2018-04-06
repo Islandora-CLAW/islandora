@@ -15,9 +15,9 @@
  */
 
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\islandora\ContextProvider\NodeContextProvider;
-use Drupal\islandora\ContextProvider\MediaContextProvider;
-use Drupal\islandora\ContextProvider\FileContextProvider;
+use Drupal\node\NodeInterface;
+use Drupal\media_entity\MediaInterface;
+use Drupal\file\FileInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 
 /**
@@ -58,102 +58,169 @@ function islandora_rdf_namespaces() {
 }
 
 /**
- * Implements hook_entity_insert().
+ * Implements hook_node_insert().
  */
-function islandora_entity_insert(EntityInterface $entity) {
-  switch ($entity->getEntityType()->id()) {
-    case "node":
-      $provider = new NodeContextProvider($entity);
-      break;
+function islandora_node_insert(NodeInterface $node) {
+  $utils = \Drupal::service('islandora.derivative_utils');
 
-    case "media":
-      $provider = new MediaContextProvider($entity);
-      break;
+  // Execute index reactions.
+  $utils->executeNodeReactions('\Drupal\islandora\Plugin\ContextReaction\IndexReaction', $node);
 
-    case "file":
-      $provider = new FileContextProvider($entity);
-      break;
-
-    default:
-      $provider = NULL;
-      break;
-  }
-
-  if ($provider) {
-    $context_manager = \Drupal::service('context.manager');
-    $provided = $provider->getRuntimeContexts([]);
-    $context_manager->evaluateContexts($provided);
-
-    foreach ($context_manager->getActiveReactions('index') as $reaction) {
-      $reaction->execute($entity);
+  // Find referenced Media and execute derivative reactions.
+  $media_reference_fields = $utils->getMediaReferenceFields($node->getEntityTypeId(), $node->bundle());
+  foreach (array_keys($media_reference_fields) as $field_name) {
+    foreach ($node->get($field_name)->referencedEntities() as $media) {
+      $utils->executeDerivativeReactions('\Drupal\islandora\Plugin\ContextReaction\DerivativeReaction', $node, $media);
     }
   }
 }
 
 /**
- * Implements hook_entity_update().
+ * Implements hook_node_update().
  */
-function islandora_entity_update(EntityInterface $entity) {
-  switch ($entity->getEntityType()->id()) {
-    case "node":
-      $provider = new NodeContextProvider($entity);
-      break;
+function islandora_node_update(NodeInterface $node) {
 
-    case "media":
-      $provider = new MediaContextProvider($entity);
-      break;
+  $utils = \Drupal::service('islandora.derivative_utils');
+  if (!$utils->haveFieldsChanged($node, $node->original)) {
+    return;
+  };
 
-    case "file":
-      $provider = new FileContextProvider($entity);
-      break;
+  // Execute index reactions.
+  $utils->executeNodeReactions('\Drupal\islandora\Plugin\ContextReaction\IndexReaction', $node);
 
-    default:
-      $provider = NULL;
-      break;
+  // Fire off derivative reactions for media just addded to an entity
+  // reference field.
+  $referenced_media = $utils->getNewMediaReferences($node);
+  foreach ($referenced_media as $media) {
+    $utils->executeDerivativeReactions('\Drupal\islandora\Plugin\ContextReaction\DerivativeReaction', $node, $media);
+  }
+}
+
+/**
+ * Implements hook_node_delete().
+ */
+function islandora_node_delete(NodeInterface $node) {
+  $utils = \Drupal::service('islandora.derivative_utils');
+
+  // Execute delete reactions.
+  $utils->executeNodeReactions('\Drupal\islandora\Plugin\ContextReaction\DeleteReaction', $node);
+}
+
+/**
+ * Implements hook_media_insert().
+ */
+function islandora_media_insert(MediaInterface $media) {
+  $utils = \Drupal::service('islandora.derivative_utils');
+
+  // Execute index reactions.
+  $utils->executeMediaReactions('\Drupal\islandora\Plugin\ContextReaction\IndexReaction', $media);
+}
+
+/**
+ * Implements hook_media_update().
+ */
+function islandora_media_update(MediaInterface $media) {
+  $media_source_service = \Drupal::service('islandora.media_source_service');
+
+  $utils = \Drupal::service('islandora.derivative_utils');
+  if (!$utils->haveFieldsChanged($media, $media->original)) {
+    return;
+  };
+
+  // Execute index reactions.
+  $utils->executeMediaReactions('\Drupal\islandora\Plugin\ContextReaction\IndexReaction', $media);
+
+  // Does it have a source field?
+  $source_field = $media_source_service->getSourceFieldName($media->bundle());
+  if (empty($source_field)) {
+    return;
   }
 
-  if ($provider) {
-    $context_manager = \Drupal::service('context.manager');
-    $provided = $provider->getRuntimeContexts([]);
-    $context_manager->evaluateContexts($provided);
+  // Have the files changed?
+  if ($media->get($source_field)->equals($media->original->get($source_field))) {
+    return;
+  }
 
-    foreach ($context_manager->getActiveReactions('index') as $reaction) {
-      $reaction->execute($entity);
+  // Fire off derivative reactions for the Media.
+  foreach ($utils->getReferencingNodes($media->id()) as $node) {
+    $utils->executeDerivativeReactions(
+      '\Drupal\islandora\Plugin\ContextReaction\DerivativeReaction',
+      $node,
+      $media
+    );
+  }
+}
+
+/**
+ * Implements hook_media_delete().
+ */
+function islandora_media_delete(MediaInterface $media) {
+  $utils = \Drupal::service('islandora.derivative_utils');
+
+  // Execute delete reactions.
+  $utils->executeMediaReactions('\Drupal\islandora\Plugin\ContextReaction\DeleteReaction', $media);
+}
+
+/**
+ * Implements hook_file_insert().
+ */
+function islandora_file_insert(FileInterface $file) {
+  $utils = \Drupal::service('islandora.derivative_utils');
+
+  // Execute index reactions.
+  $utils->executeFileReactions('\Drupal\islandora\Plugin\ContextReaction\IndexReaction', $file);
+}
+
+/**
+ * Implements hook_file_update().
+ */
+function islandora_file_update(FileInterface $file) {
+  // Exit early if unchanged.
+  if ($file->filehash['sha1'] == $file->original->filehash['sha1']) {
+    return;
+  }
+
+  $utils = \Drupal::service('islandora.derivative_utils');
+
+  // Execute index reactions.
+  $utils->executeFileReactions('\Drupal\islandora\Plugin\ContextReaction\IndexReaction', $file);
+
+  // Get Media that reference this File.
+  $mids = $utils->getReferencingMediaIds($file->id());
+
+  // Filter list to Media that are referenced by Nodes.
+  $filtered = array_filter(
+    $mids,
+    [$utils, 'mediaIsReferenced']
+  );
+
+  // Exit early if there's not referencing media that are also referenced by a
+  // node.
+  if (empty($filtered)) {
+    return;
+  }
+
+  // Execute derivative reactions.
+  $media_entities = \Drupal::service('entity_type.manager')->getStorage('media')->loadMultiple($filtered);
+  foreach ($media_entities as $media) {
+    foreach ($utils->getReferencingNodes($media->id()) as $node) {
+      $utils->executeDerivativeReactions(
+        '\Drupal\islandora\Plugin\ContextReaction\DerivativeReaction',
+        $node,
+        $media
+      );
     }
   }
 }
 
 /**
- * Implements hook_entity_delete().
+ * Implements hook_file_delete().
  */
-function islandora_entity_delete(EntityInterface $entity) {
-  switch ($entity->getEntityType()->id()) {
-    case "node":
-      $provider = new NodeContextProvider($entity);
-      break;
+function islandora_file_delete(FileInterface $file) {
+  $utils = \Drupal::service('islandora.derivative_utils');
 
-    case "media":
-      $provider = new MediaContextProvider($entity);
-      break;
-
-    case "file":
-      $provider = new FileContextProvider($entity);
-      break;
-
-    default:
-      $provider = NULL;
-      break;
-  }
-
-  if ($provider) {
-    $context_manager = \Drupal::service('context.manager');
-    $provided = $provider->getRuntimeContexts([]);
-    $context_manager->evaluateContexts($provided);
-
-    foreach ($context_manager->getActiveReactions('delete') as $reaction) {
-      $reaction->execute($entity);
-    }
-  }
+  // Execute delete reactions.
+  $utils->executeFileReactions('\Drupal\islandora\Plugin\ContextReaction\DeleteReaction', $file);
 }
 
 /**
@@ -163,5 +230,61 @@ function islandora_jsonld_alter_normalized_array(EntityInterface $entity, array 
   $context_manager = \Drupal::service('context.manager');
   foreach ($context_manager->getActiveReactions('\Drupal\islandora\ContextReaction\NormalizerAlterReaction') as $reaction) {
     $reaction->execute($entity, $normalized, $context);
+  }
+}
+
+/**
+ * Implements hook_entity_view_mode_alter().
+ */
+function islandora_entity_view_mode_alter(&$view_mode, EntityInterface $entity) {
+  $storage = \Drupal::service('entity_type.manager')->getStorage('entity_view_mode');
+  $context_manager = \Drupal::service('context.manager');
+
+  // Alter view mode based on context.
+  foreach ($context_manager->getActiveReactions('\Drupal\islandora\Plugin\ContextReaction\ViewModeAlterReaction') as $reaction) {
+    // Construct the new view mode's machine name.
+    $entity_type = $entity->getEntityTypeId();
+    $mode = $reaction->execute();
+    $machine_name = "$entity_type.$mode";
+
+    // Try to load it.
+    $new_mode = $storage->load($machine_name);
+
+    // If successful, alter the view mode.
+    if ($new_mode) {
+      $view_mode = $mode;
+    }
+    else {
+      \Drupal::logger('islandora')->info("EntityViewMode $machine_name does not exist.  View mode cannot be altered.");
+    }
+  }
+}
+
+/**
+ * Implements hook_entity_form_display_alter().
+ */
+function islandora_entity_form_display_alter(&$form_display, $context) {
+  $storage = \Drupal::service('entity_type.manager')->getStorage('entity_form_display');
+  $context_manager = \Drupal::service('context.manager');
+
+  // Alter form display based on context.
+  foreach ($context_manager->getActiveReactions('\Drupal\islandora\Plugin\ContextReaction\FormDisplayAlterReaction') as $reaction) {
+    // Construct the new form display's machine name.
+    $entity_type = $context['entity_type'];
+    $bundle = $context['bundle'];
+    $mode = $reaction->execute();
+    $machine_name = "$entity_type.$bundle.$mode";
+
+    // Try to load it.
+    $new_display = $storage->load($machine_name);
+
+    // If successful, alter the form display.
+    if ($new_display) {
+      $form_display = $new_display;
+    }
+    else {
+      // Otherwise, leave it be, but log a message.
+      \Drupal::logger('islandora')->info("EntityFormDisplay $machine_name does not exist.  Form display cannot be altered.");
+    }
   }
 }

@@ -70,10 +70,14 @@ class EventGeneratorTest extends IslandoraKernelTestBase {
   /**
    * Tests the generateCreateEvent() method.
    *
-   * @covers \Drupal\islandora\EventGenerator\EventGenerator::generateCreateEvent
+   * @covers \Drupal\islandora\EventGenerator\EventGenerator::generateEvent
    */
   public function testGenerateCreateEvent() {
-    $json = $this->eventGenerator->generateCreateEvent($this->entity, $this->user);
+    $json = $this->eventGenerator->generateEvent(
+      $this->entity,
+      $this->user,
+      ['event' => 'create', 'queue' => 'islandora-indexing-fcrepo-content']
+    );
     $msg = json_decode($json, TRUE);
 
     $this->assertBasicStructure($msg);
@@ -83,10 +87,14 @@ class EventGeneratorTest extends IslandoraKernelTestBase {
   /**
    * Tests the generateUpdateEvent() method.
    *
-   * @covers \Drupal\islandora\EventGenerator\EventGenerator::generateUpdateEvent
+   * @covers \Drupal\islandora\EventGenerator\EventGenerator::generateEvent
    */
   public function testGenerateUpdateEvent() {
-    $json = $this->eventGenerator->generateUpdateEvent($this->entity, $this->user);
+    $json = $this->eventGenerator->generateEvent(
+      $this->entity,
+      $this->user,
+      ['event' => 'update', 'queue' => 'islandora-indexing-fcrepo-content']
+    );
     $msg = json_decode($json, TRUE);
 
     $this->assertBasicStructure($msg);
@@ -96,10 +104,15 @@ class EventGeneratorTest extends IslandoraKernelTestBase {
   /**
    * Tests the generateDeleteEvent() method.
    *
-   * @covers \Drupal\islandora\EventGenerator\EventGenerator::generateDeleteEvent
+   * @covers \Drupal\islandora\EventGenerator\EventGenerator::generateEvent
    */
   public function testGenerateDeleteEvent() {
-    $json = $this->eventGenerator->generateDeleteEvent($this->entity, $this->user);
+    $json = $this->eventGenerator->generateEvent(
+      $this->entity,
+      $this->user,
+      ['event' => 'delete', 'queue' => 'islandora-indexing-fcrepo-delete']
+    );
+    $msg = json_decode($json, TRUE);
     $msg = json_decode($json, TRUE);
 
     $this->assertBasicStructure($msg);

@@ -1,0 +1,19 @@
+uuid: 0308339a-a9e5-4a04-8ce2-9f62ed504e34
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - node.type.test_type_with_reference
+  module:
+    - text
+    - user
+id: node.test_type_with_reference.teaser
+targetEntityType: node
+bundle: test_type_with_reference
+mode: teaser
+content:
+hidden:
+  body: true
+  links: true
+  langcode: true

@@ -6,47 +6,23 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\user\UserInterface;
 
 /**
- * Inteface for a service that provides serialized event messages.
+ * Inteface for a service that provides serialized AS2 messages.
  */
 interface EventGeneratorInterface {
 
   /**
-   * Generates a serialized 'Create' event.
+   * Generates a serialized event.
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
-   *   The entity that was created.
+   *   The entity in the action.
    * @param \Drupal\user\UserInterface $user
-   *   The user who created the entity.
+   *   The user performing the action.
+   * @param array $data
+   *   Arbitrary data to serialize within the event.
    *
    * @return string
    *   Serialized event message
    */
-  public function generateCreateEvent(EntityInterface $entity, UserInterface $user);
-
-  /**
-   * Generates a serialized 'Create' event.
-   *
-   * @param \Drupal\Core\Entity\EntityInterface $entity
-   *   The entity that was updated.
-   * @param \Drupal\user\UserInterface $user
-   *   The user who updated the entity.
-   *
-   * @return string
-   *   Serialized event message
-   */
-  public function generateUpdateEvent(EntityInterface $entity, UserInterface $user);
-
-  /**
-   * Generates a serialized 'Create' event.
-   *
-   * @param \Drupal\Core\Entity\EntityInterface $entity
-   *   The entity that was deleted.
-   * @param \Drupal\user\UserInterface $user
-   *   The user who deleted the entity.
-   *
-   * @return string
-   *   Serialized event message
-   */
-  public function generateDeleteEvent(EntityInterface $entity, UserInterface $user);
+  public function generateEvent(EntityInterface $entity, UserInterface $user, array $data);
 
 }

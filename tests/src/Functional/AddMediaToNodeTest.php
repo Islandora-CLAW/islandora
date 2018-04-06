@@ -27,17 +27,6 @@ class AddMediaToNodeTest extends IslandoraFunctionalTestBase {
   public function setUp() {
     parent::setUp();
 
-    // Create a test content type with an entity reference field.
-    $test_type_with_reference = $this->container->get('entity_type.manager')->getStorage('node_type')->create([
-      'type' => 'test_type_with_reference',
-      'label' => 'Test Type With Reference',
-    ]);
-    $test_type_with_reference->save();
-
-    // Add two entity reference fields.
-    // One for nodes and one for media.
-    $this->createEntityReferenceField('node', 'test_type_with_reference', 'field_media', 'Media Entity', 'media', 'default', [], 2);
-
     $this->referencer = $this->container->get('entity_type.manager')->getStorage('node')->create([
       'type' => 'test_type_with_reference',
       'title' => 'Referencer',
@@ -74,7 +63,7 @@ class AddMediaToNodeTest extends IslandoraFunctionalTestBase {
       ->setAbsolute()
       ->toString();
 
-    $image = file_get_contents(__DIR__ . '/../../static/test.jpeg');
+    $image = file_get_contents(__DIR__ . '/../../fixtures/test.jpeg');
 
     // Test different permissions scenarios.
     $options = [
@@ -210,6 +199,15 @@ class AddMediaToNodeTest extends IslandoraFunctionalTestBase {
     $this->assertTrue($response->getStatusCode() == 404, "Expected 404, received {$response->getStatusCode()}");
 
     // Should be successful with proper url, options, and permissions.
+    $options = [
+      'auth' => [$account->getUsername(), $account->pass_raw],
+      'http_errors' => FALSE,
+      'headers' => [
+        'Content-Type' => 'image/jpeg',
+        'Content-Disposition' => 'attachment; filename="test.jpeg"',
+      ],
+      'body' => $image,
+    ];
     $response = $client->request('POST', $add_to_node_url, $options);
     $this->assertTrue($response->getStatusCode() == 201, "Expected 201, received {$response->getStatusCode()}");
     $this->assertTrue(!empty($response->getHeader("Location")), "Response must include Location header");
