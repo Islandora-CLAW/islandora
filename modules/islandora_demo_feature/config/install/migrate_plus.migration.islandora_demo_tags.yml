@@ -13,7 +13,7 @@ migration_group: islandora
 label: 'Tags migration for islandora_demo feature'
 source:
   plugin: csv
-  path: /var/www/html/drupal/web/modules/contrib/islandora/modules/islandora_demo_feature/migrate/tags.csv
+  path: modules/contrib/islandora/modules/islandora_demo_feature/migrate/tags.csv
   header_row_count: 1
   keys:
     - external_uri
