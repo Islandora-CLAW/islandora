@@ -1,0 +1,37 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_subject_authorities
+    - node.type.subject
+  module:
+    - controlled_access_terms
+id: node.subject.field_subject_authorities
+field_name: field_subject_authorities
+entity_type: node
+bundle: subject
+label: 'Authority Sources'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  authority_sources:
+    aat: 'Art & Architecture Thesaurus'
+    cash: 'Canadian Subject Headings'
+    fast: 'FAST (Faceted Application of Subject Terminology)'
+    gmgpc: 'TGM II, Genre and physical characteristic terms'
+    lcsh: 'Library of Congress Subject Headings'
+    lcshac: 'Library of Congress Children''s Subject Headings'
+    mesh: 'Medical Subject Headings'
+    nal: 'National Agricultural Library subject headings'
+    rbgenr: 'Genre Terms: A Thesaurus for Use in Rare Book and Special Collections Cataloguing'
+    rvm: 'Répertoire de vedettes-matière'
+    tgn: 'Getty Thesaurus of Geographic Names'
+    tgm: 'Thesaurus for Graphic Materials'
+    lcgft: 'Library of Congress Genre/Form Terms'
+    other: Other
+  title: 1
+  link_type: 16
+field_type: authority_link

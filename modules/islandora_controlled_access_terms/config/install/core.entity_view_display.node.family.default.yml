@@ -1,0 +1,75 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.family.field_cat_date_begin
+    - field.field.node.family.field_cat_date_end
+    - field.field.node.family.field_family_name_authorities
+    - field.field.node.family.field_relation
+    - node.type.family
+  module:
+    - controlled_access_terms
+    - user
+id: node.family.default
+targetEntityType: node
+bundle: family
+mode: default
+content:
+  display_media_entity_view_1:
+    weight: 10
+    region: content
+  display_media_service_file:
+    weight: 10
+    region: content
+  display_media_thumbnail:
+    weight: 10
+    region: content
+  field_cat_date_begin:
+    weight: 8
+    label: above
+    settings:
+      date_separator: dash
+      date_order: big_endian
+      month_format: mm
+      day_format: dd
+      season_hemisphere: north
+    third_party_settings: {  }
+    type: text_edtf_human
+    region: content
+  field_cat_date_end:
+    weight: 9
+    label: above
+    settings:
+      date_separator: dash
+      date_order: big_endian
+      month_format: mm
+      day_format: dd
+      season_hemisphere: north
+    third_party_settings: {  }
+    type: text_edtf_human
+    region: content
+  field_family_name_authorities:
+    weight: 10
+    label: above
+    settings:
+      trim_length: '80'
+      url_only: ''
+      url_plain: ''
+      rel: ''
+      target: _blank
+    third_party_settings: {  }
+    type: authority_formatter_default
+    region: content
+  field_relation:
+    weight: 11
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  links:
+    weight: 100
+    region: content
+hidden:
+  langcode: true

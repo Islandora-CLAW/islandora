@@ -1,0 +1,32 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - node.type.subject
+  module:
+    - node
+id: node.subject
+targetEntityType: node
+bundle: subject
+types:
+  - 'schema:Thing'
+fieldMappings:
+  title:
+    properties:
+      - 'schema:name'
+  created:
+    properties:
+      - 'schema:dateCreated'
+    datatype_callback:
+      callable: 'Drupal\rdf\CommonDataConverter::dateIso8601Value'
+  changed:
+    properties:
+      - 'schema:dateModified'
+    datatype_callback:
+      callable: 'Drupal\rdf\CommonDataConverter::dateIso8601Value'
+  body:
+    properties:
+      - 'schema:description'
+  field_subject_authorities:
+    properties:
+      - 'schema:sameAs'

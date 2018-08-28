@@ -1,0 +1,44 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - node.type.corporate_body
+  module:
+    - node
+id: node.corporate_body
+targetEntityType: node
+bundle: corporate_body
+types:
+  - 'schema:Organization'
+fieldMappings:
+  title:
+    properties:
+      - 'schema:name'
+  created:
+    properties:
+      - 'schema:dateCreated'
+    datatype_callback:
+      callable: 'Drupal\rdf\CommonDataConverter::dateIso8601Value'
+  changed:
+    properties:
+      - 'schema:dateModified'
+    datatype_callback:
+      callable: 'Drupal\rdf\CommonDataConverter::dateIso8601Value'
+  body:
+    properties:
+      - 'schema:description'
+  field_corp_alt_name:
+    properties:
+      - 'schema:alternateName'
+  field_cat_date_end:
+    properties:
+      - 'schema:dissolutionDate'
+  field_cat_date_begin:
+    properties:
+      - 'schema:foundingDate'
+  field_corp_parent_org:
+    properties:
+      - 'schema:parentOrganization'
+  field_corporate_body_authorities:
+    properties:
+      - 'schema:sameAs'

@@ -1,0 +1,51 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.person.body
+    - field.field.node.person.field_cat_date_begin
+    - field.field.node.person.field_cat_date_end
+    - field.field.node.person.field_cat_member_of
+    - field.field.node.person.field_person_alternate_names
+    - field.field.node.person.field_person_name_authorities
+    - field.field.node.person.field_person_preferred_name
+    - field.field.node.person.field_relation
+    - node.type.person
+  module:
+    - text
+    - user
+id: node.person.teaser
+targetEntityType: node
+bundle: person
+mode: teaser
+content:
+  body:
+    label: hidden
+    type: text_summary_or_trimmed
+    weight: 101
+    settings:
+      trim_length: 600
+    third_party_settings: {  }
+    region: content
+  display_media_entity_view_1:
+    weight: 10
+    region: content
+  display_media_service_file:
+    weight: 10
+    region: content
+  display_media_thumbnail:
+    weight: 10
+    region: content
+  links:
+    weight: 100
+    region: content
+hidden:
+  field_cat_date_begin: true
+  field_cat_date_end: true
+  field_cat_member_of: true
+  field_person_alternate_names: true
+  field_person_name_authorities: true
+  field_person_preferred_name: true
+  field_relation: true
+  langcode: true

@@ -1,0 +1,17 @@
+name: 'Controlled Access Terms'
+description: 'Default Islandora configuration for controlled access terms fields'
+type: module
+core: 8.x
+dependencies:
+  - auto_entitylabel
+  - controlled_access_terms
+  - field
+  - geolocation
+  - islandora_demo_feature
+  - name
+  - node
+  - path
+  - rdf
+  - text
+  - user
+package: Islandora

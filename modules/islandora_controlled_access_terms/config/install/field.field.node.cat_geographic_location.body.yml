@@ -1,0 +1,21 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.body
+    - node.type.cat_geographic_location
+  module:
+    - text
+id: node.cat_geographic_location.body
+field_name: body
+entity_type: node
+bundle: cat_geographic_location
+label: Description
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  display_summary: true
+field_type: text_with_summary

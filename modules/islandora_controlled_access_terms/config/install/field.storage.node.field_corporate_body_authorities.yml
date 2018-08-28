@@ -1,0 +1,18 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - controlled_access_terms
+    - node
+id: node.field_corporate_body_authorities
+field_name: field_corporate_body_authorities
+entity_type: node
+type: authority_link
+settings: {  }
+module: controlled_access_terms
+locked: false
+cardinality: -1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

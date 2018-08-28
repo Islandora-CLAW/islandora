@@ -1,0 +1,39 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.subject.body
+    - field.field.node.subject.field_subject_authorities
+    - node.type.subject
+  module:
+    - text
+    - user
+id: node.subject.teaser
+targetEntityType: node
+bundle: subject
+mode: teaser
+content:
+  body:
+    label: hidden
+    type: text_summary_or_trimmed
+    weight: 101
+    settings:
+      trim_length: 600
+    third_party_settings: {  }
+    region: content
+  display_media_entity_view_1:
+    weight: 10
+    region: content
+  display_media_service_file:
+    weight: 10
+    region: content
+  display_media_thumbnail:
+    weight: 10
+    region: content
+  links:
+    weight: 100
+    region: content
+hidden:
+  field_subject_authorities: true
+  langcode: true

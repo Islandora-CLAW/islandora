@@ -1,0 +1,18 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_cat_date_end
+    - node.type.corporate_body
+id: node.corporate_body.field_cat_date_end
+field_name: field_cat_date_end
+entity_type: node
+bundle: corporate_body
+label: 'Dissolution Date'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

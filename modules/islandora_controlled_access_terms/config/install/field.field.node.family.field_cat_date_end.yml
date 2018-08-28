@@ -1,0 +1,18 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_cat_date_end
+    - node.type.family
+id: node.family.field_cat_date_end
+field_name: field_cat_date_end
+entity_type: node
+bundle: family
+label: 'Dissolution Date'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

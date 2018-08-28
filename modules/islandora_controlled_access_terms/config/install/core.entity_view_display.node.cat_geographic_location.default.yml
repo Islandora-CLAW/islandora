@@ -1,0 +1,78 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.cat_geographic_location.body
+    - field.field.node.cat_geographic_location.field_geo_alt_name
+    - field.field.node.cat_geographic_location.field_geo_authority_link
+    - field.field.node.cat_geographic_location.field_geo_broader
+    - field.field.node.cat_geographic_location.field_geo_geolocation
+    - node.type.cat_geographic_location
+  module:
+    - controlled_access_terms
+    - geolocation
+    - text
+    - user
+id: node.cat_geographic_location.default
+targetEntityType: node
+bundle: cat_geographic_location
+mode: default
+content:
+  body:
+    label: hidden
+    type: text_default
+    weight: 6
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  display_media_entity_view_1:
+    weight: 10
+    region: content
+  display_media_service_file:
+    weight: 10
+    region: content
+  display_media_thumbnail:
+    weight: 10
+    region: content
+  field_geo_alt_name:
+    weight: 4
+    label: inline
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_geo_authority_link:
+    weight: 1
+    label: inline
+    settings:
+      trim_length: '80'
+      url_only: ''
+      url_plain: ''
+      rel: ''
+      target: _blank
+    third_party_settings: {  }
+    type: authority_formatter_default
+    region: content
+  field_geo_broader:
+    weight: 5
+    label: inline
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_geo_geolocation:
+    weight: 2
+    label: inline
+    settings: {  }
+    third_party_settings: {  }
+    type: geolocation_latlng
+    region: content
+  links:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  langcode: true

@@ -1,0 +1,20 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_geo_geolocation
+    - node.type.cat_geographic_location
+  module:
+    - geolocation
+id: node.cat_geographic_location.field_geo_geolocation
+field_name: field_geo_geolocation
+entity_type: node
+bundle: cat_geographic_location
+label: Latitude/Longitude
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: geolocation

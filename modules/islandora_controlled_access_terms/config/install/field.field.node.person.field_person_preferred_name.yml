@@ -1,0 +1,53 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_person_preferred_name
+    - node.type.person
+  module:
+    - name
+id: node.person.field_person_preferred_name
+field_name: field_person_preferred_name
+entity_type: node
+bundle: person
+label: 'Person Preferred Name'
+description: ''
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  size:
+    title: 6
+    given: 20
+    middle: 20
+    family: 20
+    generational: 5
+    credentials: 35
+  title_display:
+    title: description
+    given: description
+    middle: description
+    family: description
+    generational: description
+    credentials: description
+  field_type:
+    title: select
+    given: text
+    middle: text
+    family: text
+    generational: select
+    credentials: text
+  inline_css:
+    title: ''
+    given: ''
+    middle: ''
+    family: ''
+    generational: ''
+    credentials: ''
+  component_css: ''
+  component_layout: default
+  show_component_required_marker: false
+  credentials_inline: false
+  override_format: default
+field_type: name

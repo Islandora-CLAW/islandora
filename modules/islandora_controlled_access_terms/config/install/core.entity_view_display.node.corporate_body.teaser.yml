@@ -1,0 +1,49 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.corporate_body.body
+    - field.field.node.corporate_body.field_cat_date_begin
+    - field.field.node.corporate_body.field_cat_date_end
+    - field.field.node.corporate_body.field_corp_alt_name
+    - field.field.node.corporate_body.field_corp_parent_org
+    - field.field.node.corporate_body.field_corporate_body_authorities
+    - field.field.node.corporate_body.field_relation
+    - node.type.corporate_body
+  module:
+    - text
+    - user
+id: node.corporate_body.teaser
+targetEntityType: node
+bundle: corporate_body
+mode: teaser
+content:
+  body:
+    label: hidden
+    type: text_summary_or_trimmed
+    weight: 101
+    settings:
+      trim_length: 600
+    third_party_settings: {  }
+    region: content
+  display_media_entity_view_1:
+    weight: 10
+    region: content
+  display_media_service_file:
+    weight: 10
+    region: content
+  display_media_thumbnail:
+    weight: 10
+    region: content
+  links:
+    weight: 100
+    region: content
+hidden:
+  field_cat_date_begin: true
+  field_cat_date_end: true
+  field_corp_alt_name: true
+  field_corp_parent_org: true
+  field_corporate_body_authorities: true
+  field_relation: true
+  langcode: true

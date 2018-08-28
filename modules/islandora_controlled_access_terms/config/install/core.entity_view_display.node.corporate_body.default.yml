@@ -1,0 +1,103 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.corporate_body.body
+    - field.field.node.corporate_body.field_cat_date_begin
+    - field.field.node.corporate_body.field_cat_date_end
+    - field.field.node.corporate_body.field_corp_alt_name
+    - field.field.node.corporate_body.field_corp_parent_org
+    - field.field.node.corporate_body.field_corporate_body_authorities
+    - field.field.node.corporate_body.field_relation
+    - node.type.corporate_body
+  module:
+    - controlled_access_terms
+    - text
+    - user
+id: node.corporate_body.default
+targetEntityType: node
+bundle: corporate_body
+mode: default
+content:
+  body:
+    label: hidden
+    type: text_default
+    weight: 5
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  display_media_entity_view_1:
+    weight: 10
+    region: content
+  display_media_service_file:
+    weight: 10
+    region: content
+  display_media_thumbnail:
+    weight: 10
+    region: content
+  field_cat_date_begin:
+    weight: 2
+    label: above
+    settings:
+      date_separator: dash
+      date_order: big_endian
+      month_format: mm
+      day_format: dd
+      season_hemisphere: north
+    third_party_settings: {  }
+    type: text_edtf_human
+    region: content
+  field_cat_date_end:
+    weight: 3
+    label: above
+    settings:
+      date_separator: dash
+      date_order: big_endian
+      month_format: mm
+      day_format: dd
+      season_hemisphere: north
+    third_party_settings: {  }
+    type: text_edtf_human
+    region: content
+  field_corp_alt_name:
+    weight: 4
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: basic_string
+    region: content
+  field_corp_parent_org:
+    weight: 7
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_corporate_body_authorities:
+    weight: 1
+    label: above
+    settings:
+      trim_length: '80'
+      url_only: ''
+      url_plain: ''
+      rel: ''
+      target: _blank
+    third_party_settings: {  }
+    type: authority_formatter_default
+    region: content
+  field_relation:
+    weight: 6
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  links:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  langcode: true

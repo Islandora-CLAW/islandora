@@ -1,0 +1,39 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - node.type.cat_geographic_location
+  module:
+    - node
+id: node.cat_geographic_location
+targetEntityType: node
+bundle: cat_geographic_location
+types:
+  - 'dc:Location'
+  - 'schema:Place'
+fieldMappings:
+  title:
+    properties:
+      - 'schema:name'
+  created:
+    properties:
+      - 'schema:dateCreated'
+    datatype_callback:
+      callable: 'Drupal\rdf\CommonDataConverter::dateIso8601Value'
+  changed:
+    properties:
+      - 'schema:dateModified'
+    datatype_callback:
+      callable: 'Drupal\rdf\CommonDataConverter::dateIso8601Value'
+  body:
+    properties:
+      - 'schema:description'
+  field_geo_authority_link:
+    properties:
+      - 'schema:sameAs'
+  field_geo_geolocation:
+    properties:
+      - 'wgs84_pos:lat_long'
+  field_geo_broader:
+    properties:
+      - 'schema:containedInPlace'

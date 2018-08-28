@@ -1,0 +1,31 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_relation
+    - node.type.corporate_body
+    - node.type.family
+    - node.type.person
+id: node.family.field_relation
+field_name: field_relation
+entity_type: node
+bundle: family
+label: relation
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      corporate_body: corporate_body
+      family: family
+      person: person
+    sort:
+      field: title
+      direction: ASC
+    auto_create: false
+    auto_create_bundle: corporate_body
+field_type: entity_reference

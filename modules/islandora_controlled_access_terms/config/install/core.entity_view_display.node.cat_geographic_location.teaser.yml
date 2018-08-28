@@ -1,0 +1,45 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.cat_geographic_location.body
+    - field.field.node.cat_geographic_location.field_geo_alt_name
+    - field.field.node.cat_geographic_location.field_geo_authority_link
+    - field.field.node.cat_geographic_location.field_geo_broader
+    - field.field.node.cat_geographic_location.field_geo_geolocation
+    - node.type.cat_geographic_location
+  module:
+    - text
+    - user
+id: node.cat_geographic_location.teaser
+targetEntityType: node
+bundle: cat_geographic_location
+mode: teaser
+content:
+  body:
+    label: hidden
+    type: text_summary_or_trimmed
+    weight: 101
+    settings:
+      trim_length: 600
+    third_party_settings: {  }
+    region: content
+  display_media_entity_view_1:
+    weight: 10
+    region: content
+  display_media_service_file:
+    weight: 10
+    region: content
+  display_media_thumbnail:
+    weight: 10
+    region: content
+  links:
+    weight: 100
+    region: content
+hidden:
+  field_geo_alt_name: true
+  field_geo_authority_link: true
+  field_geo_broader: true
+  field_geo_geolocation: true
+  langcode: true
