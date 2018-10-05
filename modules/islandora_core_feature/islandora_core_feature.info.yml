@@ -14,7 +14,6 @@ dependencies:
   - filehash
   - image
   - islandora
-  - islandora_demo
   - jsonld
   - jwt
   - language
