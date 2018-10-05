@@ -92,9 +92,9 @@ class MediaSourceController extends ControllerBase {
     }
 
     // Since we update both the Media and its File, do this in a transaction.
-//    $transaction = $this->database->startTransaction();
-//
-//    try {
+    $transaction = $this->database->startTransaction();
+
+    try {
 
       $this->service->updateSourceField(
         $media,
@@ -103,15 +103,15 @@ class MediaSourceController extends ControllerBase {
       );
 
       return new Response("", 204);
-//    }
-//    catch (HttpException $e) {
-//      $transaction->rollBack();
-//      throw $e;
-//    }
-//    catch (\Exception $e) {
-//      $transaction->rollBack();
-//      throw new HttpException(500, $e->getMessage());
-//    }
+    }
+    catch (HttpException $e) {
+      $transaction->rollBack();
+      throw $e;
+    }
+    catch (\Exception $e) {
+      $transaction->rollBack();
+      throw new HttpException(500, $e->getMessage());
+    }
   }
 
   /**
