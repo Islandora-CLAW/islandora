@@ -3,7 +3,6 @@
 namespace Drupal\islandora\MediaSource;
 
 use Drupal\Core\Entity\EntityTypeManager;
-use Drupal\Core\Entity\Query\QueryException;
 use Drupal\Core\Entity\Query\QueryFactory;
 use Drupal\Core\File\FileSystem;
 use Drupal\Core\Language\LanguageManagerInterface;
@@ -78,6 +77,8 @@ class MediaSourceService {
    *   Entity query.
    * @param \Drupal\Core\File\FileSystem $file_system
    *   File system service.
+   * @param \Drupal\islandora\IslandoraUtils $islandora_utils
+   *   Utility service.
    */
   public function __construct(
     EntityTypeManager $entity_type_manager,
@@ -312,7 +313,7 @@ class MediaSourceService {
         ],
         IslandoraUtils::MEDIA_USAGE_FIELD => [
           'target_id' => $taxonomy_term->id(),
-        ]
+        ],
       ];
 
       // Set alt text.

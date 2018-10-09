@@ -108,4 +108,3 @@ condition.plugin.content_entity_type:
       type: sequence
       sequence:
         type: string
-

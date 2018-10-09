@@ -102,7 +102,8 @@ class IslandoraUtils {
    *   Parent node.
    *
    * @throws \Drupal\Core\TypedData\Exception\MissingDataException
-   *   $field->first() if data structure is unset and no item can be created.
+   *   Method $field->first() throws if data structure is unset and no item can
+   *   be created.
    */
   public function getParentNode(MediaInterface $media) {
     if (!$media->hasField(self::MEDIA_OF_FIELD)) {
@@ -131,9 +132,9 @@ class IslandoraUtils {
    *   The children Media.
    *
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
-   *   getStorage() throws if the entity type doesn't exist.
+   *   Calling getStorage() throws if the entity type doesn't exist.
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
-   *   getStorage() throws if the storage handler couldn't be loaded.
+   *   Calling getStorage() throws if the storage handler couldn't be loaded.
    */
   public function getMedia(NodeInterface $node) {
     if (!$this->entityTypeManager->getStorage('field_storage_config')->load('media.' . self::MEDIA_OF_FIELD)) {
@@ -158,9 +159,9 @@ class IslandoraUtils {
    *   The child Media.
    *
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
-   *   getStorage() throws if the entity type doesn't exist.
+   *   Calling getStorage() throws if the entity type doesn't exist.
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
-   *   getStorage() throws if the storage handler couldn't be loaded
+   *   Calling getStorage() throws if the storage handler couldn't be loaded.
    */
   public function getMediaWithTerm(NodeInterface $node, TermInterface $term) {
     $mids = $this->getMediaReferencingNodeAndTerm($node, $term);
@@ -180,9 +181,9 @@ class IslandoraUtils {
    *   Array of media.
    *
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
-   *   getStorage() throws if the entity type doesn't exist.
+   *   Calling getStorage() throws if the entity type doesn't exist.
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
-   *   getStorage() throws if the storage handler couldn't be loaded
+   *   Calling getStorage() throws if the storage handler couldn't be loaded.
    */
   public function getReferencingMedia($fid) {
     // Get media fields that reference files.
@@ -215,9 +216,9 @@ class IslandoraUtils {
    *   Term or NULL if not found.
    *
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
-   *   getStorage() throws if the entity type doesn't exist.
+   *   Calling getStorage() throws if the entity type doesn't exist.
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
-   *   getStorage() throws if the storage handler couldn't be loaded
+   *   Calling getStorage() throws if the storage handler couldn't be loaded.
    */
   public function getTermForUri($uri) {
     $results = $this->entityQuery->get('taxonomy_term')
@@ -239,7 +240,8 @@ class IslandoraUtils {
    *   URI or NULL if not found.
    *
    * @throws \Drupal\Core\TypedData\Exception\MissingDataException
-   *   $field->first() if data structure is unset and no item can be created.
+   *   Method $field->first() throws if data structure is unset and no item can
+   *   be created.
    */
   public function getUriForTerm(TermInterface $term) {
     if ($term && $term->hasField(self::EXTERNAL_URI_FIELD)) {
@@ -463,7 +465,6 @@ class IslandoraUtils {
    *
    * @return array
    *   Array of fields.
-   *
    */
   public function getReferencingFields($entity_type, $target_type) {
     $fields = $this->entityQuery->get('field_storage_config')
@@ -483,7 +484,7 @@ class IslandoraUtils {
    *   The QueryInterface for the query.
    * @param array $fields
    *   The array of field names.
-   * @param $value
+   * @param string $value
    *   The value to search the fields for.
    *
    * @return \Drupal\Core\Entity\Query\ConditionInterface
@@ -496,4 +497,5 @@ class IslandoraUtils {
     }
     return $condition;
   }
+
 }
