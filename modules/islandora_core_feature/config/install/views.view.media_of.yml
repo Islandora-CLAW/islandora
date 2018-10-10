@@ -2,8 +2,8 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.storage.media.field_media_use
     - field.storage.media.field_mime_type
-    - field.storage.media.field_tags
   enforced:
     module:
       - islandora_core_feature
@@ -743,14 +743,14 @@ display:
           separator: ', '
           field_api_classes: false
           plugin_id: field
-        field_tags:
-          id: field_tags
-          table: media__field_tags
-          field: field_tags
+        field_media_use:
+          id: field_media_use
+          table: media__field_media_use
+          field: field_media_use
           relationship: none
           group_type: group
           admin_label: ''
-          label: Tags
+          label: 'Media Use'
           exclude: false
           alter:
             alter_text: false
@@ -935,8 +935,8 @@ display:
         - url.query_args
         - user.permissions
       tags:
+        - 'config:field.storage.media.field_media_use'
         - 'config:field.storage.media.field_mime_type'
-        - 'config:field.storage.media.field_tags'
         - extensions
   rest_export_1:
     display_plugin: rest_export

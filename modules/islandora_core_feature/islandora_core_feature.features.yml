@@ -3,5 +3,14 @@ excluded:
   - core.entity_view_display.node.article.default
   - core.entity_view_display.node.article.rss
   - core.entity_view_display.node.article.teaser
+  - core.entity_view_display.taxonomy_term.islandora_display.default
+  - core.entity_view_display.taxonomy_term.islandora_media_use.default
+  - core.entity_view_display.taxonomy_term.islandora_models.default
   - field.field.node.article.field_tags
+  - core.entity_form_display.taxonomy_term.islandora_display.default
+  - core.entity_form_display.taxonomy_term.islandora_media_use.default
+  - core.entity_form_display.taxonomy_term.islandora_models.default
+  - language.content_settings.taxonomy_term.islandora_access
+  - field.storage.node.field_access_terms
+  - taxonomy.vocabulary.islandora_access
 required: true

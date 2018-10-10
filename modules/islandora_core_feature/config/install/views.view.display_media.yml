@@ -133,13 +133,13 @@ display:
       footer: {  }
       empty: {  }
       relationships:
-        field_tags:
-          id: field_tags
-          table: media__field_tags
-          field: field_tags
+        field_media_use:
+          id: field_media_use
+          table: media__field_media_use
+          field: field_media_use
           relationship: none
           group_type: group
-          admin_label: 'field_tags: Taxonomy term'
+          admin_label: 'field_media_use: Taxonomy term'
           required: false
           plugin_id: standard
       arguments:
@@ -210,7 +210,7 @@ display:
           id: field_external_uri_uri
           table: taxonomy_term__field_external_uri
           field: field_external_uri_uri
-          relationship: field_tags
+          relationship: field_media_use
           group_type: group
           admin_label: ''
           operator: '='
@@ -288,7 +288,7 @@ display:
           id: field_external_uri_uri
           table: taxonomy_term__field_external_uri
           field: field_external_uri_uri
-          relationship: field_tags
+          relationship: field_media_use
           group_type: group
           admin_label: ''
           operator: '='
@@ -332,6 +332,7 @@ display:
       entity_type: node
       bundles: {  }
       title: 'Service File'
+      show_title: false
     cache_metadata:
       max-age: -1
       contexts:
@@ -364,7 +365,7 @@ display:
           id: field_external_uri_uri
           table: taxonomy_term__field_external_uri
           field: field_external_uri_uri
-          relationship: field_tags
+          relationship: field_media_use
           group_type: group
           admin_label: ''
           operator: '='

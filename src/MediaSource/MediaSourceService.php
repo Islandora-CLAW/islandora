@@ -8,6 +8,7 @@ use Drupal\Core\File\FileSystem;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\file\FileInterface;
+use Drupal\islandora\IslandoraUtils;
 use Drupal\media\MediaInterface;
 use Drupal\media\MediaTypeInterface;
 use Drupal\node\NodeInterface;
@@ -57,6 +58,13 @@ class MediaSourceService {
   protected $fileSystem;
 
   /**
+   * Islandora Utility service.
+   *
+   * @var \Drupal\islandora\IslandoraUtils
+   */
+  protected $islandoraUtils;
+
+  /**
    * Constructor.
    *
    * @param \Drupal\Core\Entity\EntityTypeManager $entity_type_manager
@@ -69,19 +77,23 @@ class MediaSourceService {
    *   Entity query.
    * @param \Drupal\Core\File\FileSystem $file_system
    *   File system service.
+   * @param \Drupal\islandora\IslandoraUtils $islandora_utils
+   *   Utility service.
    */
   public function __construct(
     EntityTypeManager $entity_type_manager,
     AccountInterface $account,
     LanguageManagerInterface $language_manager,
     QueryFactory $entity_query,
-    FileSystem $file_system
+    FileSystem $file_system,
+    IslandoraUtils $islandora_utils
   ) {
     $this->entityTypeManager = $entity_type_manager;
     $this->account = $account;
     $this->languageManager = $language_manager;
     $this->entityQuery = $entity_query;
     $this->fileSystem = $file_system;
+    $this->islandoraUtils = $islandora_utils;
   }
 
   /**
@@ -238,10 +250,7 @@ class MediaSourceService {
     $mimetype,
     $content_location
   ) {
-    $existing = $this->entityQuery->get('media')
-      ->condition('field_media_of', $node->id())
-      ->condition('field_tags', $taxonomy_term->id())
-      ->execute();
+    $existing = $this->islandoraUtils->getMediaReferencingNodeAndTerm($node, $taxonomy_term);
 
     if (!empty($existing)) {
       // Just update already existing media.
@@ -299,11 +308,11 @@ class MediaSourceService {
         "$source_field" => [
           'target_id' => $file->id(),
         ],
-        'field_tags' => [
-          'target_id' => $taxonomy_term->id(),
-        ],
-        'field_media_of' => [
+        IslandoraUtils::MEDIA_OF_FIELD => [
           'target_id' => $node->id(),
+        ],
+        IslandoraUtils::MEDIA_USAGE_FIELD => [
+          'target_id' => $taxonomy_term->id(),
         ],
       ];
 

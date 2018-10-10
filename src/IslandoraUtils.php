@@ -6,7 +6,9 @@ use Drupal\context\ContextManager;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityFieldManager;
 use Drupal\Core\Entity\EntityTypeManager;
+use Drupal\Core\Entity\Query\QueryException;
 use Drupal\Core\Entity\Query\QueryFactory;
+use Drupal\Core\Entity\Query\QueryInterface;
 use Drupal\Core\Site\Settings;
 use Drupal\file\FileInterface;
 use Drupal\flysystem\FlysystemFactory;
@@ -25,7 +27,7 @@ class IslandoraUtils {
 
   const EXTERNAL_URI_FIELD = 'field_external_uri';
   const MEDIA_OF_FIELD = 'field_media_of';
-  const TAGS_FIELD = 'field_tags';
+  const MEDIA_USAGE_FIELD = 'field_media_use';
 
   /**
    * The entity type manager.
@@ -98,6 +100,10 @@ class IslandoraUtils {
    *
    * @return \Drupal\node\NodeInterface
    *   Parent node.
+   *
+   * @throws \Drupal\Core\TypedData\Exception\MissingDataException
+   *   Method $field->first() throws if data structure is unset and no item can
+   *   be created.
    */
   public function getParentNode(MediaInterface $media) {
     if (!$media->hasField(self::MEDIA_OF_FIELD)) {
@@ -124,6 +130,11 @@ class IslandoraUtils {
    *
    * @return \Drupal\media\MediaInterface[]
    *   The children Media.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+   *   Calling getStorage() throws if the entity type doesn't exist.
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   *   Calling getStorage() throws if the storage handler couldn't be loaded.
    */
   public function getMedia(NodeInterface $node) {
     if (!$this->entityTypeManager->getStorage('field_storage_config')->load('media.' . self::MEDIA_OF_FIELD)) {
@@ -146,12 +157,14 @@ class IslandoraUtils {
    *
    * @return \Drupal\media\MediaInterface
    *   The child Media.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+   *   Calling getStorage() throws if the entity type doesn't exist.
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   *   Calling getStorage() throws if the storage handler couldn't be loaded.
    */
   public function getMediaWithTerm(NodeInterface $node, TermInterface $term) {
-    $mids = $this->entityQuery->get('media')
-      ->condition(self::MEDIA_OF_FIELD, $node->id())
-      ->condition(self::TAGS_FIELD, $term->id())
-      ->execute();
+    $mids = $this->getMediaReferencingNodeAndTerm($node, $term);
     if (empty($mids)) {
       return NULL;
     }
@@ -166,13 +179,15 @@ class IslandoraUtils {
    *
    * @return \Drupal\media\MediaInterface[]
    *   Array of media.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+   *   Calling getStorage() throws if the entity type doesn't exist.
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   *   Calling getStorage() throws if the storage handler couldn't be loaded.
    */
   public function getReferencingMedia($fid) {
     // Get media fields that reference files.
-    $fields = $this->entityQuery->get('field_storage_config')
-      ->condition('entity_type', 'media')
-      ->condition('settings.target_type', 'file')
-      ->execute();
+    $fields = $this->getReferencingFields('media', 'file');
 
     // Process field names, stripping off 'media.' and appending 'target_id'.
     $conditions = array_map(
@@ -199,12 +214,16 @@ class IslandoraUtils {
    *
    * @return \Drupal\taxonomy\TermInterface|null
    *   Term or NULL if not found.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+   *   Calling getStorage() throws if the entity type doesn't exist.
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   *   Calling getStorage() throws if the storage handler couldn't be loaded.
    */
   public function getTermForUri($uri) {
     $results = $this->entityQuery->get('taxonomy_term')
       ->condition(self::EXTERNAL_URI_FIELD . '.uri', $uri)
       ->execute();
-
     if (empty($results)) {
       return NULL;
     }
@@ -219,6 +238,10 @@ class IslandoraUtils {
    *
    * @return string|null
    *   URI or NULL if not found.
+   *
+   * @throws \Drupal\Core\TypedData\Exception\MissingDataException
+   *   Method $field->first() throws if data structure is unset and no item can
+   *   be created.
    */
   public function getUriForTerm(TermInterface $term) {
     if ($term && $term->hasField(self::EXTERNAL_URI_FIELD)) {
@@ -335,6 +358,9 @@ class IslandoraUtils {
    *   The updated entity.
    * @param \Drupal\Core\Entity\ContentEntityInterface $original
    *   The original entity.
+   *
+   * @return bool
+   *   TRUE if the fields have changed.
    */
   public function haveFieldsChanged(ContentEntityInterface $entity, ContentEntityInterface $original) {
 
@@ -383,6 +409,93 @@ class IslandoraUtils {
       $schemes[] = 'private';
     }
     return array_merge($schemes, $this->flysystemFactory->getSchemes());
+  }
+
+  /**
+   * Get array of media ids that have fields that reference $node and $term.
+   *
+   * @param \Drupal\node\NodeInterface $node
+   *   The node to reference.
+   * @param \Drupal\taxonomy\TermInterface $term
+   *   The term to reference.
+   *
+   * @return array|int|null
+   *   Array of media IDs or NULL.
+   */
+  public function getMediaReferencingNodeAndTerm(NodeInterface $node, TermInterface $term) {
+    $term_fields = $this->getReferencingFields('media', 'taxonomy_term');
+    if (count($term_fields) <= 0) {
+      \Drupal::logger("No media fields reference a taxonomy term");
+      return NULL;
+    }
+    $node_fields = $this->getReferencingFields('media', 'node');
+    if (count($node_fields) <= 0) {
+      \Drupal::logger("No media fields reference a node.");
+      return NULL;
+    }
+
+    $remove_entity = function (&$o) {
+      $o = substr($o, strpos($o, '.') + 1);
+    };
+    array_walk($term_fields, $remove_entity);
+    array_walk($node_fields, $remove_entity);
+
+    $query = $this->entityQuery->get('media');
+    $taxon_condition = $this->getEntityQueryOrCondition($query, $term_fields, $term->id());
+    $query->condition($taxon_condition);
+    $node_condition = $this->getEntityQueryOrCondition($query, $node_fields, $node->id());
+    $query->condition($node_condition);
+    // Does the tags field exist?
+    try {
+      $mids = $query->execute();
+    }
+    catch (QueryException $e) {
+      $mids = [];
+    }
+    return $mids;
+  }
+
+  /**
+   * Get the fields on an entity of $entity_type that reference a $target_type.
+   *
+   * @param string $entity_type
+   *   Type of entity to search for.
+   * @param string $target_type
+   *   Type of entity the field references.
+   *
+   * @return array
+   *   Array of fields.
+   */
+  public function getReferencingFields($entity_type, $target_type) {
+    $fields = $this->entityQuery->get('field_storage_config')
+      ->condition('entity_type', $entity_type)
+      ->condition('settings.target_type', $target_type)
+      ->execute();
+    if (!is_array($fields)) {
+      $fields = [$fields];
+    }
+    return $fields;
+  }
+
+  /**
+   * Make an OR condition for an array of fields and a value.
+   *
+   * @param \Drupal\Core\Entity\Query\QueryInterface $query
+   *   The QueryInterface for the query.
+   * @param array $fields
+   *   The array of field names.
+   * @param string $value
+   *   The value to search the fields for.
+   *
+   * @return \Drupal\Core\Entity\Query\ConditionInterface
+   *   The OR condition to add to your query.
+   */
+  private function getEntityQueryOrCondition(QueryInterface $query, array $fields, $value) {
+    $condition = $query->orConditionGroup();
+    foreach ($fields as $field) {
+      $condition->condition($field, $value);
+    }
+    return $condition;
   }
 
 }

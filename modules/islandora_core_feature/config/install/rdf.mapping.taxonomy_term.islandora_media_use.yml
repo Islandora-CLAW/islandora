@@ -2,15 +2,15 @@ langcode: en
 status: true
 dependencies:
   config:
-    - taxonomy.vocabulary.tags
+    - taxonomy.vocabulary.islandora_media_use
   enforced:
     module:
       - islandora_core_feature
   module:
     - taxonomy
-id: taxonomy_term.tags
+id: taxonomy_term.islandora_media_use
 targetEntityType: taxonomy_term
-bundle: tags
+bundle: islandora_media_use
 types:
   - 'schema:Thing'
 fieldMappings:

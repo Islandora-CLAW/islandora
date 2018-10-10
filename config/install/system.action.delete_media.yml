@@ -5,9 +5,9 @@ dependencies:
     module:
       - islandora
   module:
-    - media 
+    - islandora
 id: delete_media
 label: 'Delete media'
-type: media 
-plugin: delete_media 
+type: media
+plugin: delete_media
 configuration: {  }
