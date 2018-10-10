@@ -9,7 +9,6 @@ dependencies:
   - eva
   - features
   - field
-  - field_permissions
   - file
   - filehash
   - image
