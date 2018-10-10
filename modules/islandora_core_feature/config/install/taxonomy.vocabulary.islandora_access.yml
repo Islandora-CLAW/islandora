@@ -1,8 +1,0 @@
-langcode: en
-status: true
-dependencies: {  }
-name: 'Islandora Access'
-vid: islandora_access
-description: 'Terms used to limit, restrict or coordinate access'
-hierarchy: 0
-weight: 0
