@@ -31,6 +31,3 @@ dependencies:
   - content_translation
   - flysystem
   - token
-  - field_permissions
-  - inline_entity_form
-  - content_browser
