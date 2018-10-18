@@ -231,3 +231,4 @@ an Islandora Foundation [Contributor License Agreement][5] or
 [5]: http://islandora.ca/sites/default/files/islandora_cla.pdf
 [6]: http://islandora.ca/sites/default/files/islandora_ccla.pdf
 [7]: http://islandora.ca/resources/contributors
+
