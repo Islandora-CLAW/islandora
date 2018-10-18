@@ -1,0 +1,8 @@
+langcode: en
+status: true
+dependencies: {  }
+name: 'Islandora Models'
+vid: islandora_models
+description: 'Types of repository objects'
+hierarchy: 0
+weight: 0

@@ -145,8 +145,7 @@ class NodeHasTerm extends ConditionPluginBase implements ContainerFactoryPluginI
    */
   protected function evaluateEntity(EntityInterface $entity) {
     foreach ($entity->referencedEntities() as $referenced_entity) {
-      if ($referenced_entity->getEntityTypeId() == 'taxonomy_term'
-        && $referenced_entity->hasField(IslandoraUtils::EXTERNAL_URI_FIELD)) {
+      if ($referenced_entity->getEntityTypeId() == 'taxonomy_term' && $referenced_entity->hasField(IslandoraUtils::EXTERNAL_URI_FIELD)) {
         $field = $referenced_entity->get(IslandoraUtils::EXTERNAL_URI_FIELD);
         if (!$field->isEmpty()) {
           $link = $field->first()->getValue();

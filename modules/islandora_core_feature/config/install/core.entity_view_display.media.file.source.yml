@@ -6,8 +6,8 @@ dependencies:
     - field.field.media.file.field_file_size
     - field.field.media.file.field_media_file
     - field.field.media.file.field_media_of
+    - field.field.media.file.field_media_use
     - field.field.media.file.field_mime_type
-    - field.field.media.file.field_tags
     - media.type.file
   enforced:
     module:
@@ -31,8 +31,8 @@ hidden:
   created: true
   field_file_size: true
   field_media_of: true
+  field_media_use: true
   field_mime_type: true
-  field_tags: true
   langcode: true
   name: true
   thumbnail: true

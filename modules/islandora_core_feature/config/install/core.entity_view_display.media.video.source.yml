@@ -5,9 +5,9 @@ dependencies:
     - core.entity_view_mode.media.source
     - field.field.media.video.field_file_size
     - field.field.media.video.field_media_of
+    - field.field.media.video.field_media_use
     - field.field.media.video.field_media_video_file
     - field.field.media.video.field_mime_type
-    - field.field.media.video.field_tags
     - media.type.video
   enforced:
     module:
@@ -37,8 +37,8 @@ hidden:
   created: true
   field_file_size: true
   field_media_of: true
+  field_media_use: true
   field_mime_type: true
-  field_tags: true
   langcode: true
   name: true
   thumbnail: true
