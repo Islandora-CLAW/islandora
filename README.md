@@ -1,5 +1,5 @@
 # ![Islandora](https://cloud.githubusercontent.com/assets/2371345/25624809/f95b0972-2f30-11e7-8992-a8f135402cdc.png) Islandora
-[![Build Status][1]](https://travis-ci.org/Islandora-CLAW/islandora)
+[![Build Status][1]](https://travis-ci.com/Islandora-CLAW/islandora)
 [![Contribution Guidelines][2]](./CONTRIBUTING.md)
 [![LICENSE][3]](./LICENSE)
 
