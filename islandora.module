@@ -257,23 +257,30 @@ function islandora_entity_view_mode_alter(&$view_mode, EntityInterface $entity) 
   // ContextReaction.
   $storage = \Drupal::service('entity_type.manager')->getStorage('entity_view_mode');
   $context_manager = \Drupal::service('context.manager');
+  $current_entity = \Drupal::routeMatch()->getParameter('node');
+  $current_id = NULL;
+  if ($current_entity instanceof \Drupal\node\NodeInterface) {
+    $current_id = $current_entity->id();
+  }
+  if (isset($current_id) && $current_id == $entity->id()) {
+    foreach ($context_manager->getActiveReactions('\Drupal\islandora\Plugin\ContextReaction\ViewModeAlterReaction') as $reaction) {
+      // Construct the new view mode's machine name.
+      $entity_type = $entity->getEntityTypeId();
+      $mode = $reaction->execute();
+      $machine_name = "$entity_type.$mode";
 
-  foreach ($context_manager->getActiveReactions('\Drupal\islandora\Plugin\ContextReaction\ViewModeAlterReaction') as $reaction) {
-    // Construct the new view mode's machine name.
-    $entity_type = $entity->getEntityTypeId();
-    $mode = $reaction->execute();
-    $machine_name = "$entity_type.$mode";
+      // Try to load it.
+      $new_mode = $storage->load($machine_name);
 
-    // Try to load it.
-    $new_mode = $storage->load($machine_name);
-
-    // If successful, alter the view mode.
-    if ($new_mode) {
-      $view_mode = $mode;
-    }
-    else {
-      // Otherwise, leave it be, but log a message.
-      \Drupal::logger('islandora')->info("EntityViewMode $machine_name does not exist.  View mode cannot be altered.");
+      // If successful, alter the view mode.
+      if ($new_mode) {
+        $view_mode = $mode;
+      }
+      else {
+        // Otherwise, leave it be, but log a message.
+        \Drupal::logger('islandora')
+          ->info("EntityViewMode $machine_name does not exist.  View mode cannot be altered.");
+      }
     }
   }
 }
