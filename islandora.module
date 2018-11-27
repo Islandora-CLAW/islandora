@@ -258,10 +258,7 @@ function islandora_entity_view_mode_alter(&$view_mode, EntityInterface $entity) 
   $storage = \Drupal::service('entity_type.manager')->getStorage('entity_view_mode');
   $context_manager = \Drupal::service('context.manager');
   $current_entity = \Drupal::routeMatch()->getParameter('node');
-  $current_id = NULL;
-  if ($current_entity instanceof \Drupal\node\NodeInterface) {
-    $current_id = $current_entity->id();
-  }
+  $current_id = ($current_entity instanceof NodeInterface) ? $current_entity->id() : NULL;
   if (isset($current_id) && $current_id == $entity->id()) {
     foreach ($context_manager->getActiveReactions('\Drupal\islandora\Plugin\ContextReaction\ViewModeAlterReaction') as $reaction) {
       // Construct the new view mode's machine name.
