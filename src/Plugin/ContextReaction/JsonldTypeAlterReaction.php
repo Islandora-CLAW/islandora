@@ -1,16 +1,11 @@
 <?php
 
-
 namespace Drupal\islandora\Plugin\ContextReaction;
 
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\islandora\ContextReaction\NormalizerAlterReaction;
-use Drupal\islandora\MediaSource\MediaSourceService;
 use Drupal\jsonld\Normalizer\NormalizerBase;
-use Drupal\media\MediaInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Alter JSON-LD Type context reaction.
@@ -21,6 +16,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * )
  */
 class JsonldTypeAlterReaction extends NormalizerAlterReaction {
+
   /**
    * {@inheritdoc}
    */
@@ -33,15 +29,13 @@ class JsonldTypeAlterReaction extends NormalizerAlterReaction {
    */
   public function execute(EntityInterface $entity = NULL, array &$normalized = NULL, array $context = NULL) {
     $config = $this->getConfiguration();
-    // if ((in_array($config['source_field'], array_keys($entity->getFields()))) &&
     if (($entity->hasField($config['source_field'])) &&
-        ( !empty($entity->get($config['source_field'])->getValue() ))) {
+        (!empty($entity->get($config['source_field'])->getValue()))) {
       if (isset($normalized['@graph']) && is_array($normalized['@graph'])) {
         foreach ($normalized['@graph'] as &$graph) {
-          foreach($entity->get($config['source_field'])->getValue() as $type){
-            $graph['@type'][] =  NormalizerBase::escapePrefix($type['value'], $context['namespaces']);
+          foreach ($entity->get($config['source_field'])->getValue() as $type) {
+            $graph['@type'][] = NormalizerBase::escapePrefix($type['value'], $context['namespaces']);
           }
-          \Drupal::logger('islandora')->notice(print_r($graph['@type'],TRUE));
         }
       }
     }
@@ -79,4 +73,5 @@ class JsonldTypeAlterReaction extends NormalizerAlterReaction {
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
     $this->setConfiguration(['source_field' => $form_state->getValue('source_field')]);
   }
+
 }
