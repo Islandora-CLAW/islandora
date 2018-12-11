@@ -61,7 +61,7 @@ class JsonldTypeAlterReaction extends NormalizerAlterReaction {
       '#type' => 'select',
       '#title' => $this->t('Source Field'),
       '#options' => $options,
-      '#description' => $this->t("A DESCRIPTION!"),
+      '#description' => $this->t("Select the field containing the type predicates."),
       '#default_value' => isset($config['source_field']) ? $config['source_field'] : '',
     ];
     return $form;
