@@ -29,12 +29,27 @@ class JsonldTypeAlterReaction extends NormalizerAlterReaction {
    */
   public function execute(EntityInterface $entity = NULL, array &$normalized = NULL, array $context = NULL) {
     $config = $this->getConfiguration();
+    // Use a pre-configured field as the source of the additional @type.
     if (($entity->hasField($config['source_field'])) &&
         (!empty($entity->get($config['source_field'])->getValue()))) {
       if (isset($normalized['@graph']) && is_array($normalized['@graph'])) {
         foreach ($normalized['@graph'] as &$graph) {
           foreach ($entity->get($config['source_field'])->getValue() as $type) {
-            $graph['@type'][] = NormalizerBase::escapePrefix($type['value'], $context['namespaces']);
+            // If the configured field is using an entity reference,
+            // we will see if it uses the core config's field_external_uri.
+            if (array_key_exists('target_id', $type)) {
+              $target_type = $entity->get($config['source_field'])->getFieldDefinition()->getSetting('target_type');
+              $referenced_entity = \Drupal::entityTypeManager()->getStorage($target_type)->load($type['target_id']);
+              if ($referenced_entity->hasField('field_external_uri') &&
+                  !empty($referenced_entity->get('field_external_uri')->getValue())) {
+                foreach ($referenced_entity->get('field_external_uri')->getValue() as $value) {
+                  $graph['@type'][] = $value['uri'];
+                }
+              }
+            }
+            else {
+              $graph['@type'][] = NormalizerBase::escapePrefix($type['value'], $context['namespaces']);
+            }
           }
         }
       }
