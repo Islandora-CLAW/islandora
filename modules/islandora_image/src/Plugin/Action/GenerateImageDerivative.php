@@ -23,6 +23,7 @@ class GenerateImageDerivative extends AbstractGenerateDerivative {
     $config = parent::defaultConfiguration();
     $config['mimetype'] = 'image/jpeg';
     $config['path'] = '[date:custom:Y]-[date:custom:m]/[node:nid].jpg';
+    $config['destination_media_type'] = 'image';
     return $config;
   }
 
