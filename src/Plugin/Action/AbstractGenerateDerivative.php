@@ -126,6 +126,7 @@ class AbstractGenerateDerivative extends EmitEvent {
       'derivative_term_uri' => '',
       'mimetype' => '',
       'args' => '',
+      'destination_media_type' => '',
       'scheme' => file_default_scheme(),
       'path' => '[date:custom:Y]-[date:custom:m]/[node:nid].bin',
     ];
@@ -165,7 +166,7 @@ class AbstractGenerateDerivative extends EmitEvent {
 
     $route_params = [
       'node' => $entity->id(),
-      'media_type' => $source_media->bundle(),
+      'media_type' => $this->configuration['destination_media_type'],
       'taxonomy_term' => $derivative_term->id(),
     ];
     $data['destination_uri'] = Url::fromRoute('islandora.media_source_put_to_node', $route_params)
@@ -186,6 +187,7 @@ class AbstractGenerateDerivative extends EmitEvent {
     unset($data['derivative_term_uri']);
     unset($data['path']);
     unset($data['scheme']);
+    unset($data['destination_media_type']);
 
     return $data;
   }
@@ -215,6 +217,14 @@ class AbstractGenerateDerivative extends EmitEvent {
       '#default_value' => $this->utils->getTermForUri($this->configuration['derivative_term_uri']),
       '#required' => TRUE,
       '#description' => t('Term indicating the derivative media'),
+    ];
+    $form['destination_media_type'] = [
+      '#type' => 'entity_autocomplete',
+      '#target_type' => 'media_type',
+      '#title' => t('Derivative media type'),
+      '#default_value' => $this->getEntityById($this->configuration['destination_media_type']),
+      '#required' => TRUE,
+      '#description' => t('The Drupal media type to create with this derivative, can be different than the source'),
     ];
     $form['mimetype'] = [
       '#type' => 'textfield',
@@ -296,6 +306,32 @@ class AbstractGenerateDerivative extends EmitEvent {
     $this->configuration['args'] = $form_state->getValue('args');
     $this->configuration['scheme'] = $form_state->getValue('scheme');
     $this->configuration['path'] = trim($form_state->getValue('path'), '\\/');
+    $this->configuration['destination_media_type'] = $form_state->getValue('destination_media_type');
+  }
+
+  /**
+   * Find a media_type by id and return it or nothing.
+   *
+   * @param string $entity_id
+   *   The media type.
+   *
+   * @return \Drupal\Core\Entity\EntityInterface|string
+   *   Return the loaded entity or nothing.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+   *   Thrown by getStorage() if the entity type doesn't exist.
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   *   Thrown by getStorage() if the storage handler couldn't be loaded.
+   */
+  protected function getEntityById($entity_id) {
+    $entity_ids = $this->entityTypeManager->getStorage('media_type')
+      ->getQuery()->condition('id', $entity_id)->execute();
+
+    $id = reset($entity_ids);
+    if ($id !== FALSE) {
+      return $this->entityTypeManager->getStorage('media_type')->load($id);
+    }
+    return '';
   }
 
 }

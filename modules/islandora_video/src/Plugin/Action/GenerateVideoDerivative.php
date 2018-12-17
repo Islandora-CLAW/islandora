@@ -24,6 +24,7 @@ class GenerateVideoDerivative extends AbstractGenerateDerivative {
     $config['path'] = '[date:custom:Y]-[date:custom:m]/[node:nid].mp4';
     $config['mimetype'] = 'video/mp4';
     $config['queue'] = 'islandora-connector-homarus';
+    $config['destination_media_type'] = 'video';
     return $config;
   }
 
