@@ -251,6 +251,14 @@ EOD;
   }
 
   /**
+   * Create a new node by posting its add form.
+   */
+  protected function postTermAddForm($taxomony_id, $values, $button_text) {
+    $this->drupalPostForm("admin/structure/taxonomy/manage/$taxomony_id/add", $values, t('@text', ['@text' => $button_text]));
+    $this->assertSession()->statusCodeEquals(200);
+  }
+
+  /**
    * Edits a node by posting its edit form.
    */
   protected function postEntityEditForm($entity_url, $values, $button_text) {
