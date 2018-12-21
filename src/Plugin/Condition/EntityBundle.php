@@ -12,8 +12,8 @@ use Drupal\Core\Form\FormStateInterface;
  *   id = "entity_bundle",
  *   label = @Translation("Entity Bundle"),
  *   context = {
- *     "node" = @ContextDefinition("entity:node", label = @Translation("Node")),
- *     "taxonomy_term" = @ContextDefinition("entity:taxonomy_term", label = @Translation("Term"))
+ *     "node" = @ContextDefinition("entity:node", required = FALSE, label = @Translation("Node")),
+ *     "taxonomy_term" = @ContextDefinition("entity:taxonomy_term", required = FALSE, label = @Translation("Term"))
  *   }
  * )
  */
@@ -56,9 +56,9 @@ class EntityBundle extends ConditionPluginBase {
    * {@inheritdoc}
    */
   public function evaluate() {
-    foreach (\Drupal::routeMatch()->getParameters()->keys() as $type) {
-      if ($this->getContext($type)->hasContextValue()) {
-        $entity = $this->getContextValue($type);
+    foreach ($this->getContexts() as $context) {
+      if ($context->hasContextValue()) {
+        $entity = $context->getContextValue();
         if (!empty($this->configuration['bundles'][$entity->bundle()])) {
           return !$this->isNegated();
         }
