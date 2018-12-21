@@ -19,15 +19,14 @@ class EntityBundleTest extends IslandoraFunctionalTestBase {
     $account = $this->drupalCreateUser([
       'bypass node access',
       'administer contexts',
-      'view media',
-      'create media',
-      'update media',
+      'administer taxonomy',
     ]);
     $this->drupalLogin($account);
 
     $this->createContext('Test', 'test');
     $this->addCondition('test', 'entity_bundle');
     $this->getSession()->getPage()->checkField("edit-conditions-entity-bundle-bundles-test-type");
+    $this->getSession()->getPage()->findById("edit-conditions-entity-bundle-context-mapping-node")->selectOption("@node.node_route_context:node");
     $this->getSession()->getPage()->pressButton(t('Save and continue'));
     $this->addPresetReaction('test', 'index', 'hello_world');
 
@@ -37,7 +36,7 @@ class EntityBundleTest extends IslandoraFunctionalTestBase {
 
     // Create a new term and confirm Hellow World! is NOT printed to the screen.
     $this->postTermAddForm('test_vocabulary', ['name[0][value]' => 'Test Term'], 'Save');
-    $this->assertSession()->pageTextContains("Hello World!");
+    $this->assertSession()->pageTextNotContains("Hello World!");
 
   }
 
