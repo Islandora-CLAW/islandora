@@ -264,6 +264,84 @@ display:
         - url
         - user.permissions
       tags: {  }
+  entity_view_2:
+    display_plugin: entity_view
+    id: entity_view_2
+    display_title: 'Original File - Download'
+    position: 1
+    display_options:
+      display_extenders: {  }
+      display_description: 'The original creation format of a file'
+      filters:
+        status:
+          value: '1'
+          table: media_field_data
+          field: status
+          plugin_id: boolean
+          entity_type: media
+          entity_field: status
+          id: status
+          expose:
+            operator: ''
+          group: 1
+        field_external_uri_uri:
+          id: field_external_uri_uri
+          table: taxonomy_term__field_external_uri
+          field: field_external_uri_uri
+          relationship: field_media_use
+          group_type: group
+          admin_label: ''
+          operator: '='
+          value: 'http://pcdm.org/use#OriginalFile'
+          group: 1
+          exposed: false
+          expose:
+            operator_id: ''
+            label: ''
+            description: ''
+            use_operator: false
+            operator: ''
+            identifier: ''
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+            placeholder: ''
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          plugin_id: string
+      defaults:
+        filters: false
+        filter_groups: false
+      filter_groups:
+        operator: AND
+        groups:
+          1: AND
+      entity_type: node
+      bundles: {  }
+      argument_mode: id
+      default_argument: null
+      title: 'Original File'
+      show_title: false
+    cache_metadata:
+      max-age: -1
+      contexts:
+        - 'languages:language_content'
+        - 'languages:language_interface'
+        - url
+        - user.permissions
+      tags: {  }
   service_file:
     display_plugin: entity_view
     id: service_file
