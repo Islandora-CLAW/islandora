@@ -156,6 +156,7 @@ EOD;
     $this->createEntityReferenceField('node', 'test_type', 'field_member_of', 'Member Of', 'node', 'default', [], 2);
     $this->createEntityReferenceField('node', 'test_type', 'field_tags', 'Tags', 'taxonomy_term', 'default', [], 2);
 
+    // Create a media type.
     $this->testMediaType = $this->createMediaType(['bundle' => 'test_media_type'], 'file');
     $this->testMediaType->save();
     $this->createEntityReferenceField('media', $this->testMediaType->id(), 'field_media_of', 'Media Of', 'node', 'default', [], 2);
