@@ -21,16 +21,22 @@ class JsonldTypeAlterReactionTest extends MappingUriPredicateReactionTest {
     ]);
     $this->drupalLogin($account);
 
-    // add the typed predicate we will select in the reaction config.
-    // DEBUG: it is crashing on FieldUiTestTrait.php:45 and I can't make it work.
-    $this->fieldUIAddNewField('admin/structure/types/manage/test_type', 'field_type_predicate', 'Type Predicate', 'string');
+    // Add the typed predicate we will select in the reaction config.
+    // Taken from FieldUiTestTrait->fieldUIAddNewField.
+    $this->drupalPostForm('admin/structure/types/manage/test_type/fields/add-field', [
+      'new_storage_type' => 'string',
+      'label' => 'Typed Predicate',
+      'field_name' => 'type_predicate',
+    ], t('Save and continue'));
+    $this->drupalPostForm(NULL, [], t('Save field settings'));
+    $this->drupalPostForm(NULL, [], t('Save settings'));
+    $this->assertRaw('field_type_predicate', 'Redirected to "Manage fields" page.');
 
-    $context_name = 'test';
-    $reaction_id = 'alter_jsonld_type';
+    // Add the test node.
     $this->postNodeAddForm('test_type', [
       'title[0][value]' => 'Test Node',
-      'field_type_predicate[0][value]' => 'org:Organization',
-    ],t('Save'));
+      'field_type_predicate[0][value]' => 'schema:Organization',
+    ], t('Save'));
     $this->assertSession()->pageTextContains("Test Node");
     $url = $this->getUrl();
 
@@ -49,6 +55,10 @@ class JsonldTypeAlterReactionTest extends MappingUriPredicateReactionTest {
       'Missing @type value of http://schema.org/Thing'
     );
 
+    // Add the test context.
+    $context_name = 'test';
+    $reaction_id = 'alter_jsonld_type';
+
     $this->createContext('Test', $context_name);
     $this->drupalGet("admin/structure/context/$context_name/reaction/add/$reaction_id");
     $this->assertSession()->statusCodeEquals(200);
@@ -65,40 +75,13 @@ class JsonldTypeAlterReactionTest extends MappingUriPredicateReactionTest {
     $this->getSession()->getPage()->findById("edit-conditions-entity-bundle-context-mapping-node")->selectOption("@node.node_route_context:node");
     $this->getSession()->getPage()->pressButton(t('Save and continue'));
 
-    // $new_contents = $this->drupalGet($url . '?_format=jsonld');
-    // $json = \GuzzleHttp\json_decode($new_contents, TRUE);
-    // $this->assertEquals(
-    //   'Test Node',
-    //   $json['@graph'][0]['http://purl.org/dc/terms/title'][0]['@value'],
-    //   'Missing title value'
-    // );
-    // $this->assertEquals(
-    //   "$url?_format=jsonld",
-    //   $json['@graph'][0]['http://www.w3.org/2002/07/owl#sameAs'][0]['@value'],
-    //   'Missing alter added predicate.'
-    // );
-    //
-    // $this->drupalGet("admin/structure/context/$context_name");
-    // // Change to a random URL.
-    // $this->getSession()->getPage()
-    //   ->fillField("Drupal URI predicate", "http://example.org/first/second");
-    // $this->getSession()->getPage()->pressButton("Save and continue");
-    // $this->assertSession()
-    //   ->pageTextContains("The context $context_name has been saved");
-    // $new_contents = $this->drupalGet($url . '?_format=jsonld');
-    // $json = \GuzzleHttp\json_decode($new_contents, TRUE);
-    // $this->assertEquals(
-    //   'Test Node',
-    //   $json['@graph'][0]['http://purl.org/dc/terms/title'][0]['@value'],
-    //   'Missing title value'
-    // );
-    // $this->assertArrayNotHasKey('http://www.w3.org/2002/07/owl#sameAs',
-    //   $json['@graph'][0], 'Still has old predicate');
-    // $this->assertEquals(
-    //   "$url?_format=jsonld",
-    //   $json['@graph'][0]['http://example.org/first/second'][0]['@value'],
-    //   'Missing alter added predicate.'
-    // );
+    // Check for the new @type from the field_type_predicate value.
+    $new_contents = $this->drupalGet($url . '?_format=jsonld');
+    $json = \GuzzleHttp\json_decode($new_contents, TRUE);
+    $this->assertTrue(
+      in_array('http://schema.org/Organization', $json['@graph'][0]['@type']),
+      'Missing altered @type value of http://schema.org/Organization'
+    );
   }
 
 }

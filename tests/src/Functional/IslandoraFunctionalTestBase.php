@@ -6,7 +6,6 @@ use Drupal\Core\Config\FileStorage;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\field\Tests\EntityReference\EntityReferenceTestTrait;
-use Drupal\field_ui\Tests\FieldUiTestTrait;
 use Drupal\link\LinkItemInterface;
 use Drupal\Tests\BrowserTestBase;
 use Drupal\Tests\TestFileCreationTrait;
@@ -18,7 +17,6 @@ use Drupal\Tests\media\Functional\MediaFunctionalTestCreateMediaTypeTrait;
 class IslandoraFunctionalTestBase extends BrowserTestBase {
 
   use EntityReferenceTestTrait;
-  use FieldUiTestTrait;
   use TestFileCreationTrait;
   use MediaFunctionalTestCreateMediaTypeTrait;
 
