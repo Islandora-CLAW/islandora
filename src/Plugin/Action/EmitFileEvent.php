@@ -104,10 +104,10 @@ class EmitFileEvent extends EmitEvent {
 
     $data = parent::generateData($entity);
     if (isset($flysystem_config[$scheme]) && $flysystem_config[$scheme]['driver'] == 'fedora') {
-      // $uri for files may contain 'fedora:///' so we need to replace
+      // Fdora $uri for files may contain ':///' so we need to replace
       // the three / with two.
-      if (strpos($uri, 'fedora:///') !== FALSE) {
-        $uri = str_replace('fedora:///', 'fedora://', $uri);
+      if (strpos($uri, $scheme . ':///') !== FALSE) {
+        $uri = str_replace($scheme . ':///', $scheme . '://', $uri);
       }
       $data['fedora_uri'] = str_replace("$scheme://", $flysystem_config[$scheme]['config']['root'], $uri);
     }
