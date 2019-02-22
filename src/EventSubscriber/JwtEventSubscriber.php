@@ -2,6 +2,7 @@
 
 namespace Drupal\islandora\EventSubscriber;
 
+use Drupal\islandora\Form\IslandoraSettingsForm;
 use Drupal\jwt\Authentication\Event\JwtAuthValidateEvent;
 use Drupal\jwt\Authentication\Event\JwtAuthValidEvent;
 use Drupal\jwt\Authentication\Event\JwtAuthGenerateEvent;
@@ -88,7 +89,10 @@ class JwtEventSubscriber implements EventSubscriberInterface {
 
     // Standard claims, validated at JWT validation time.
     $event->addClaim('iat', time());
-    $event->addClaim('exp', strtotime('+2 hour'));
+    $expiry_setting = \Drupal::config(IslandoraSettingsForm::CONFIG_NAME)
+      ->get(IslandoraSettingsForm::JWT_EXPIRY);
+    $expiry = $expiry_setting ? $expiry_setting : '+2 hour';
+    $event->addClaim('exp', strtotime($expiry));
     $event->addClaim('webid', $this->currentUser->id());
     $event->addClaim('iss', $base_secure_url);
 
