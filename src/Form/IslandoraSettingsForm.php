@@ -84,7 +84,7 @@ class IslandoraSettingsForm extends ConfigFormBase {
 
     // Validate jwt expiry as a valid time string.
     $expiry = $form_state->getValue(self::JWT_EXPIRY);
-    if (strtotime($expiry) === false) {
+    if (strtotime($expiry) === FALSE) {
       $form_state->setErrorByName(
         self::JWT_EXPIRY,
         $this->t(
