@@ -2,13 +2,17 @@
 
 namespace Drupal\islandora\Flysystem\Adapter;
 
-use Islandora\Chullo\IFedoraApi;
+use Drupal\jwt\Authentication\Provider\JwtAuth;
+use Islandora\Chullo\FedoraApi;
 use League\Flysystem\AdapterInterface;
 use League\Flysystem\Adapter\Polyfill\NotSupportingVisibilityTrait;
 use League\Flysystem\Adapter\Polyfill\StreamedCopyTrait;
 use League\Flysystem\Config;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Client;
 use GuzzleHttp\Psr7;
 use GuzzleHttp\Psr7\Response;
+use Psr\Http\Message\RequestInterface;
 use GuzzleHttp\Psr7\StreamWrapper;
 use Symfony\Component\HttpFoundation\File\MimeType\MimeTypeGuesserInterface;
 
@@ -20,27 +24,71 @@ class FedoraAdapter implements AdapterInterface {
   use StreamedCopyTrait;
   use NotSupportingVisibilityTrait;
 
-  protected $fedora;
+  protected $jwt;
+  protected $configuration;
   protected $mimeTypeGuesser;
 
   /**
    * Constructs a Fedora adapter for Flysystem.
    *
-   * @param \Islandora\Chullo\IFedoraApi $fedora
-   *   Fedora client.
+   * @param Drupal\jwt\Authentication\Provider\JwtAuth $jwt
+   *   JWT Authentication.
+   * @param array $configuration
+   *   Configuration.
    * @param \Symfony\Component\HttpFoundation\File\Mimetype\MimeTypeGuesserInterface $mime_type_guesser
    *   Mimetype guesser.
    */
-  public function __construct(IFedoraApi $fedora, MimeTypeGuesserInterface $mime_type_guesser) {
-    $this->fedora = $fedora;
+  public function __construct(JwtAuth $jwt, array $configuration, MimeTypeGuesserInterface $mime_type_guesser) {
+    $this->jwt = $jwt;
+    $this->configuration = $configuration;
     $this->mimeTypeGuesser = $mime_type_guesser;
+  }
+
+  /**
+   * Returns a Chullo Fedora API class object.
+   */
+  private function getFedora() {
+    $auth = 'Bearer ' . $this->jwt->generateToken();
+    // Construct guzzle client to middleware that adds the header.
+    $stack = HandlerStack::create();
+    $stack->push(static::addHeader('Authorization', $auth));
+    $client = new Client([
+      'handler' => $stack,
+      'base_uri' => $this->configuration['root'],
+    ]);
+
+    return new FedoraApi($client);
+  }
+
+  /**
+   * Guzzle middleware to add a header to outgoing requests.
+   *
+   * @param string $header
+   *   Header name.
+   * @param string $value
+   *   Header value.
+   */
+  public static function addHeader($header, $value) {
+    return function (callable $handler) use ($header, $value) {
+      return function (
+        RequestInterface $request,
+        array $options
+      ) use (
+$handler,
+ $header,
+ $value
+) {
+        $request = $request->withHeader($header, $value);
+        return $handler($request, $options);
+      };
+    };
   }
 
   /**
    * {@inheritdoc}
    */
   public function has($path) {
-    $response = $this->fedora->getResourceHeaders($path);
+    $response = $this->getFedora()->getResourceHeaders($path);
     return $response->getStatusCode() == 200;
   }
 
@@ -67,7 +115,7 @@ class FedoraAdapter implements AdapterInterface {
    * {@inheritdoc}
    */
   public function readStream($path) {
-    $response = $this->fedora->getResource($path);
+    $response = $this->getFedora()->getResource($path);
 
     if ($response->getStatusCode() != 200) {
       return FALSE;
@@ -87,7 +135,7 @@ class FedoraAdapter implements AdapterInterface {
    * {@inheritdoc}
    */
   public function getMetadata($path) {
-    $response = $this->fedora->getResourceHeaders($path);
+    $response = $this->getFedora()->getResourceHeaders($path);
 
     if ($response->getStatusCode() != 200) {
       return FALSE;
@@ -167,12 +215,13 @@ class FedoraAdapter implements AdapterInterface {
     if ($meta['type'] == 'file') {
       return [];
     }
+    $fedora = $this->getFedora();
     // Get the resource from Fedora.
-    $response = $this->fedora->getResource($normalized, ['Accept' => 'application/ld+json']);
+    $response = $fedora->getResource($normalized, ['Accept' => 'application/ld+json']);
     $jsonld = (string) $response->getBody();
     $graph = json_decode($jsonld, TRUE);
 
-    $uri = $this->fedora->getBaseUri() . $normalized;
+    $uri = $fedora->getBaseUri() . $normalized;
 
     // Hack it out of the graph.
     // There may be more than one resource returned.
@@ -210,11 +259,11 @@ class FedoraAdapter implements AdapterInterface {
     $ancestors = [];
 
     foreach ($contained as $child_uri) {
-      $child_directory = explode($this->fedora->getBaseUri(), $child_uri)[1];
+      $child_directory = explode($fedora->getBaseUri(), $child_uri)[1];
       $ancestors = array_merge($this->listContents($child_directory, $recursive), $ancestors);
     }
 
-    // // Transform results to their flysystem metadata.
+    // Transform results to their flysystem metadata.
     return array_map(
         [$this, 'transformToMetadata'],
         array_merge($ancestors, $contained)
@@ -231,7 +280,7 @@ class FedoraAdapter implements AdapterInterface {
     if (is_array($uri)) {
       return $uri;
     }
-    $exploded = explode($this->fedora->getBaseUri(), $uri);
+    $exploded = explode($this->getFedora()->getBaseUri(), $uri);
     return $this->getMetadata($exploded[1]);
   }
 
@@ -243,7 +292,7 @@ class FedoraAdapter implements AdapterInterface {
       'Content-Type' => $this->mimeTypeGuesser->guess($path),
     ];
 
-    $response = $this->fedora->saveResource(
+    $response = $this->getFedora()->saveResource(
         $path,
         $contents,
         $headers
@@ -282,7 +331,7 @@ class FedoraAdapter implements AdapterInterface {
    * {@inheritdoc}
    */
   public function delete($path) {
-    $response = $this->fedora->deleteResource($path);
+    $response = $this->getFedora()->deleteResource($path);
     $code = $response->getStatusCode();
     if ($code == 204) {
       // Deleted so check for a tombstone as well.
@@ -315,7 +364,7 @@ class FedoraAdapter implements AdapterInterface {
    * {@inheritdoc}
    */
   public function createDir($dirname, Config $config) {
-    $response = $this->fedora->saveResource(
+    $response = $this->getFedora()->saveResource(
         $dirname
     );
 
@@ -337,7 +386,7 @@ class FedoraAdapter implements AdapterInterface {
    *   NULL if no tombstone, TRUE if tombstone deleted, FALSE otherwise.
    */
   private function deleteTombstone($path) {
-    $response = $this->fedora->getResourceHeaders($path);
+    $response = $this->getFedora()->getResourceHeaders($path);
     $return = NULL;
     if ($response->getStatusCode() == 410) {
       $return = FALSE;
@@ -349,7 +398,7 @@ class FedoraAdapter implements AdapterInterface {
         foreach ($tombstones as $tombstone) {
           // Trim <> from URL.
           $url = rtrim(ltrim($tombstone[0], '<'), '>');
-          $response = $this->fedora->deleteResource($url);
+          $response = $this->getFedora()->deleteResource($url);
           if ($response->getStatusCode() == 204) {
             $return = TRUE;
           }

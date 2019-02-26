@@ -7,11 +7,7 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\flysystem\Plugin\FlysystemPluginInterface;
 use Drupal\flysystem\Plugin\FlysystemUrlTrait;
 use Drupal\islandora\Flysystem\Adapter\FedoraAdapter;
-use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Client;
-use Islandora\Chullo\IFedoraApi;
-use Islandora\Chullo\FedoraApi;
-use Psr\Http\Message\RequestInterface;
+use Drupal\jwt\Authentication\Provider\JwtAuth;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\File\MimeType\MimeTypeGuesserInterface;
 
@@ -24,23 +20,33 @@ class Fedora implements FlysystemPluginInterface, ContainerFactoryPluginInterfac
 
   use FlysystemUrlTrait;
 
-  protected $fedora;
+  /**
+   * JWT Authentication.
+   *
+   * @var \Drupal\jwt\Authentication\Provider\JwtAuth
+   */
+  protected $jwt;
+  protected $configuration;
 
   protected $mimeTypeGuesser;
 
   /**
    * Constructs a Fedora plugin for Flysystem.
    *
-   * @param \Islandora\Chullo\IFedoraApi $fedora
-   *   Fedora client.
+   * @param \Drupal\jwt\Authentication\Provider\JwtAuth $jwt
+   *   JWT Auth.
+   * @param array $configuration
+   *   Configuration.
    * @param \Symfony\Component\HttpFoundation\File\Mimetype\MimeTypeGuesserInterface $mime_type_guesser
    *   Mimetype guesser.
    */
   public function __construct(
-    IFedoraApi $fedora,
+    JwtAuth $jwt,
+    array $configuration,
     MimeTypeGuesserInterface $mime_type_guesser
   ) {
-    $this->fedora = $fedora;
+    $this->jwt = $jwt;
+    $this->configuration = $configuration;
     $this->mimeTypeGuesser = $mime_type_guesser;
   }
 
@@ -50,53 +56,19 @@ class Fedora implements FlysystemPluginInterface, ContainerFactoryPluginInterfac
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     // Construct Authorization header using jwt token.
     $jwt = $container->get('jwt.authentication.jwt');
-    $auth = 'Bearer ' . $jwt->generateToken();
 
-    // Construct guzzle client to middleware that adds the header.
-    $stack = HandlerStack::create();
-    $stack->push(static::addHeader('Authorization', $auth));
-    $client = new Client([
-      'handler' => $stack,
-      'base_uri' => $configuration['root'],
-    ]);
-    $fedora = new FedoraApi($client);
-
-    // Return it.
     return new static(
-      $fedora,
+      $jwt,
+      $configuration,
       $container->get('file.mime_type.guesser')
     );
-  }
-
-  /**
-   * Guzzle middleware to add a header to outgoing requests.
-   *
-   * @param string $header
-   *   Header name.
-   * @param string $value
-   *   Header value.
-   */
-  public static function addHeader($header, $value) {
-    return function (callable $handler) use ($header, $value) {
-      return function (
-        RequestInterface $request,
-        array $options
-      ) use (
-$handler,
- $header,
- $value
-) {
-        $request = $request->withHeader($header, $value);
-        return $handler($request, $options);
-      };
-    };
   }
 
   /**
    * {@inheritdoc}
    */
   public function getAdapter() {
-    return new FedoraAdapter($this->fedora, $this->mimeTypeGuesser);
+    return new FedoraAdapter($this->jwt, $this->configuration, $this->mimeTypeGuesser);
   }
 
   /**
@@ -104,9 +76,7 @@ $handler,
    */
   public function ensure($force = FALSE) {
     // Check fedora root for sanity.
-    $response = $this->fedora->getResourceHeaders('');
-
-    if ($response->getStatusCode() != 200) {
+    if (!$this->getAdapter()->has('')) {
       return [[
         'severity' => RfcLogLevel::ERROR,
         'message' => '%url returned %status',
