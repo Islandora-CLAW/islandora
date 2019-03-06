@@ -95,7 +95,7 @@ class NodeLinkHeaderSubscriber extends LinkHeaderSubscriber implements EventSubs
   }
 
   /**
-   * Generates link headrs for media asssociated with a node.
+   * Generates link headers for media associated with a node.
    */
   protected function generateRelatedMediaLinks(NodeInterface $node) {
     $links = [];
