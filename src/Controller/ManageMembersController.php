@@ -115,7 +115,7 @@ class ManageMembersController extends EntityController {
           $bundle->label(),
           $entity_add_form,
           [$bundle_type => $bundle->id()],
-          ['query' => ["edit[$field]" => $node->id()]]
+          ['query' => ["edit[$field][widget][0][target_id]" => $node->id()]]
         ),
       ];
     }

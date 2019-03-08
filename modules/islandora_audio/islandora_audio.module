@@ -1,0 +1,32 @@
+<?php
+
+/**
+ * @file
+ * Contains islandora_audio.module.
+ *
+ * This file is part of the Islandora Project.
+ *
+ * (c) Islandora Foundation
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function islandora_audio_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the islandora module.
+    case 'help.page.islandora_audio':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Islandora Audio adds audio derivative actions.') . '</p>';
+      $output .= '<p>' . t('These can be used with microservices to automatically generate derivative audios.') . '</p>';
+      return $output;
+
+    default:
+  }
+}

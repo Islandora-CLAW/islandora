@@ -7,6 +7,7 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\flysystem\Plugin\FlysystemPluginInterface;
 use Drupal\flysystem\Plugin\FlysystemUrlTrait;
 use Drupal\islandora\Flysystem\Adapter\FedoraAdapter;
+use Drupal\jwt\Authentication\Provider\JwtAuth;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Client;
 use Islandora\Chullo\IFedoraApi;
@@ -48,13 +49,10 @@ class Fedora implements FlysystemPluginInterface, ContainerFactoryPluginInterfac
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    // Construct Authorization header using jwt token.
-    $jwt = $container->get('jwt.authentication.jwt');
-    $auth = 'Bearer ' . $jwt->generateToken();
 
-    // Construct guzzle client to middleware that adds the header.
+    // Construct guzzle client to middleware that adds JWT.
     $stack = HandlerStack::create();
-    $stack->push(static::addHeader('Authorization', $auth));
+    $stack->push(static::addJwt($container->get('jwt.authentication.jwt')));
     $client = new Client([
       'handler' => $stack,
       'base_uri' => $configuration['root'],
@@ -71,22 +69,19 @@ class Fedora implements FlysystemPluginInterface, ContainerFactoryPluginInterfac
   /**
    * Guzzle middleware to add a header to outgoing requests.
    *
-   * @param string $header
-   *   Header name.
-   * @param string $value
-   *   Header value.
+   * @param \Drupal\jwt\Authentication\Provider\JwtAuth $jwt
+   *   JWT.
    */
-  public static function addHeader($header, $value) {
-    return function (callable $handler) use ($header, $value) {
+  public static function addJwt(JwtAuth $jwt) {
+    return function (callable $handler) use ($jwt) {
       return function (
         RequestInterface $request,
         array $options
       ) use (
-$handler,
- $header,
- $value
-) {
-        $request = $request->withHeader($header, $value);
+        $handler,
+        $jwt
+      ) {
+        $request = $request->withHeader('Authorization', 'Bearer ' . $jwt->generateToken());
         return $handler($request, $options);
       };
     };
