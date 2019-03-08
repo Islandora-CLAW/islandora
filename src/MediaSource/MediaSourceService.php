@@ -206,6 +206,8 @@ class MediaSourceService {
 
     $content_length = stream_copy_to_stream($resource, $destination);
 
+    fclose($destination);
+
     if ($content_length === FALSE) {
       throw new HttpException(500, "Request body could not be copied to $uri");
     }
