@@ -14,8 +14,12 @@
  * @author Diego Pino Navarro <dpino@metro.org> https://github.com/diegopino
  */
 
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Url;
+use Drupal\islandora\Form\IslandoraSettingsForm;
+use Drupal\islandora\GeminiLookup;
 use Drupal\node\NodeInterface;
 use Drupal\media\MediaInterface;
 use Drupal\file\FileInterface;
@@ -343,4 +347,56 @@ function islandora_form_block_form_alter(&$form, FormStateInterface $form_state,
   unset($form['visibility']['file_uses_filesystem']);
   unset($form['visibility']['node_has_term']);
   unset($form['visibility']['media_uses_filesystem']);
+}
+
+/**
+ * Implements hook_entity_extra_field_info().
+ */
+function islandora_entity_extra_field_info() {
+    $config_factory = \Drupal::service('config.factory')->get(IslandoraSettingsForm::CONFIG_NAME);
+    $extra_field = [];
+
+    $pseudo_bundles = $config_factory->get(IslandoraSettingsForm::GEMINI_PSEUDO);
+
+    foreach ($pseudo_bundles as $key) {
+        list($bundle, $content_entity) = explode(":", $key);
+        $extra_field[$content_entity][$bundle]['display']['field_gemini_uri'] = [
+            'label' => t('Fedora URI'),
+            'description' => t('The URI to the persistent'),
+            'weight' => 100,
+            'visible' => TRUE,
+        ];
+    }
+    return $extra_field;
+}
+
+/**
+ * Implements hook_entity_view().
+ */
+function islandora_entity_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
+    if ($view_mode == 'full') {
+        if ($display->getComponent('field_gemini_uri')) {
+            $gemini = \Drupal::service('islandora.gemini.lookup');
+            if ($gemini instanceof GeminiLookup) {
+                $fedora_uri = $gemini->lookup($entity);
+                if (!is_null($fedora_uri)) {
+                    $build['field_gemini_uri'] = [
+                        '#type' => 'container',
+                        '#attributes' => [
+                            'id' => 'field-gemini-uri',
+                        ],
+                        'internal_label' => [
+                            '#type' => 'item',
+                            '#title' => t('Fedora URI'),
+                            'internal_uri' => [
+                                '#type' => 'link',
+                                '#title' => t($fedora_uri),
+                                '#url' => Url::fromUri($fedora_uri),
+                            ],
+                        ],
+                    ];
+                }
+            }
+        }
+    }
 }
