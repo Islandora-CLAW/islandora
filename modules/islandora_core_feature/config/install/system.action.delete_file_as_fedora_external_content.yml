@@ -1,0 +1,12 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - islandora
+id: delete_file_as_fedora_external_content
+label: 'Delete File as Fedora External Content'
+type: file
+plugin: emit_file_event
+configuration:
+  queue: islandora-indexing-fcrepo-delete
+  event: Delete

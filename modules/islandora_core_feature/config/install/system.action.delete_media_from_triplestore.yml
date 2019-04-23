@@ -12,4 +12,4 @@ type: media
 plugin: emit_media_event
 configuration:
   queue: islandora-indexing-triplestore-delete
-  event: delete
+  event: Delete

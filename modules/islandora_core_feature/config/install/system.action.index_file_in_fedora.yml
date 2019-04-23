@@ -12,4 +12,4 @@ type: file
 plugin: emit_file_event
 configuration:
   queue: islandora-indexing-fcrepo-file
-  event: Create
+  event: Update
