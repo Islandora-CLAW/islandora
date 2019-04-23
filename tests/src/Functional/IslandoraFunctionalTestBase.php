@@ -5,11 +5,11 @@ namespace Drupal\Tests\islandora\Functional;
 use Drupal\Core\Config\FileStorage;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\field\Tests\EntityReference\EntityReferenceTestTrait;
 use Drupal\link\LinkItemInterface;
 use Drupal\Tests\BrowserTestBase;
+use Drupal\Tests\field\Traits\EntityReferenceTestTrait;
+use Drupal\Tests\media\Traits\MediaTypeCreationTrait;
 use Drupal\Tests\TestFileCreationTrait;
-use Drupal\Tests\media\Functional\MediaFunctionalTestCreateMediaTypeTrait;
 
 /**
  * Base class for Functional tests.
@@ -18,7 +18,7 @@ class IslandoraFunctionalTestBase extends BrowserTestBase {
 
   use EntityReferenceTestTrait;
   use TestFileCreationTrait;
-  use MediaFunctionalTestCreateMediaTypeTrait;
+  use MediaTypeCreationTrait;
 
   protected static $modules = ['context_ui', 'field_ui', 'islandora'];
 
@@ -157,7 +157,7 @@ EOD;
     $this->createEntityReferenceField('node', 'test_type', 'field_tags', 'Tags', 'taxonomy_term', 'default', [], 2);
 
     // Create a media type.
-    $this->testMediaType = $this->createMediaType(['bundle' => 'test_media_type'], 'file');
+    $this->testMediaType = $this->createMediaType('file', ['id' => 'test_media_type']);
     $this->testMediaType->save();
     $this->createEntityReferenceField('media', $this->testMediaType->id(), 'field_media_of', 'Media Of', 'node', 'default', [], 2);
     $this->createEntityReferenceField('media', $this->testMediaType->id(), 'field_tags', 'Tags', 'taxonomy_term', 'default', [], 2);

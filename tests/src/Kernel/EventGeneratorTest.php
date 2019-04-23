@@ -5,7 +5,7 @@ namespace Drupal\Tests\islandora\Kernel;
 use Drupal\islandora\EventGenerator\EventGenerator;
 use Drupal\node\Entity\Node;
 use Drupal\node\Entity\NodeType;
-use Drupal\simpletest\UserCreationTrait;
+use Drupal\Tests\user\Traits\UserCreationTrait;
 
 /**
  * Tests the EventGenerator default implementation.
