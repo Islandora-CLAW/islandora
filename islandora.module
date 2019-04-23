@@ -356,7 +356,7 @@ function islandora_entity_extra_field_info() {
   $config_factory = \Drupal::service('config.factory')->get(IslandoraSettingsForm::CONFIG_NAME);
   $extra_field = [];
 
-  $pseudo_bundles = $config_factory->get(IslandoraSettingsForm::GEMINI_PSEUDO);
+  $pseudo_bundles = $config_factory->get(IslandoraSettingsForm::GEMINI_PSEUDO) ? $config_factory->get(IslandoraSettingsForm::GEMINI_PSEUDO) : [];
 
   foreach ($pseudo_bundles as $key) {
     list($bundle, $content_entity) = explode(":", $key);
