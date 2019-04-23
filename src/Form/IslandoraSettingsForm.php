@@ -2,11 +2,8 @@
 
 namespace Drupal\islandora\Form;
 
-use Drupal\Core\Cache\Cache;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeBundleInfo;
-use Drupal\Core\Entity\EntityTypeManager;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
@@ -29,6 +26,8 @@ class IslandoraSettingsForm extends ConfigFormBase {
   const GEMINI_PSEUDO = 'gemini_pseudo_bundles';
 
   /**
+   * To list the available bundle types.
+   *
    * @var \Drupal\Core\Entity\EntityTypeBundleInfo
    */
   private $entityTypeBundleInfo;
@@ -38,17 +37,19 @@ class IslandoraSettingsForm extends ConfigFormBase {
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The factory for configuration objects.
+   * @param \Drupal\Core\Entity\EntityTypeBundleInfo $entity_type_bundle_info
+   *   The EntityTypeBundleInfo service.
    */
   public function __construct(ConfigFactoryInterface $config_factory, EntityTypeBundleInfo $entity_type_bundle_info) {
-      $this->setConfigFactory($config_factory);
-      $this->entityTypeBundleInfo = $entity_type_bundle_info;
+    $this->setConfigFactory($config_factory);
+    $this->entityTypeBundleInfo = $entity_type_bundle_info;
   }
 
   /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-      return new static(
+    return new static(
           $container->get('config.factory'),
           $container->get('entity_type.bundle.info')
       );
@@ -98,25 +99,25 @@ class IslandoraSettingsForm extends ConfigFormBase {
 
     $options = [];
     foreach (['node', 'media', 'taxonomy_term'] as $content_entity) {
-        $bundles = $this->entityTypeBundleInfo->getBundleInfo($content_entity);
-        foreach ($bundles as $bundle => $bundle_properties) {
-            $options["{$bundle}:{$content_entity}"] =
+      $bundles = $this->entityTypeBundleInfo->getBundleInfo($content_entity);
+      foreach ($bundles as $bundle => $bundle_properties) {
+        $options["{$bundle}:{$content_entity}"] =
                 $this->t('@label (@type)', [
-                    '@label' => $bundle_properties['label'],
-                    '@type' => $content_entity,
+                  '@label' => $bundle_properties['label'],
+                  '@type' => $content_entity,
                 ]);
-        }
+      }
     }
 
     $form['bundle_container'] = [
-        '#type' => 'details',
-        '#title' => $this->t('Bundles with Gemini URI Pseudo field'),
-        '#description' => $this->t('The selected bundles can display the pseudo-field showing the Gemini linked URI. Configured in the field display.'),
-        self::GEMINI_PSEUDO => [
-            '#type' => 'checkboxes',
-            '#options' => $options,
-            '#default_value' => $selected_bundles,
-        ],
+      '#type' => 'details',
+      '#title' => $this->t('Bundles with Gemini URI Pseudo field'),
+      '#description' => $this->t('The selected bundles can display the pseudo-field showing the Gemini linked URI. Configured in the field display.'),
+      self::GEMINI_PSEUDO => [
+        '#type' => 'checkboxes',
+        '#options' => $options,
+        '#default_value' => $selected_bundles,
+      ],
     ];
     return parent::buildForm($form, $form_state);
   }
@@ -161,7 +162,7 @@ class IslandoraSettingsForm extends ConfigFormBase {
       );
     }
 
-    // Validate Gemini URL by validating the URL
+    // Validate Gemini URL by validating the URL.
     $geminiUrlValue = trim($form_state->getValue(self::GEMINI_URL));
     if (!empty($geminiUrlValue)) {
       try {
@@ -169,7 +170,7 @@ class IslandoraSettingsForm extends ConfigFormBase {
         $client = GeminiClient::create($geminiUrlValue, $this->logger('islandora'));
         $client->findByUri('http://example.org');
       }
-      // Uri is invalid
+      // Uri is invalid.
       catch (\InvalidArgumentException $e) {
         $form_state->setErrorByName(
           self::GEMINI_URL,
@@ -179,9 +180,9 @@ class IslandoraSettingsForm extends ConfigFormBase {
           )
         );
       }
-      // Uri is not available
+      // Uri is not available.
       catch (ConnectException $e) {
-          $form_state->setErrorByName(
+        $form_state->setErrorByName(
               self::GEMINI_URL,
               $this->t(
                   'Cannot connect to URL @url',
