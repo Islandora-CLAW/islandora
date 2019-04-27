@@ -163,7 +163,7 @@ class IslandoraSettingsForm extends ConfigFormBase {
       );
     }
 
-    // Needed for the elseif below
+    // Needed for the elseif below.
     $pseudo_types = array_filter($form_state->getValue(self::GEMINI_PSEUDO));
 
     // Validate Gemini URL by validating the URL.
@@ -196,10 +196,10 @@ class IslandoraSettingsForm extends ConfigFormBase {
       }
     }
     elseif (count($pseudo_types) > 0) {
-        $form_state->setErrorByName(
-            self::GEMINI_URL,
-            $this->t('Must enter Gemini URL before selecting bundles to display a pseudo field on.')
-        );
+      $form_state->setErrorByName(
+        self::GEMINI_URL,
+        $this->t('Must enter Gemini URL before selecting bundles to display a pseudo field on.')
+      );
     }
 
   }
