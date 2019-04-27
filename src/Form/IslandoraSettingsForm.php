@@ -113,6 +113,7 @@ class IslandoraSettingsForm extends ConfigFormBase {
       '#type' => 'details',
       '#title' => $this->t('Bundles with Gemini URI Pseudo field'),
       '#description' => $this->t('The selected bundles can display the pseudo-field showing the Gemini linked URI. Configured in the field display.'),
+      '#open' => TRUE,
       self::GEMINI_PSEUDO => [
         '#type' => 'checkboxes',
         '#options' => $options,
@@ -162,6 +163,9 @@ class IslandoraSettingsForm extends ConfigFormBase {
       );
     }
 
+    // Needed for the elseif below
+    $pseudo_types = array_filter($form_state->getValue(self::GEMINI_PSEUDO));
+
     // Validate Gemini URL by validating the URL.
     $geminiUrlValue = trim($form_state->getValue(self::GEMINI_URL));
     if (!empty($geminiUrlValue)) {
@@ -190,6 +194,12 @@ class IslandoraSettingsForm extends ConfigFormBase {
               )
           );
       }
+    }
+    elseif (count($pseudo_types) > 0) {
+        $form_state->setErrorByName(
+            self::GEMINI_URL,
+            $this->t('Must enter Gemini URL before selecting bundles to display a pseudo field on.')
+        );
     }
 
   }
