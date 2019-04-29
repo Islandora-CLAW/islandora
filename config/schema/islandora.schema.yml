@@ -11,6 +11,9 @@ islandora.settings:
     broadcast_queue:
       type: string
       label: 'Queue that handles distributing messages amongst multiple recipients'
+    jwt_expiry:
+      type: string
+      label: 'How long JWTs should last before expiring.'
     gemini_url:
       type: uri
       label: 'Url to Gemini microservice'

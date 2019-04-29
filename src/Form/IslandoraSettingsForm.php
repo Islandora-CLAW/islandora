@@ -157,7 +157,7 @@ class IslandoraSettingsForm extends ConfigFormBase {
       $form_state->setErrorByName(
         self::JWT_EXPIRY,
         $this->t(
-          '"@exipry" is not a valid time or interval expression.',
+          '"@expiry" is not a valid time or interval expression.',
           ['@expiry' => $expiry]
         )
       );
