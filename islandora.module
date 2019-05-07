@@ -374,7 +374,11 @@ function islandora_entity_extra_field_info() {
  * Implements hook_entity_view().
  */
 function islandora_entity_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
-  if ($view_mode == 'full') {
+  $route_match_item = \Drupal::routeMatch()->getParameters()->all();
+  // Get the parameter, which might be node, media or taxonomy term.
+  $current_entity = reset($route_match_item);
+  // Match exactly to ensure they are the same entity type too.
+  if ($entity === $current_entity) {
     if ($display->getComponent('field_gemini_uri')) {
       $gemini = \Drupal::service('islandora.gemini.lookup');
       if ($gemini instanceof GeminiLookup) {
