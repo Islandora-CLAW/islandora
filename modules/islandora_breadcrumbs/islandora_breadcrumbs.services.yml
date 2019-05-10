@@ -1,0 +1,5 @@
+services:
+  islandora_breadcrumbs.breadcrumb:
+    class: Drupal\islandora_breadcrumbs\IslandoraBreadcrumbBuilder
+    tags:
+      - { name: breadcrumb_builder, priority: 100 }
