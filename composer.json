@@ -17,7 +17,7 @@
   "require": {
     "drupal/context": "^4.0",
     "drupal/search_api": "~1.8",
-    "islandora/jsonld": "dev-issue-887",
+    "islandora/jsonld": "0.2.0",
     "stomp-php/stomp-php": "4.*",
     "drupal/jwt": "1.0.0-alpha6",
     "drupal/filehash": "^1.1",
