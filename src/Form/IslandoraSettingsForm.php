@@ -80,22 +80,22 @@ class IslandoraSettingsForm extends ConfigFormBase {
     $form[self::BROKER_URL] = [
       '#type' => 'textfield',
       '#title' => $this->t('Broker URL'),
-      '#default_value' => $config->get(self::BROKER_URL) ? $config->get(self::BROKER_URL) : 'tcp://localhost:61613',
+      '#default_value' => $config->get(self::BROKER_URL),
     ];
 
     $form[self::JWT_EXPIRY] = [
       '#type' => 'textfield',
       '#title' => $this->t('JWT Expiry'),
-      '#default_value' => $config->get(self::JWT_EXPIRY) ? $config->get(self::JWT_EXPIRY) : '+2 hour',
+      '#default_value' => $config->get(self::JWT_EXPIRY),
     ];
 
     $form[self::GEMINI_URL] = [
       '#type' => 'textfield',
       '#title' => $this->t('Gemini URL'),
-      '#default_value' => $config->get(self::GEMINI_URL) ? $config->get(self::GEMINI_URL) : '',
+      '#default_value' => $config->get(self::GEMINI_URL),
     ];
 
-    $selected_bundles = $config->get(self::GEMINI_PSEUDO) ? $config->get(self::GEMINI_PSEUDO) : [];
+    $selected_bundles = $config->get(self::GEMINI_PSEUDO);
 
     $options = [];
     foreach (['node', 'media', 'taxonomy_term'] as $content_entity) {
