@@ -3,7 +3,6 @@
 namespace Drupal\islandora\EventGenerator;
 
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Url;
 use Drupal\file\FileInterface;
 use Drupal\user\UserInterface;
 
