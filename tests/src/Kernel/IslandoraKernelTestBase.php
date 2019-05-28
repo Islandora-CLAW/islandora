@@ -34,10 +34,8 @@ abstract class IslandoraKernelTestBase extends KernelTestBase {
     'key',
     'jwt',
     'file',
-    'taxonomy',
     'image',
     'media',
-    'webform',
     'islandora',
     'flysystem',
   ];
@@ -51,13 +49,10 @@ abstract class IslandoraKernelTestBase extends KernelTestBase {
     // Bootstrap minimal Drupal environment to run the tests.
     $this->installSchema('system', 'sequences');
     $this->installSchema('node', 'node_access');
-    $this->installSchema('file', 'file_usage');
     $this->installEntitySchema('user');
     $this->installEntitySchema('node');
     $this->installEntitySchema('context');
     $this->installEntitySchema('file');
-    $this->installEntitySchema('media');
-    $this->installEntitySchema('taxonomy_term');
     $this->installConfig('filter');
   }
 
