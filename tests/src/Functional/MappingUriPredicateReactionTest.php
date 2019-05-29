@@ -107,7 +107,7 @@ class MappingUriPredicateReactionTest extends IslandoraFunctionalTestBase {
     );
     $this->assertEquals(
       "$url?_format=jsonld",
-      $json['@graph'][0]['http://www.w3.org/2002/07/owl#sameAs'][0]['@value'],
+      $json['@graph'][0]['http://www.w3.org/2002/07/owl#sameAs'][0]['@id'],
       'Missing alter added predicate.'
     );
 
@@ -129,7 +129,7 @@ class MappingUriPredicateReactionTest extends IslandoraFunctionalTestBase {
       $json['@graph'][0], 'Still has old predicate');
     $this->assertEquals(
       "$url?_format=jsonld",
-      $json['@graph'][0]['http://example.org/first/second'][0]['@value'],
+      $json['@graph'][0]['http://example.org/first/second'][0]['@id'],
       'Missing alter added predicate.'
     );
   }
@@ -181,7 +181,7 @@ class MappingUriPredicateReactionTest extends IslandoraFunctionalTestBase {
     $json = \GuzzleHttp\json_decode($new_contents, TRUE);
     $this->assertEquals(
       "$media_url?_format=jsonld",
-      $json['@graph'][0]['http://www.iana.org/assignments/relation/describedby'][0]['@value'],
+      $json['@graph'][0]['http://www.iana.org/assignments/relation/describedby'][0]['@id'],
       'Missing alter added predicate.'
     );
     $this->assertEquals(

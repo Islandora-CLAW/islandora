@@ -91,7 +91,7 @@ class MappingUriPredicateReaction extends NormalizerAlterReaction {
                 $tmp = $graph[$drupal_predicate];
                 $graph[$drupal_predicate] = [$tmp];
               }
-              elseif (array_search($url, array_column($graph[$drupal_predicate], '@value'))) {
+              elseif (array_search($url, array_column($graph[$drupal_predicate], '@id'))) {
                 // Don't add it if it already exists.
                 return;
               }
@@ -99,7 +99,7 @@ class MappingUriPredicateReaction extends NormalizerAlterReaction {
             else {
               $graph[$drupal_predicate] = [];
             }
-            $graph[$drupal_predicate][] = ["@value" => $url];
+            $graph[$drupal_predicate][] = ["@id" => $url];
             return;
           }
         }
