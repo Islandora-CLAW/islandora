@@ -31,7 +31,9 @@ class FedoraPluginTest extends IslandoraKernelTestBase {
 
     $mime_guesser = $this->prophesize(MimeTypeGuesserInterface::class)->reveal();
 
-    return new Fedora($api, $mime_guesser);
+    $language_manager = $this->container->get('language_manager');
+
+    return new Fedora($api, $mime_guesser, $language_manager);
   }
 
   /**

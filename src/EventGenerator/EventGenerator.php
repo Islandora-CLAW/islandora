@@ -3,8 +3,8 @@
 namespace Drupal\islandora\EventGenerator;
 
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Url;
-use Drupal\file\FileInterface;
 use Drupal\user\UserInterface;
 
 /**
@@ -15,18 +15,41 @@ use Drupal\user\UserInterface;
 class EventGenerator implements EventGeneratorInterface {
 
   /**
+   * Language manager.
+   *
+   * @var \Drupal\Core\Language\LanguageManagerInterface
+   */
+  protected $languageManager;
+
+  /**
+   * Constructor.
+   *
+   * @param \Drupal\Core\Language\LanguageManagerInterface $language_manager
+   *   Language manager.
+   */
+  public function __construct(LanguageManagerInterface $language_manager) {
+    $this->languageManager = $language_manager;
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function generateEvent(EntityInterface $entity, UserInterface $user, array $data) {
 
     $user_url = $user->toUrl()->setAbsolute()->toString();
+    $entity_type = $entity->getEntityTypeId();
 
-    if ($entity instanceof FileInterface) {
+    if ($entity_type == 'file') {
       $entity_url = $entity->url();
       $mimetype = $entity->getMimeType();
     }
     else {
-      $entity_url = $entity->toUrl()->setAbsolute()->toString();
+      $undefined = $this->languageManager->getLanguage('und');
+      $entity_url = Url::fromRoute(
+        "rest.entity.$entity_type.GET",
+        [$entity_type => $entity->id()],
+        ['absolute' => TRUE, 'language' => $undefined]
+      )->toString();
       $mimetype = 'text/html';
     }
 

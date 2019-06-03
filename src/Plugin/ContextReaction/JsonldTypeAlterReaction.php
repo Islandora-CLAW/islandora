@@ -43,7 +43,7 @@ class JsonldTypeAlterReaction extends NormalizerAlterReaction {
 
     // Search for the entity in the graph.
     foreach ($normalized['@graph'] as &$elem) {
-      if ($elem['@id'] === $entity->toUrl()->setAbsolute()->toString() . '?_format=jsonld') {
+      if ($elem['@id'] === $this->getSubjectUrl($entity)) {
         foreach ($entity->get($config['source_field'])->getValue() as $type) {
           // If the configured field is using an entity reference,
           // we will see if it uses the core config's field_external_uri.

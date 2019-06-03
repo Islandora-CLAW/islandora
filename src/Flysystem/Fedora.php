@@ -2,8 +2,10 @@
 
 namespace Drupal\islandora\Flysystem;
 
+use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Logger\RfcLogLevel;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\Url;
 use Drupal\flysystem\Plugin\FlysystemPluginInterface;
 use Drupal\flysystem\Plugin\FlysystemUrlTrait;
 use Drupal\islandora\Flysystem\Adapter\FedoraAdapter;
@@ -30,19 +32,30 @@ class Fedora implements FlysystemPluginInterface, ContainerFactoryPluginInterfac
   protected $mimeTypeGuesser;
 
   /**
+   * Language manager.
+   *
+   * @var \Drupal\Core\Language\LanguageManagerInterface
+   */
+  protected $languageManager;
+
+  /**
    * Constructs a Fedora plugin for Flysystem.
    *
    * @param \Islandora\Chullo\IFedoraApi $fedora
    *   Fedora client.
    * @param \Symfony\Component\HttpFoundation\File\Mimetype\MimeTypeGuesserInterface $mime_type_guesser
    *   Mimetype guesser.
+   * @param \Drupal\Core\Language\LanguageManagerInterface $language_manager
+   *   Language manager.
    */
   public function __construct(
     IFedoraApi $fedora,
-    MimeTypeGuesserInterface $mime_type_guesser
+    MimeTypeGuesserInterface $mime_type_guesser,
+    LanguageManagerInterface $language_manager
   ) {
     $this->fedora = $fedora;
     $this->mimeTypeGuesser = $mime_type_guesser;
+    $this->languageManager = $language_manager;
   }
 
   /**
@@ -62,7 +75,8 @@ class Fedora implements FlysystemPluginInterface, ContainerFactoryPluginInterfac
     // Return it.
     return new static(
       $fedora,
-      $container->get('file.mime_type.guesser')
+      $container->get('file.mime_type.guesser'),
+      $container->get('language_manager')
     );
   }
 
@@ -114,6 +128,26 @@ class Fedora implements FlysystemPluginInterface, ContainerFactoryPluginInterfac
     }
 
     return [];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getExternalUrl($uri) {
+    $path = str_replace('\\', '/', $this->getTarget($uri));
+
+    $arguments = [
+      'scheme' => $this->getScheme($uri),
+      'filepath' => $path,
+    ];
+
+    // Force file urls to be language neutral.
+    $undefined = $this->languageManager->getLanguage('und');
+    return Url::fromRoute(
+      'flysystem.serve',
+      $arguments,
+      ['absolute' => TRUE, 'language' => $undefined]
+    )->toString();
   }
 
 }
