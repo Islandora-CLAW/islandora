@@ -12,6 +12,9 @@ use Drupal\Core\Routing\RouteMatchInterface;
  */
 class IslandoraBreadcrumbBuilder implements BreadcrumbBuilderInterface {
 
+  protected $depthLimit = 2;
+  protected $includeSelf = FALSE;
+
   /**
    * {@inheritdoc}
    */
@@ -27,14 +30,24 @@ class IslandoraBreadcrumbBuilder implements BreadcrumbBuilderInterface {
    * {@inheritdoc}
    */
   public function build(RouteMatchInterface $route_match) {
+
+    $config = \Drupal::config('islandora.breadcrumbs');
+    if (!empty($config->get('depthLimit'))) {
+      $this->depthLimit = $config->get('depthLimit');
+    }
+    if (!empty($config->get('includeSelf'))) {
+      $this->includeSelf = $config->get('includeSelf');
+    }
+
     $node = $route_match->getParameter('node');
     $breadcrumb = new Breadcrumb();
 
     $chain = [];
-    IslandoraBreadcrumbBuilder::walkMembership($node, $chain);
+    $this->walkMembership($node, $chain);
 
-    // Don't include the current item. @TODO make configurable.
-    array_pop($chain);
+    if (!$this->includeSelf) {
+      array_pop($chain);
+    }
     $breadcrumb->addCacheableDependency($node);
 
     // Add membership chain to the breadcrumb.
@@ -51,7 +64,7 @@ class IslandoraBreadcrumbBuilder implements BreadcrumbBuilderInterface {
    *
    * We pass crumbs by reference to enable checking for looped chains.
    */
-  protected static function walkMembership(EntityInterface $entity, &$crumbs) {
+  protected function walkMembership(EntityInterface $entity, &$crumbs) {
     // Avoid infinate loops, return if we've seen this before.
     foreach ($crumbs as $crumb) {
       if ($crumb->uuid == $entity->uuid) {
@@ -62,10 +75,14 @@ class IslandoraBreadcrumbBuilder implements BreadcrumbBuilderInterface {
     // Add this item onto the pile.
     array_unshift($crumbs, $entity);
 
+    if ($this->depthLimit > 0 && count($crumbs) >= $this->depthLimit) {
+      return;
+    }
+
     // Find the next in the chain, if there are any.
     if ($entity->hasField('field_member_of') &&
       !$entity->get('field_member_of')->isEmpty()) {
-      IslandoraBreadcrumbBuilder::walkMembership($entity->get('field_member_of')->entity, $crumbs);
+      $this->walkMembership($entity->get('field_member_of')->entity, $crumbs);
     }
   }
 
