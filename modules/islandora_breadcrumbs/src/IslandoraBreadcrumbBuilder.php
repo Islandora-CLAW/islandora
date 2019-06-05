@@ -29,7 +29,9 @@ class IslandoraBreadcrumbBuilder implements BreadcrumbBuilderInterface {
   public function build(RouteMatchInterface $route_match) {
     $node = $route_match->getParameter('node');
     $breadcrumb = new Breadcrumb();
-    $chain = IslandoraBreadcrumbBuilder::walkMembership($node);
+
+    $chain = [];
+    IslandoraBreadcrumbBuilder::walkMembership($node, $chain);
 
     // Don't include the current item. @TODO make configurable.
     array_pop($chain);
@@ -46,15 +48,25 @@ class IslandoraBreadcrumbBuilder implements BreadcrumbBuilderInterface {
 
   /**
    * Follows chain of field_member_of links.
+   *
+   * We pass crumbs by reference to enable checking for looped chains.
    */
-  protected static function walkMembership(EntityInterface $entity) {
+  protected static function walkMembership(EntityInterface $entity, &$crumbs) {
+    // Avoid infinate loops, return if we've seen this before.
+    foreach ($crumbs as $crumb) {
+      if ($crumb->uuid == $entity->uuid) {
+        return;
+      }
+    }
+
+    // Add this item onto the pile.
+    array_unshift($crumbs, $entity);
+
+    // Find the next in the chain, if there are any.
     if ($entity->hasField('field_member_of') &&
       !$entity->get('field_member_of')->isEmpty()) {
-      $crumbs = IslandoraBreadcrumbBuilder::walkMembership($entity->get('field_member_of')->entity);
-      $crumbs[] = $entity;
-      return $crumbs;
+      IslandoraBreadcrumbBuilder::walkMembership($entity->get('field_member_of')->entity, $crumbs);
     }
-    return [$entity];
   }
 
 }
