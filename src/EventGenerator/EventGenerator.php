@@ -5,6 +5,7 @@ namespace Drupal\islandora\EventGenerator;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Url;
+use Drupal\islandora\MediaSource\MediaSourceService;
 use Drupal\user\UserInterface;
 
 /**
@@ -22,13 +23,23 @@ class EventGenerator implements EventGeneratorInterface {
   protected $languageManager;
 
   /**
+   * Media source service.
+   *
+   * @var \Drupal\islandora\MediaSource\MediaSourceService
+   */
+  protected $mediaSource;
+
+  /**
    * Constructor.
    *
    * @param \Drupal\Core\Language\LanguageManagerInterface $language_manager
    *   Language manager.
+   * @param \Drupal\islandora\MediaSource\MediaSourceService $media_source
+   *   Media source service.
    */
-  public function __construct(LanguageManagerInterface $language_manager) {
+  public function __construct(LanguageManagerInterface $language_manager, MediaSourceService $media_source) {
     $this->languageManager = $language_manager;
+    $this->mediaSource = $media_source;
   }
 
   /**
@@ -39,12 +50,13 @@ class EventGenerator implements EventGeneratorInterface {
     $user_url = $user->toUrl()->setAbsolute()->toString();
     $entity_type = $entity->getEntityTypeId();
 
+    $undefined = $this->languageManager->getLanguage('und');
+
     if ($entity_type == 'file') {
-      $entity_url = $entity->url();
+      $entity_url = $entity->url('canonical', ['absolute' => TRUE, 'language' => $undefined]);
       $mimetype = $entity->getMimeType();
     }
     else {
-      $undefined = $this->languageManager->getLanguage('und');
       $entity_url = Url::fromRoute(
         "rest.entity.$entity_type.GET",
         [$entity_type => $entity->id()],
@@ -109,6 +121,20 @@ class EventGenerator implements EventGeneratorInterface {
         "mediaType" => "application/ld+json",
         "rel" => "alternate",
       ];
+    }
+
+    // Add a link to the file described by a media.
+    if ($entity_type == 'media') {
+      $file = $this->mediaSource->getSourceFile($entity);
+      if ($file) {
+        $event['object']['url'][] = [
+          "name" => "Describes",
+          "type" => "Link",
+          "href" => $file->url('canonical', ['absolute' => TRUE, 'language' => $undefined]),
+          "mediaType" => $file->getMimeType(),
+          "rel" => "describes",
+        ];
+      }
     }
 
     unset($data["event"]);

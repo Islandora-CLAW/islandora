@@ -15,7 +15,7 @@ dependencies:
     module:
       - islandora_core_feature
   module:
-    - image
+    - islandora
 id: media.image.source
 targetEntityType: media
 bundle: image
@@ -27,12 +27,13 @@ content:
       image_style: ''
       image_link: content
     third_party_settings: {  }
-    type: image
+    type: islandora_image
     weight: 0
     region: content
 hidden:
   created: true
   field_file_size: true
+  field_gemini_uri: true
   field_height: true
   field_media_of: true
   field_media_use: true

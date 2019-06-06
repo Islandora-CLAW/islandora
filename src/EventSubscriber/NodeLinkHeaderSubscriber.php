@@ -5,8 +5,10 @@ namespace Drupal\islandora\EventSubscriber;
 use Drupal\Core\Access\AccessManagerInterface;
 use Drupal\Core\Entity\EntityFieldManager;
 use Drupal\Core\Entity\EntityTypeManager;
+use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Url;
 use Drupal\islandora\IslandoraUtils;
 use Drupal\node\NodeInterface;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
@@ -42,6 +44,8 @@ class NodeLinkHeaderSubscriber extends LinkHeaderSubscriber implements EventSubs
    *   The route match object.
    * @param Symfony\Component\HttpFoundation\RequestStack $request_stack
    *   Request stack (for current request).
+   * @param \Drupal\Core\Language\LanguageManagerInterface $language_manager
+   *   Language manager.
    * @param \Drupal\islandora\IslandoraUtils $utils
    *   Derivative utils.
    */
@@ -52,16 +56,18 @@ class NodeLinkHeaderSubscriber extends LinkHeaderSubscriber implements EventSubs
     AccountInterface $account,
     RouteMatchInterface $route_match,
     RequestStack $request_stack,
+    LanguageManagerInterface $language_manager,
     IslandoraUtils $utils
   ) {
-    $this->entityTypeManager = $entity_type_manager;
-    $this->entityFieldManager = $entity_field_manager;
-    $this->accessManager = $access_manager;
-    $this->account = $account;
-    $this->routeMatch = $route_match;
-    $this->accessManager = $access_manager;
-    $this->account = $account;
-    $this->requestStack = $request_stack;
+    parent::__construct(
+      $entity_type_manager,
+      $entity_field_manager,
+      $access_manager,
+      $account,
+      $route_match,
+      $request_stack,
+      $language_manager
+    );
     $this->utils = $utils;
   }
 
@@ -99,8 +105,13 @@ class NodeLinkHeaderSubscriber extends LinkHeaderSubscriber implements EventSubs
    */
   protected function generateRelatedMediaLinks(NodeInterface $node) {
     $links = [];
+    $undefined = $this->languageManager->getLanguage('und');
     foreach ($this->utils->getMedia($node) as $media) {
-      $url = $media->url('canonical', ['absolute' => TRUE]);
+      $url = Url::fromRoute(
+        "rest.entity.media.GET",
+        ['media' => $media->id()],
+        ['absolute' => TRUE, 'language' => $undefined]
+      )->toString();
       foreach ($media->referencedEntities() as $term) {
         if ($term->getEntityTypeId() == 'taxonomy_term' && $term->hasField('field_external_uri')) {
           $field = $term->get('field_external_uri');

@@ -30,6 +30,7 @@ content:
 hidden:
   created: true
   field_file_size: true
+  field_gemini_uri: true
   field_media_of: true
   field_media_use: true
   field_mime_type: true

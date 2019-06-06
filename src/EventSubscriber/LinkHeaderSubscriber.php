@@ -6,6 +6,7 @@ use Drupal\Core\Access\AccessManagerInterface;
 use Drupal\Core\Entity\EntityFieldManager;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManager;
+use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
@@ -65,6 +66,13 @@ abstract class LinkHeaderSubscriber implements EventSubscriberInterface {
   protected $requestStack;
 
   /**
+   * Language manager.
+   *
+   * @var \Drupal\Core\Language\LanguageManagerInterface
+   */
+  protected $languageManager;
+
+  /**
    * Constructor.
    *
    * @param \Drupal\Core\Entity\EntityTypeManager $entity_type_manager
@@ -79,6 +87,8 @@ abstract class LinkHeaderSubscriber implements EventSubscriberInterface {
    *   The route match object.
    * @param Symfony\Component\HttpFoundation\RequestStack $request_stack
    *   Request stack (for current request).
+   * @param \Drupal\Core\Language\LanguageManagerInterface $language_manager
+   *   Language manager.
    */
   public function __construct(
     EntityTypeManager $entity_type_manager,
@@ -86,7 +96,8 @@ abstract class LinkHeaderSubscriber implements EventSubscriberInterface {
     AccessManagerInterface $access_manager,
     AccountInterface $account,
     RouteMatchInterface $route_match,
-    RequestStack $request_stack
+    RequestStack $request_stack,
+    LanguageManagerInterface $language_manager
   ) {
     $this->entityTypeManager = $entity_type_manager;
     $this->entityFieldManager = $entity_field_manager;
@@ -96,6 +107,7 @@ abstract class LinkHeaderSubscriber implements EventSubscriberInterface {
     $this->accessManager = $access_manager;
     $this->account = $account;
     $this->requestStack = $request_stack;
+    $this->languageManager = $language_manager;
   }
 
   /**

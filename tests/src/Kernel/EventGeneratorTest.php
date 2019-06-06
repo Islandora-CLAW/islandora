@@ -64,7 +64,10 @@ class EventGeneratorTest extends IslandoraKernelTestBase {
     $this->entity->save();
 
     // Create the event generator so we can test it.
-    $this->eventGenerator = new EventGenerator($this->container->get('language_manager'));
+    $this->eventGenerator = new EventGenerator(
+      $this->container->get('language_manager'),
+      $this->container->get('islandora.media_source_service')
+    );
   }
 
   /**
@@ -146,9 +149,12 @@ class EventGeneratorTest extends IslandoraKernelTestBase {
     foreach ($msg['actor']['url'] as $url) {
       $this->assertTrue($url['type'] == 'Link', "'url' entries must have type 'Link'");
       $this->assertTrue(
-            $url['mediaType'] == 'application/ld+json' || $url['mediaType'] == 'text/html',
-            "'url' entries must be either html or jsonld"
-        );
+        in_array(
+          $url['mediaType'],
+          ['application/json', 'application/ld+json', 'text/html']
+        ),
+        "'url' entries must be either html, json, or jsonld"
+      );
     }
 
     // Make sure the object exists and is a uri.
@@ -158,13 +164,16 @@ class EventGeneratorTest extends IslandoraKernelTestBase {
         $msg["object"]["id"] == "urn:uuid:{$this->entity->uuid()}",
         "Id must be an URN with entity's UUID"
     );
-    $this->assertTrue(array_key_exists("url", $msg["actor"]), "Object must have 'url' key.");
-    foreach ($msg['actor']['url'] as $url) {
+    $this->assertTrue(array_key_exists("url", $msg["object"]), "Object must have 'url' key.");
+    foreach ($msg['object']['url'] as $url) {
       $this->assertTrue($url['type'] == 'Link', "'url' entries must have type 'Link'");
       $this->assertTrue(
-            $url['mediaType'] == 'application/ld+json' || $url['mediaType'] == 'text/html',
-            "'url' entries must be either html or jsonld"
-        );
+        in_array(
+          $url['mediaType'],
+          ['application/json', 'application/ld+json', 'text/html']
+        ),
+        "'url' entries must be either html, json, or jsonld"
+      );
     }
   }
 

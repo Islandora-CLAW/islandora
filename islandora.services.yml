@@ -3,7 +3,7 @@
 services:
   islandora.eventgenerator:
     class: Drupal\islandora\EventGenerator\EventGenerator
-    arguments: ['@language_manager']
+    arguments: ['@language_manager', '@islandora.media_source_service']
   islandora.stomp:
     class: Stomp\StatefulStomp
     factory: ['Drupal\islandora\StompFactory', create]
@@ -16,12 +16,12 @@ services:
       - { name: event_subscriber }
   islandora.media_link_header_subscriber:
     class: Drupal\islandora\EventSubscriber\MediaLinkHeaderSubscriber
-    arguments: ['@entity_type.manager', '@entity_field.manager', '@access_manager', '@current_user', '@current_route_match', '@request_stack']
+    arguments: ['@entity_type.manager', '@entity_field.manager', '@access_manager', '@current_user', '@current_route_match', '@request_stack', '@language_manager']
     tags:
       - { name: event_subscriber }
   islandora.node_link_header_subscriber:
     class: Drupal\islandora\EventSubscriber\NodeLinkHeaderSubscriber
-    arguments: ['@entity_type.manager', '@entity_field.manager', '@access_manager', '@current_user', '@current_route_match', '@request_stack', '@islandora.utils']
+    arguments: ['@entity_type.manager', '@entity_field.manager', '@access_manager', '@current_user', '@current_route_match', '@request_stack', '@language_manager', '@islandora.utils']
     tags:
       - { name: event_subscriber }
   islandora.admin_view_route_subscriber:
