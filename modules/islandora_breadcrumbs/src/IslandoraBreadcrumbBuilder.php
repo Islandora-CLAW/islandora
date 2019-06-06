@@ -2,18 +2,33 @@
 
 namespace Drupal\islandora_breadcrumbs;
 
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Breadcrumb\Breadcrumb;
 use Drupal\Core\Breadcrumb\BreadcrumbBuilderInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 
 /**
- * Provides a breadcrumb builder for nodes using field_member_of.
+ * Provides breadcrumbs for nodes using a configured entity reference field.
  */
 class IslandoraBreadcrumbBuilder implements BreadcrumbBuilderInterface {
 
-  protected $depthLimit = 2;
-  protected $includeSelf = FALSE;
+  /**
+   * The configuration.
+   *
+   * @var \Drupal\Core\Config\ImmutableConfig
+   */
+  protected $config;
+
+  /**
+   * Constructs a breadcrumb builder.
+   *
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   *   The configuration factory.
+   */
+  public function __construct(ConfigFactoryInterface $config_factory) {
+    $this->config = $config_factory->get('islandora.breadcrumbs');
+  }
 
   /**
    * {@inheritdoc}
@@ -21,8 +36,8 @@ class IslandoraBreadcrumbBuilder implements BreadcrumbBuilderInterface {
   public function applies(RouteMatchInterface $attributes) {
     $parameters = $attributes->getParameters()->all();
     if (!empty($parameters['node'])) {
-      return ($parameters['node']->hasField('field_member_of') &&
-              !$parameters['node']->field_member_of->isEmpty());
+      return ($parameters['node']->hasField($this->config->get('referenceField')) &&
+              !$parameters['node']->get($this->config->get('referenceField'))->isEmpty());
     }
   }
 
@@ -31,21 +46,13 @@ class IslandoraBreadcrumbBuilder implements BreadcrumbBuilderInterface {
    */
   public function build(RouteMatchInterface $route_match) {
 
-    $config = \Drupal::config('islandora.breadcrumbs');
-    if (!empty($config->get('depthLimit'))) {
-      $this->depthLimit = $config->get('depthLimit');
-    }
-    if (!empty($config->get('includeSelf'))) {
-      $this->includeSelf = $config->get('includeSelf');
-    }
-
     $node = $route_match->getParameter('node');
     $breadcrumb = new Breadcrumb();
 
     $chain = [];
     $this->walkMembership($node, $chain);
 
-    if (!$this->includeSelf) {
+    if (!$this->config->get('includeSelf')) {
       array_pop($chain);
     }
     $breadcrumb->addCacheableDependency($node);
@@ -75,14 +82,14 @@ class IslandoraBreadcrumbBuilder implements BreadcrumbBuilderInterface {
     // Add this item onto the pile.
     array_unshift($crumbs, $entity);
 
-    if ($this->depthLimit > 0 && count($crumbs) >= $this->depthLimit) {
+    if ($this->config->get('maxDepth') > 0 && count($crumbs) >= $this->config->get('maxDepth')) {
       return;
     }
 
     // Find the next in the chain, if there are any.
-    if ($entity->hasField('field_member_of') &&
-      !$entity->get('field_member_of')->isEmpty()) {
-      $this->walkMembership($entity->get('field_member_of')->entity, $crumbs);
+    if ($entity->hasField($this->config->get('referenceField')) &&
+      !$entity->get($this->config->get('referenceField'))->isEmpty()) {
+      $this->walkMembership($entity->get($this->config->get('referenceField'))->entity, $crumbs);
     }
   }
 

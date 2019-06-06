@@ -1,0 +1,12 @@
+islandora.breadcrumbs:
+  type: config_object
+  mapping:
+    maxDepth:
+      type: integer
+      label: 'Max Depth'
+    includeSelf:
+      type: boolean
+      label: 'Include Self'
+    referenceField:
+      type: string
+      label: 'Reference Field'
