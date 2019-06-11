@@ -27,6 +27,7 @@ install:
 
 script:
   - $SCRIPT_DIR/travis_scripts.sh
+  - $SCRIPT_DIR/run-tests.sh "islandora"
   - $SCRIPT_DIR/run-tests.sh "islandora_breadcrumbs"
 
 notifications:
