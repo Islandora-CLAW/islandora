@@ -86,7 +86,7 @@ class NodeHadNamespace extends ConditionPluginBase implements ContainerFactoryPl
     $form['namespace'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Islandora 7.x Namespaces'),
-      '#description' => $this->t('Comma-delimited list of 7.x PID namespaces, including the trailing colon (e.g., "islandora:"). Assumes the presence of a field with the internal ID of field_pid.'),
+      '#description' => $this->t('Comma-delimited list of 7.x PID namespaces, including the trailing colon (e.g., "islandora:,ir:").'),
       '#default_value' => $this->configuration['namespace'],
       '#maxlength' => 256,
     ];
@@ -141,7 +141,8 @@ class NodeHadNamespace extends ConditionPluginBase implements ContainerFactoryPl
    */
   protected function evaluateEntity(EntityInterface $entity) {
     if ($entity->hasField('field_pid')) {
-      $pid_value = $entity->get('field_pid')->getValue();
+      $pid_field = $this->configuration['pid_field'];
+      $pid_value = $entity->get($pid_field)->getValue();
       $pid = $pid_value[0]['value'];
       $namespace = strtok($pid, ':') . ':';
       $registered_namespaces = explode(',', $this->configuration['namespace']);
