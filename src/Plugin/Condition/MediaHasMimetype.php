@@ -161,4 +161,14 @@ class MediaHasMimetype extends ConditionPluginBase implements ContainerFactoryPl
     }
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function defaultConfiguration() {
+    return array_merge(
+      ['mimetypes' => ''],
+      parent::defaultConfiguration()
+    );
+  }
+
 }
