@@ -90,12 +90,15 @@ class NodeHadNamespace extends ConditionPluginBase implements ContainerFactoryPl
       '#default_value' => $this->configuration['namespace'],
       '#maxlength' => 256,
     ];
+    $field_map = \Drupal::service('entity_field.manager')->getFieldMapByFieldType('string');
+    $options = array_keys($field_map['node']);
     $form['pid_field'] = [
-      '#type' => 'textfield',
-      '#title' => t('Field name that contains the PID'),
+      '#type' => 'select',
+      '#title' => t('Field that contains the PID'),
+      '#options' => $options,
       '#default_value' => $this->configuration['pid_field'],
       '#required' => TRUE,
-      '#description' => t("Machine field name that contains the PID. You normally do not need to change this value."),
+      '#description' => t("Machine field name that contains the PID."),
     ];
 
     return parent::buildConfigurationForm($form, $form_state);
@@ -112,6 +115,7 @@ class NodeHadNamespace extends ConditionPluginBase implements ContainerFactoryPl
         $this->configuration['namespace'] = $namespace;
       }
     }
+    $this->configuration['pid_field'] = $form_state->getValue('pid_field');
     parent::submitConfigurationForm($form, $form_state);
   }
 
