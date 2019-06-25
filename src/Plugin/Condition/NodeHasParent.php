@@ -96,7 +96,7 @@ class NodeHasParent extends ConditionPluginBase implements ContainerFactoryPlugi
       '#options' => $options,
       '#default_value' => $this->configuration['parent_reference_field'],
       '#required' => TRUE,
-      '#description' => t("Machine field name that contains references to parent node. You normally do not need to change this value."),
+      '#description' => t("Machine field name that contains references to parent node."),
     ];
 
     return parent::buildConfigurationForm($form, $form_state);
