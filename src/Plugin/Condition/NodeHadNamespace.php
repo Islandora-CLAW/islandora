@@ -91,7 +91,8 @@ class NodeHadNamespace extends ConditionPluginBase implements ContainerFactoryPl
       '#maxlength' => 256,
     ];
     $field_map = \Drupal::service('entity_field.manager')->getFieldMapByFieldType('string');
-    $options = array_keys($field_map['node']);
+    $node_fields = array_keys($field_map['node']);
+    $options = array_combine($node_fields, $node_fields);
     $form['pid_field'] = [
       '#type' => 'select',
       '#title' => t('Field that contains the PID'),

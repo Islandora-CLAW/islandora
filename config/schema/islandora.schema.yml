@@ -121,6 +121,16 @@ condition.plugin.content_entity_type:
       sequence:
         type: string
 
+condition.plugin.node_had_namespace:
+  type: condition.plugin
+  mapping:
+    namespace:
+      type: text
+      label: 'Namespace'
+    pid_field:
+      type: ignore
+      label: 'PID field'
+
 field.formatter.settings.islandora_image:
   type: mapping
   label: 'Image field display format settings'
