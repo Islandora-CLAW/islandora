@@ -89,7 +89,8 @@ class NodeHasParent extends ConditionPluginBase implements ContainerFactoryPlugi
       '#target_type' => 'node',
     ];
     $field_map = \Drupal::service('entity_field.manager')->getFieldMapByFieldType('entity_reference');
-    $options = array_keys($field_map['node']);
+    $node_fields = array_keys($field_map['node']);
+    $options = array_combine($node_fields, $node_fields);
     $form['parent_reference_field'] = [
       '#type' => 'select',
       '#title' => t('Field that contains reference to parents'),
