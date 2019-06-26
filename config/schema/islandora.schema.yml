@@ -113,6 +113,13 @@ condition.plugin.media_uses_filesystem:
       sequence:
         type: string
 
+condition.plugin.media_has_mimetype:
+  type: condition.plugin
+  mapping:
+    mimetypes:
+      type: text
+      label: 'Mime types'
+
 condition.plugin.content_entity_type:
   type: condition.plugin
   mapping:
