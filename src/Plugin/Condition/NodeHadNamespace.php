@@ -145,8 +145,8 @@ class NodeHadNamespace extends ConditionPluginBase implements ContainerFactoryPl
    *   TRUE if entity has the specified namespace, otherwise FALSE.
    */
   protected function evaluateEntity(EntityInterface $entity) {
-    if ($entity->hasField('field_pid')) {
-      $pid_field = $this->configuration['pid_field'];
+    $pid_field = $this->configuration['pid_field'];
+    if ($entity->hasField($pid_field)) {
       $pid_value = $entity->get($pid_field)->getValue();
       $pid = $pid_value[0]['value'];
       $namespace = strtok($pid, ':') . ':';
