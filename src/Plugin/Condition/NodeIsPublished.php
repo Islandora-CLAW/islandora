@@ -21,13 +21,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class NodeIsPublished extends ConditionPluginBase implements ContainerFactoryPluginInterface {
 
   /**
-   * Islandora utils.
-   *
-   * @var \Drupal\islandora\IslandoraUtils
-   */
-  protected $utils;
-
-  /**
    * Term storage.
    *
    * @var \Drupal\Core\Entity\EntityTypeManager
@@ -46,8 +39,6 @@ class NodeIsPublished extends ConditionPluginBase implements ContainerFactoryPlu
    *   The plugin_id for the plugin instance.
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
-   * @param \Drupal\islandora\IslandoraUtils $utils
-   *   Islandora utils.
    * @param \Drupal\Core\Entity\EntityTypeManager $entity_type_manager
    *   Entity type manager.
    */
@@ -55,11 +46,9 @@ class NodeIsPublished extends ConditionPluginBase implements ContainerFactoryPlu
     array $configuration,
     $plugin_id,
     $plugin_definition,
-    IslandoraUtils $utils,
     EntityTypeManager $entity_type_manager
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
-    $this->utils = $utils;
     $this->entityTypeManager = $entity_type_manager;
   }
 
@@ -71,7 +60,6 @@ class NodeIsPublished extends ConditionPluginBase implements ContainerFactoryPlu
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('islandora.utils'),
       $container->get('entity_type.manager')
     );
   }
