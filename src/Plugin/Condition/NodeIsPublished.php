@@ -1,3 +1,12 @@
+<?php
+
+namespace Drupal\islandora\Plugin\Condition;
+
+use Drupal\Core\Condition\ConditionPluginBase;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityTypeManager;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
