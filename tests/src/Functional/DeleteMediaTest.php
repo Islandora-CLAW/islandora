@@ -36,31 +36,6 @@ class DeleteMediaTest extends IslandoraFunctionalTestBase {
   }
 
   /**
-   * Tests the delete_media action.
-   *
-   * @covers \Drupal\islandora\Plugin\Action\DeleteMedia::execute
-   */
-  public function testDeleteMedia() {
-    $action = $this->container->get('entity_type.manager')->getStorage('action')->load('delete_media');
-
-    $mid = $this->media->id();
-    $fid = $this->file->id();
-
-    $action->execute([$this->media]);
-
-    // Attempt to reload the entities.
-    // Media should be gone but file should remain.
-    $this->assertTrue(
-      !$this->container->get('entity_type.manager')->getStorage('media')->load($mid),
-      "Media must be deleted after running action"
-    );
-    $this->assertTrue(
-      $this->container->get('entity_type.manager')->getStorage('file')->load($fid),
-      "File must remain after running action"
-    );
-  }
-
-  /**
    * Tests the delete_media_and_file action.
    *
    * @covers \Drupal\islandora\Plugin\Action\DeleteMediaAndFile::execute
