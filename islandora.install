@@ -43,10 +43,10 @@ function islandora_schema() {
 
 /**
  * Delete the 'delete_media' action we used to provide, if it exists.
- * The core 'media_delete_action' action should be used instead.
+ *
+ * Use the core 'media_delete_action' instead.
  */
 function islandora_update_8001(&$sandbox) {
-  // 
   $action = \Drupal::service('entity_type.manager')->getStorage('action')->load('delete_media');
   if ($action) {
     $action->delete();
