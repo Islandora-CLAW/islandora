@@ -38,7 +38,6 @@ class IslandoraBreadcrumbBuilder implements BreadcrumbBuilderInterface {
     // because getParameters sometimes returns a node and sometimes
     // returns a node object.
     $nid = $attributes->getRawParameters()->get('node');
-    \Drupal::logger('test')->notice('Route Node ID: ' . print_r($nid, TRUE));
     if (!empty($nid)) {
       $node = \Drupal::entityTypeManager()->getStorage('node')->load($nid);
       return (!empty($node) && $node->hasField($this->config->get('referenceField')) && !$node->get($this->config->get('referenceField'))->isEmpty());
