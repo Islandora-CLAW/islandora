@@ -34,9 +34,9 @@ class IslandoraBreadcrumbBuilder implements BreadcrumbBuilderInterface {
    * {@inheritdoc}
    */
   public function applies(RouteMatchInterface $attributes) {
-    // Using getRawParameters for consistency (always gives a string)
-    // because getParameters sometimes returns a node and sometimes
-    // returns a node object.
+    // Using getRawParameters for consistency (always gives a
+    // node ID string) because getParameters sometimes returns
+    // a node ID string and sometimes returns a node object.
     $nid = $attributes->getRawParameters()->get('node');
     if (!empty($nid)) {
       $node = \Drupal::entityTypeManager()->getStorage('node')->load($nid);
