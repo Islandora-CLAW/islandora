@@ -49,7 +49,8 @@ class IslandoraBreadcrumbBuilder implements BreadcrumbBuilderInterface {
    */
   public function build(RouteMatchInterface $route_match) {
 
-    $node = $route_match->getParameter('node');
+    $nid = $route_match->getRawParameters()->get('node');
+    $node = \Drupal::entityTypeManager()->getStorage('node')->load($nid);
     $breadcrumb = new Breadcrumb();
 
     $chain = [];
