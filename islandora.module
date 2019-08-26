@@ -60,6 +60,7 @@ function islandora_rdf_namespaces() {
     'pcdm' => 'http://pcdm.org/models#',
     'use' => 'http://pcdm.org/use#',
     'iana' => 'http://www.iana.org/assignments/relation/',
+    'premis' => 'http://www.loc.gov/premis/rdf/v1#',
   ];
 }
 

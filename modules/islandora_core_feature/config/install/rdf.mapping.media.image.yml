@@ -49,3 +49,6 @@ fieldMappings:
   field_height:
     properties:
       - 'ebucore:height'
+  field_file_size:
+    properties:
+      - 'premis:hasSize'
