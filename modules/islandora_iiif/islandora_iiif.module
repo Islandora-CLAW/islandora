@@ -1,0 +1,24 @@
+<?php
+
+/**
+ * @file
+ * Contains islandora_iiif.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function islandora_iiif_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the islandora_iiif module.
+    case 'help.page.islandora_iiif':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('IIIF support for Islandora') . '</p>';
+      return $output;
+
+    default:
+  }
+}
