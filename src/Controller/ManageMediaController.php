@@ -2,6 +2,10 @@
 
 namespace Drupal\islandora\Controller;
 
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Routing\RouteMatch;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\node\Entity\Node;
 use Drupal\node\NodeInterface;
 
 /**
@@ -14,6 +18,9 @@ class ManageMediaController extends ManageMembersController {
    *
    * @param \Drupal\node\NodeInterface $node
    *   Node you want to add a media to.
+   *
+   * @return array
+   *   Array of media types to add.
    */
   public function addToNodePage(NodeInterface $node) {
     return $this->generateTypeList(
@@ -24,6 +31,21 @@ class ManageMediaController extends ManageMembersController {
       $node,
       'field_media_of'
     );
+  }
+
+  public function access(AccountInterface $account, RouteMatch $route_match) {
+    if ($account->hasPermission('manage media')) {
+      if ($route_match->getParameters()->has('node')) {
+        $node = $route_match->getParameter('node');
+        if (! $node instanceof NodeInterface) {
+          $node = Node::load($node);
+        }
+        if ($node->hasField('field_content_model') || $node->hasField('field_member_of')) {
+          return AccessResult::allowed();
+        }
+      }
+    }
+    return AccessResult::forbidden();
   }
 
 }
