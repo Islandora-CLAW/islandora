@@ -20,6 +20,7 @@ class AdminViewsRouteSubscriber extends RouteSubscriberBase {
     }
     if ($route = $collection->get('view.manage_members.page_1')) {
       $route->setOption('_admin_route', 'TRUE');
+      $route->setRequirement('_custom_access', '\Drupal\islandora\Controller\ManageMediaController::access');
     }
   }
 
