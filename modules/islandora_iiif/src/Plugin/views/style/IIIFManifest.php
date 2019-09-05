@@ -7,6 +7,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\views\ResultRow;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Drupal\openseadragon\File\FileInformationInterface;
 use Drupal\openseadragon\ConfigInterface;
 
@@ -49,6 +50,13 @@ class IIIFManifest extends StylePluginBase {
   protected $serializer;
 
   /**
+   * The request service.
+   *
+   * @var \Symfony\Component\HttpFoundation\Request
+   */
+  protected $request;
+
+  /**
    * Openseadragon config.
    *
    * @var \Drupal\openseadragon\ConfigInterface
@@ -65,10 +73,11 @@ class IIIFManifest extends StylePluginBase {
   /**
    * {@inheritdoc}
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, SerializerInterface $serializer, ConfigInterface $openseadragon_config, FileInformationInterface $fileinfo_service) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, SerializerInterface $serializer, Request $request, ConfigInterface $openseadragon_config, FileInformationInterface $fileinfo_service) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
 
     $this->serializer = $serializer;
+    $this->request = $request;
     $this->openseadragonConfig = $openseadragon_config;
     $this->fileinfoService = $fileinfo_service;
   }
@@ -82,6 +91,7 @@ class IIIFManifest extends StylePluginBase {
       $plugin_id,
       $plugin_definition,
       $container->get('serializer'),
+      $container->get('request_stack')->getCurrentRequest(),
       $container->get('openseadragon.config'),
       $container->get('openseadragon.fileinfo')
     );
@@ -95,11 +105,31 @@ class IIIFManifest extends StylePluginBase {
     $viewer_settings = $this->openseadragonConfig->getSettings(TRUE);
     $iiif_address = $this->openseadragonConfig->getIiifAddress();
     if (!is_null($iiif_address) && !empty($iiif_address)) {
+      // Get the current URL being requested.
+      $request_url = $this->request->getSchemeAndHttpHost() . $this->request->getRequestUri();
+      // Strip off the last URI component to get the base ID of the URL.
+      // @todo assumming the view is a path like /node/1/manifest.json
+      $url_components = explode('/', $request_url);
+      array_pop($url_components);
+      $iiif_base_id = implode('/', $url_components);
+      // @see https://iiif.io/api/presentation/2.1/#manifest
+      $json += [
+        '@type' => 'sc:Manifest',
+        '@id' => $request_url,
+        '@context' => 'http://iiif.io/api/presentation/2/context.json',
+        // @see https://iiif.io/api/presentation/2.1/#sequence
+        'sequences' => [
+          '@context' => 'http://iiif.io/api/presentation/2/context.json',
+          '@id' => $iiif_base_id . '/sequence/normal',
+          '@type' => 'sc:Sequence',
+        ],
+      ];
       // For each row in the View result.
       foreach ($this->view->result as $row) {
         // Add the IIIF URL to the image to print out as JSON.
-        foreach ($this->getTileSourceFromRow($row, $iiif_address) as $tile_source) {
-          $json[] = $tile_source;
+        $canvases = $this->getTileSourceFromRow($row, $iiif_address, $iiif_base_id);
+        foreach ($canvases as $tile_source) {
+          $json['sequences'][0]['canvases'][] = $tile_source;
         }
       }
     }
@@ -117,12 +147,15 @@ class IIIFManifest extends StylePluginBase {
    *   Result row.
    * @param string $iiif_address
    *   The URL to the IIIF server endpoint.
+   * @param string $iiif_base_id
+   *   The URL for the request, minus the last part of the URL,
+   *   which is likely "manifest".
    *
    * @return array
    *   List of IIIF URLs to display in the Openseadragon viewer.
    */
-  protected function getTileSourceFromRow(ResultRow $row, $iiif_address) {
-    $tile_sources = [];
+  protected function getTileSourceFromRow(ResultRow $row, $iiif_address, $iiif_base_id) {
+    $canvases = [];
     $viewsField = $this->view->field[$this->options['iiif_tile_field']];
     $entity = $viewsField->getEntity($row);
 
@@ -131,15 +164,42 @@ class IIIFManifest extends StylePluginBase {
       /** @var \Drupal\Core\Field\FieldItemListInterface $images */
       $images = $entity->{$viewsField->definition['field_name']};
       foreach ($images as $image) {
+        // Create the IIIF URL for this file
+        // Visiting $iiif_url will resolve to the info.json for the image.
         $file = $image->entity;
         $resource = $this->fileinfoService->getFileData($file);
+        $iiif_url = rtrim($iiif_address, '/') . '/' . urlencode($resource['full_path']);
 
-        // Create the IIIF URL.
-        $tile_sources[] = rtrim($iiif_address, '/') . '/' . urlencode($resource['full_path']);
+        // Create the necessary ID's for the canvas and annotation.
+        $canvas_id = $iiif_base_id . '/canvas/' . $entity->id();
+        $annotation_id = $iiif_base_id . '/annotation/' . $entity->id();
+
+        $canvases[] = [
+          // @see https://iiif.io/api/presentation/2.1/#canvas
+          '@id' => $canvas_id,
+          '@type' => 'sc:Canvas',
+          'label' => $entity->label(),
+          // @see https://iiif.io/api/presentation/2.1/#image-resources
+          'images' => [[
+            '@id' => $annotation_id,
+            "@type" => "oa:Annotation",
+            'motivation' => 'sc:painting',
+            'resource' => [
+              '@id' => $iiif_url . '/full/full/0/default.jpg',
+              'service' => [
+                '@id' => $iiif_url,
+                '@context' => 'http://iiif.io/api/image/2/context.json',
+                'profile' => 'http://iiif.io/api/image/2/profiles/level2.json',
+              ],
+            ],
+            'on' => $canvas_id,
+          ],
+          ],
+        ];
       }
     }
 
-    return $tile_sources;
+    return $canvases;
   }
 
   /**
