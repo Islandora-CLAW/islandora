@@ -34,15 +34,13 @@ class ManageMediaController extends ManageMembersController {
   }
 
   public function access(AccountInterface $account, RouteMatch $route_match) {
-    if ($account->hasPermission('manage media')) {
-      if ($route_match->getParameters()->has('node')) {
-        $node = $route_match->getParameter('node');
-        if (! $node instanceof NodeInterface) {
-          $node = Node::load($node);
-        }
-        if ($node->hasField('field_content_model') || $node->hasField('field_member_of')) {
-          return AccessResult::allowed();
-        }
+    if ($route_match->getParameters()->has('node')) {
+      $node = $route_match->getParameter('node');
+      if (! $node instanceof NodeInterface) {
+        $node = Node::load($node);
+      }
+      if ($node->hasField('field_content_model') || $node->hasField('field_member_of')) {
+        return AccessResult::allowed();
       }
     }
     return AccessResult::forbidden();
