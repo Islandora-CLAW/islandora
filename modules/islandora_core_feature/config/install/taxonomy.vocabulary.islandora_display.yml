@@ -4,5 +4,4 @@ dependencies: {  }
 name: 'Islandora Display'
 vid: islandora_display
 description: 'Terms used to alter how a repository item is viewed. ie. basic image vs large image'
-hierarchy: 0
 weight: 0
