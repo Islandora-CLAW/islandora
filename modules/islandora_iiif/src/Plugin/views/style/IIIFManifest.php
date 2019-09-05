@@ -6,7 +6,6 @@ use Drupal\views\Plugin\views\style\StylePluginBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\views\ResultRow;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Url;
 use Symfony\Component\Serializer\SerializerInterface;
 use Drupal\openseadragon\File\FileInformationInterface;
 use Drupal\openseadragon\ConfigInterface;
@@ -96,12 +95,10 @@ class IIIFManifest extends StylePluginBase {
     $viewer_settings = $this->openseadragonConfig->getSettings(TRUE);
     $iiif_address = $this->openseadragonConfig->getIiifAddress();
     if (!is_null($iiif_address) && !empty($iiif_address)) {
-      // Get Drupal's base URL to remove from IIIF image URL.
-      $base_url = Url::fromRoute('<front>', [], ['absolute' => TRUE])->toString();
       // For each row in the View result.
       foreach ($this->view->result as $row) {
         // Add the IIIF URL to the image to print out as JSON.
-        foreach ($this->getTileSourceFromRow($row, $base_url, $iiif_address) as $tile_source) {
+        foreach ($this->getTileSourceFromRow($row, $iiif_address) as $tile_source) {
           $json[] = $tile_source;
         }
       }
@@ -118,15 +115,13 @@ class IIIFManifest extends StylePluginBase {
    *
    * @param \Drupal\views\ResultRow $row
    *   Result row.
-   * @param string $base_url
-   *   The URL to the frontpage of the Drupal site.
    * @param string $iiif_address
    *   The URL to the IIIF server endpoint.
    *
    * @return array
    *   List of IIIF URLs to display in the Openseadragon viewer.
    */
-  protected function getTileSourceFromRow(ResultRow $row, $base_url, $iiif_address) {
+  protected function getTileSourceFromRow(ResultRow $row, $iiif_address) {
     $tile_sources = [];
     $viewsField = $this->view->field[$this->options['iiif_tile_field']];
     $entity = $viewsField->getEntity($row);
@@ -139,12 +134,8 @@ class IIIFManifest extends StylePluginBase {
         $file = $image->entity;
         $resource = $this->fileinfoService->getFileData($file);
 
-        // Remove $base_url from full_path.
-        $path = $resource['full_path'];
-        $path = str_replace($base_url, '', $path);
-
         // Create the IIIF URL.
-        $tile_sources[] = rtrim($iiif_address, '/') . '/' . urlencode($path);
+        $tile_sources[] = rtrim($iiif_address, '/') . '/' . urlencode($resource['full_path']);
       }
     }
 
