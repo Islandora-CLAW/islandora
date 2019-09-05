@@ -7,13 +7,12 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\views\ResultRow;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Url;
-use Drupal\file\Entity\File;
 use Symfony\Component\Serializer\SerializerInterface;
 use Drupal\openseadragon\File\FileInformationInterface;
 use Drupal\openseadragon\ConfigInterface;
 
 /**
- * Provide serializer format for IIIF Manifest
+ * Provide serializer format for IIIF Manifest.
  *
  * @ingroup views_style_plugins
  *
@@ -38,6 +37,8 @@ class IIIFManifest extends StylePluginBase {
 
   /**
    * The allowed formats for this serializer. Default to only JSON.
+   *
+   * @var array
    */
   protected $formats = ['json'];
 
@@ -56,7 +57,7 @@ class IIIFManifest extends StylePluginBase {
   protected $openseadragonConfig = NULL;
 
   /**
-   * Openseadragon File Info service
+   * Openseadragon File Info service.
    *
    * @var \Drupal\openseadragon\File\FileInformationInterface
    */
@@ -67,7 +68,6 @@ class IIIFManifest extends StylePluginBase {
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition, SerializerInterface $serializer, ConfigInterface $openseadragon_config, FileInformationInterface $fileinfo_service) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
-
 
     $this->serializer = $serializer;
     $this->openseadragonConfig = $openseadragon_config;
@@ -96,11 +96,11 @@ class IIIFManifest extends StylePluginBase {
     $viewer_settings = $this->openseadragonConfig->getSettings(TRUE);
     $iiif_address = $this->openseadragonConfig->getIiifAddress();
     if (!is_null($iiif_address) && !empty($iiif_address)) {
-      // get Drupal's base URL to remove from IIIF image URL
+      // Get Drupal's base URL to remove from IIIF image URL.
       $base_url = Url::fromRoute('<front>', [], ['absolute' => TRUE])->toString();
-      // for each row in the View result
+      // For each row in the View result.
       foreach ($this->view->result as $row) {
-        // add the IIIF URL to the image to print out as JSON
+        // Add the IIIF URL to the image to print out as JSON.
         foreach ($this->getTileSourceFromRow($row, $base_url, $iiif_address) as $tile_source) {
           $json[] = $tile_source;
         }
@@ -118,6 +118,10 @@ class IIIFManifest extends StylePluginBase {
    *
    * @param \Drupal\views\ResultRow $row
    *   Result row.
+   * @param string $base_url
+   *   The URL to the frontpage of the Drupal site.
+   * @param string $iiif_address
+   *   The URL to the IIIF server endpoint.
    *
    * @return array
    *   List of IIIF URLs to display in the Openseadragon viewer.
@@ -135,11 +139,11 @@ class IIIFManifest extends StylePluginBase {
         $file = $image->entity;
         $resource = $this->fileinfoService->getFileData($file);
 
-        // remove $base_url from full_path
+        // Remove $base_url from full_path.
         $path = $resource['full_path'];
         $path = str_replace($base_url, '', $path);
 
-        // create the IIIF URL
+        // Create the IIIF URL.
         $tile_sources[] = rtrim($iiif_address, '/') . '/' . urlencode($path);
       }
     }
@@ -174,9 +178,10 @@ class IIIFManifest extends StylePluginBase {
       }
     }
 
-    // if no fields to choose from, add an error message indicating such
+    // If no fields to choose from, add an error message indicating such.
     if (count($field_options) == 0) {
-      drupal_set_message($this->t('No image or file fields were found in the View. You will need to add a field to this View'), 'error');
+      drupal_set_message($this->t('No image or file fields were found in the View.
+        You will need to add a field to this View'), 'error');
     }
 
     $form['iiif_tile_field'] = [
@@ -185,14 +190,21 @@ class IIIFManifest extends StylePluginBase {
       '#default_value' => $this->options['iiif_tile_field'],
       '#description' => $this->t("The source of image for each entity."),
       '#options' => $field_options,
-      // only make the form element required if we have more than one option to choose from
-      // otherwise could lock up the form when setting up a View
+      // Only make the form element required if
+      // we have more than one option to choose from
+      // otherwise could lock up the form when setting up a View.
       '#required' => count($field_options) > 0,
     ];
   }
 
+  /**
+   * Returns an array of format options.
+   *
+   * @return string[]
+   *   An array of the allowed serializer formats. In this case just JSON.
+   */
   public function getFormats() {
-    return ['json'];
+    return ['json' => 'json'];
   }
 
 }
