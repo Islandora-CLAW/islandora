@@ -12,3 +12,6 @@ islandora_models,"Collection","A collection is an aggregation of items",http://p
 islandora_models,"Image","A visual representation other than text, including all types of moving image and still image",http://purl.org/coar/resource_type/c_c513
 islandora_models,"Video","A recording of visual images, usually in motion and with sound accompaniment",http://purl.org/coar/resource_type/c_12ce
 islandora_models,"Digital Document","An electronic file or document.",https://schema.org/DigitalDocument
+islandora_models,"Paged Content","An Electronic Book, object with pages",https://schema.org/Book
+islandora_models,"Page","A page in an Electronic Paged Content Object",http://id.loc.gov/ontologies/bibframe/part
+islandora_models,"Publication Issue","A part of a successively published publication such as a periodical or publication volume, often numbered, usually containing a grouping of works such as articles.",https://schema.org/PublicationIssue
