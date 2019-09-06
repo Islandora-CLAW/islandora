@@ -4,7 +4,6 @@ namespace Drupal\islandora\Controller;
 
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Routing\RouteMatch;
-use Drupal\Core\Session\AccountInterface;
 use Drupal\node\Entity\Node;
 use Drupal\node\NodeInterface;
 
@@ -33,13 +32,22 @@ class ManageMediaController extends ManageMembersController {
     );
   }
 
+  /**
+   * Check if the object being displayed "is Islandora".
+   *
+   * @param \Drupal\Core\Routing\RouteMatch $route_match
+   *   The current routing match.
+   *
+   * @return \Drupal\Core\Access\AccessResultAllowed|\Drupal\Core\Access\AccessResultForbidden
+   *   Whether we can or can't show the "thing".
+   */
   public function access(RouteMatch $route_match) {
     if ($route_match->getParameters()->has('node')) {
       $node = $route_match->getParameter('node');
       if (! $node instanceof NodeInterface) {
         $node = Node::load($node);
       }
-      if ($node->hasField('field_model') || $node->hasField('field_member_of')) {
+      if ($node->hasField('field_model') && $node->hasField('field_member_of')) {
         return AccessResult::allowed();
       }
     }
