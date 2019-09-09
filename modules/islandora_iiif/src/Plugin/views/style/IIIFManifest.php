@@ -102,7 +102,6 @@ class IIIFManifest extends StylePluginBase {
    */
   public function render() {
     $json = [];
-    $viewer_settings = $this->openseadragonConfig->getSettings(TRUE);
     $iiif_address = $this->openseadragonConfig->getIiifAddress();
     if (!is_null($iiif_address) && !empty($iiif_address)) {
       // Get the current URL being requested.
