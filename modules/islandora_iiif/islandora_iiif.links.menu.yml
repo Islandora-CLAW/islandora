@@ -1,0 +1,6 @@
+islandora_iiif.islandora_iiif_config_form:
+  title: 'IIIF Settings'
+  route_name: islandora_iiif.islandora_iiif_config_form
+  description: 'Configure Islandora IIIF settings'
+  parent: system.admin_config_islandora
+  weight: 99

@@ -1,0 +1,9 @@
+islandora_iiif.islandora_iiif_config_form:
+  path: '/admin/config/islandora/iiif'
+  defaults:
+    _form: '\Drupal\islandora_iiif\Form\IslandoraIIIFConfigForm'
+    _title: 'IslandoraIIIFConfigForm'
+  requirements:
+    _permission: 'access administration pages'
+  options:
+    _admin_route: TRUE

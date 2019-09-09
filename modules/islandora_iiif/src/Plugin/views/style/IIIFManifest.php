@@ -8,8 +8,7 @@ use Drupal\views\ResultRow;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Drupal\openseadragon\File\FileInformationInterface;
-use Drupal\openseadragon\ConfigInterface;
+use Drupal\Core\Config\ImmutableConfig;
 
 /**
  * Provide serializer format for IIIF Manifest.
@@ -57,29 +56,21 @@ class IIIFManifest extends StylePluginBase {
   protected $request;
 
   /**
-   * Openseadragon config.
+   * This module's config.
    *
-   * @var \Drupal\openseadragon\ConfigInterface
+   * @var \Drupal\Core\Config\ImmutableConfig
    */
-  protected $openseadragonConfig = NULL;
-
-  /**
-   * Openseadragon File Info service.
-   *
-   * @var \Drupal\openseadragon\File\FileInformationInterface
-   */
-  protected $fileinfoService = NULL;
+  protected $iiifConfig;
 
   /**
    * {@inheritdoc}
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, SerializerInterface $serializer, Request $request, ConfigInterface $openseadragon_config, FileInformationInterface $fileinfo_service) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, SerializerInterface $serializer, Request $request, ImmutableConfig $iiif_config) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
 
     $this->serializer = $serializer;
     $this->request = $request;
-    $this->openseadragonConfig = $openseadragon_config;
-    $this->fileinfoService = $fileinfo_service;
+    $this->iiifConfig = $iiif_config;
   }
 
   /**
@@ -92,8 +83,7 @@ class IIIFManifest extends StylePluginBase {
       $plugin_definition,
       $container->get('serializer'),
       $container->get('request_stack')->getCurrentRequest(),
-      $container->get('openseadragon.config'),
-      $container->get('openseadragon.fileinfo')
+      $container->get('config.factory')->get('islandora_iiif.settings')
     );
   }
 
@@ -102,7 +92,7 @@ class IIIFManifest extends StylePluginBase {
    */
   public function render() {
     $json = [];
-    $iiif_address = $this->openseadragonConfig->getIiifAddress();
+    $iiif_address = $this->iiifConfig->get('iiif_server');
     if (!is_null($iiif_address) && !empty($iiif_address)) {
       // Get the current URL being requested.
       $request_url = $this->request->getSchemeAndHttpHost() . $this->request->getRequestUri();
@@ -165,9 +155,8 @@ class IIIFManifest extends StylePluginBase {
       foreach ($images as $image) {
         // Create the IIIF URL for this file
         // Visiting $iiif_url will resolve to the info.json for the image.
-        $file = $image->entity;
-        $resource = $this->fileinfoService->getFileData($file);
-        $iiif_url = rtrim($iiif_address, '/') . '/' . urlencode($resource['full_path']);
+        $file_url = $image->entity->url();
+        $iiif_url = rtrim($iiif_address, '/') . '/' . urlencode($file_url);
 
         // Create the necessary ID's for the canvas and annotation.
         $canvas_id = $iiif_base_id . '/canvas/' . $entity->id();
