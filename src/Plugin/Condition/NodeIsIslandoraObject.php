@@ -26,7 +26,7 @@ class NodeIsIslandoraObject extends ConditionPluginBase implements ContainerFact
     return new static(
       $configuration,
       $plugin_id,
-      $plugin_definition,
+      $plugin_definition
     );
   }
 
