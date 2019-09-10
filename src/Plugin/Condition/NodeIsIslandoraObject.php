@@ -27,8 +27,6 @@ class NodeIsIslandoraObject extends ConditionPluginBase implements ContainerFact
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('islandora.utils'),
-      $container->get('entity_type.manager')
     );
   }
 
