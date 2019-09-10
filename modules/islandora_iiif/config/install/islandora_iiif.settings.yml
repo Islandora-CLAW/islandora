@@ -2,6 +2,6 @@ islandora_iiif.settings:
   type: config_object
   label: 'Islandora IIIF Settings'
   mapping:
-    islandora_iiif:
+    iiif_server:
       type: string
       label: 'IIIF Server Url'
