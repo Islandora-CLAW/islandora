@@ -210,9 +210,27 @@ class IIIFManifest extends StylePluginBase {
     $field_options = [];
 
     $fields = $this->displayHandler->getHandlers('field');
+    $islandora_default_file_fields = [
+      'field_media_file',
+      'field_media_image',
+    ];
+    $file_views_field_formatters = [
+      // Image formatters.
+      'image', 'image_url',
+      // File formatters.
+      'file_default', 'file_url_plain',
+    ];
     /** @var \Drupal\views\Plugin\views\field\FieldPluginBase[] $fields */
     foreach ($fields as $field_name => $field) {
-      if (!empty($field->options['type']) && in_array($field->options['type'], ['image', 'file'])) {
+      // If this is a known Islandora file/image field
+      // OR it is another/custom field add it as an available option.
+      // @todo find better way to identify file fields
+      // Currently $field->options['type'] is storing the "formatter" of the
+      // file/image so there are a lot of possibilities.
+      // The default formatters are 'image' and 'file_default'
+      // so this approach should catch most...
+      if (in_array($field_name, $islandora_default_file_fields) ||
+        (!empty($field->options['type']) && in_array($field->options['type'], $file_views_field_formatters))) {
         $field_options[$field_name] = $field->adminLabel();
       }
     }
