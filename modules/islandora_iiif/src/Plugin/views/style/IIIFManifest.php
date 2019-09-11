@@ -145,45 +145,47 @@ class IIIFManifest extends StylePluginBase {
    */
   protected function getTileSourceFromRow(ResultRow $row, $iiif_address, $iiif_base_id) {
     $canvases = [];
-    $viewsField = $this->view->field[$this->options['iiif_tile_field']];
-    $entity = $viewsField->getEntity($row);
+    foreach ($this->options['iiif_tile_field'] as $iiif_tile_field) {
+      $viewsField = $this->view->field[$iiif_tile_field];
+      $entity = $viewsField->getEntity($row);
 
-    if (isset($entity->{$viewsField->definition['field_name']})) {
+      if (isset($entity->{$viewsField->definition['field_name']})) {
 
-      /** @var \Drupal\Core\Field\FieldItemListInterface $images */
-      $images = $entity->{$viewsField->definition['field_name']};
-      foreach ($images as $image) {
-        // Create the IIIF URL for this file
-        // Visiting $iiif_url will resolve to the info.json for the image.
-        $file_url = $image->entity->url();
-        $iiif_url = rtrim($iiif_address, '/') . '/' . urlencode($file_url);
+        /** @var \Drupal\Core\Field\FieldItemListInterface $images */
+        $images = $entity->{$viewsField->definition['field_name']};
+        foreach ($images as $image) {
+          // Create the IIIF URL for this file
+          // Visiting $iiif_url will resolve to the info.json for the image.
+          $file_url = $image->entity->url();
+          $iiif_url = rtrim($iiif_address, '/') . '/' . urlencode($file_url);
 
-        // Create the necessary ID's for the canvas and annotation.
-        $canvas_id = $iiif_base_id . '/canvas/' . $entity->id();
-        $annotation_id = $iiif_base_id . '/annotation/' . $entity->id();
+          // Create the necessary ID's for the canvas and annotation.
+          $canvas_id = $iiif_base_id . '/canvas/' . $entity->id();
+          $annotation_id = $iiif_base_id . '/annotation/' . $entity->id();
 
-        $canvases[] = [
-          // @see https://iiif.io/api/presentation/2.1/#canvas
-          '@id' => $canvas_id,
-          '@type' => 'sc:Canvas',
-          'label' => $entity->label(),
-          // @see https://iiif.io/api/presentation/2.1/#image-resources
-          'images' => [[
-            '@id' => $annotation_id,
-            "@type" => "oa:Annotation",
-            'motivation' => 'sc:painting',
-            'resource' => [
-              '@id' => $iiif_url . '/full/full/0/default.jpg',
-              'service' => [
-                '@id' => $iiif_url,
-                '@context' => 'http://iiif.io/api/image/2/context.json',
-                'profile' => 'http://iiif.io/api/image/2/profiles/level2.json',
+          $canvases[] = [
+            // @see https://iiif.io/api/presentation/2.1/#canvas
+            '@id' => $canvas_id,
+            '@type' => 'sc:Canvas',
+            'label' => $entity->label(),
+            // @see https://iiif.io/api/presentation/2.1/#image-resources
+            'images' => [[
+              '@id' => $annotation_id,
+              "@type" => "oa:Annotation",
+              'motivation' => 'sc:painting',
+              'resource' => [
+                '@id' => $iiif_url . '/full/full/0/default.jpg',
+                'service' => [
+                  '@id' => $iiif_url,
+                  '@context' => 'http://iiif.io/api/image/2/context.json',
+                  'profile' => 'http://iiif.io/api/image/2/profiles/level2.json',
+                ],
               ],
+              'on' => $canvas_id,
             ],
-            'on' => $canvas_id,
-          ],
-          ],
-        ];
+            ],
+          ];
+        }
       }
     }
 
@@ -242,8 +244,8 @@ class IIIFManifest extends StylePluginBase {
     }
 
     $form['iiif_tile_field'] = [
-      '#title' => $this->t('Tile source field'),
-      '#type' => 'select',
+      '#title' => $this->t('Tile source field(s)'),
+      '#type' => 'checkboxes',
       '#default_value' => $this->options['iiif_tile_field'],
       '#description' => $this->t("The source of image for each entity."),
       '#options' => $field_options,
