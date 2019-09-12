@@ -10,6 +10,9 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Drupal\Core\Config\ImmutableConfig;
 use Drupal\Core\File\FileSystem;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\ServerException;
 
 /**
  * Provide serializer format for IIIF Manifest.
@@ -73,13 +76,14 @@ class IIIFManifest extends StylePluginBase {
   /**
    * {@inheritdoc}
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, SerializerInterface $serializer, Request $request, ImmutableConfig $iiif_config, FileSystem $file_system) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, SerializerInterface $serializer, Request $request, ImmutableConfig $iiif_config, FileSystem $file_system, Client $http_client) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
 
     $this->serializer = $serializer;
     $this->request = $request;
     $this->iiifConfig = $iiif_config;
     $this->fileSystem = $file_system;
+    $this->httpClient = $http_client;
   }
 
   /**
@@ -93,7 +97,8 @@ class IIIFManifest extends StylePluginBase {
       $container->get('serializer'),
       $container->get('request_stack')->getCurrentRequest(),
       $container->get('config.factory')->get('islandora_iiif.settings'),
-      $container->get('file_system')
+      $container->get('file_system'),
+      $container->get('http_client')
     );
   }
 
@@ -172,29 +177,45 @@ class IIIFManifest extends StylePluginBase {
           // Visiting $iiif_url will resolve to the info.json for the image.
           $file_url = $image->entity->url();
 
-          // Get the image properties so we know the image width/height.
-          $properties = $image->getProperties();
-          $width = isset($properties['width']) ? $properties['width'] : 0;
-          $height = isset($properties['height']) ? $properties['height'] : 0;
-          $mime_type = $image->entity->getMimeType();
-
-          // If this is a TIFF AND we don't know the width/height
-          // see if we can get the image size via PHP's core function.
-          if ($mime_type === 'image/tiff' && !$width || !$height) {
-            $uri = $image->entity->getFileUri();
-            $path = $this->fileSystem->realpath($uri);
-            $image_size = getimagesize($path);
-            if ($image_size) {
-              $width = $image_size[0];
-              $height = $image_size[1];
-            }
-          }
-
           $iiif_url = rtrim($iiif_address, '/') . '/' . urlencode($file_url);
 
           // Create the necessary ID's for the canvas and annotation.
           $canvas_id = $iiif_base_id . '/canvas/' . $entity->id();
           $annotation_id = $iiif_base_id . '/annotation/' . $entity->id();
+
+          // Try to fetch the IIIF metadata for the image.
+          try {
+            $info_json = $this->httpClient->get($iiif_url)->getBody();
+            $resource = json_decode($info_json, TRUE);
+            $width = $resource['width'];
+            $height = $resource['height'];
+          }
+          catch (ClientException $e) {
+          }
+          catch (ServerException $e) {
+          }
+
+          // If we couldn't get the info.json from IIIF
+          // try seeing if we can get it from Drupal.
+          if (empty($width) || empty($height)) {
+            // Get the image properties so we know the image width/height.
+            $properties = $image->getProperties();
+            $width = isset($properties['width']) ? $properties['width'] : 0;
+            $height = isset($properties['height']) ? $properties['height'] : 0;
+            $mime_type = $image->entity->getMimeType();
+
+            // If this is a TIFF AND we don't know the width/height
+            // see if we can get the image size via PHP's core function.
+            if ($mime_type === 'image/tiff' && !$width || !$height) {
+              $uri = $image->entity->getFileUri();
+              $path = $this->fileSystem->realpath($uri);
+              $image_size = getimagesize($path);
+              if ($image_size) {
+                $width = $image_size[0];
+                $height = $image_size[1];
+              }
+            }
+          }
 
           $canvases[] = [
             // @see https://iiif.io/api/presentation/2.1/#canvas
