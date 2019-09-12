@@ -9,6 +9,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Drupal\Core\Config\ImmutableConfig;
+use Drupal\Core\File\FileSystem;
 
 /**
  * Provide serializer format for IIIF Manifest.
@@ -63,14 +64,22 @@ class IIIFManifest extends StylePluginBase {
   protected $iiifConfig;
 
   /**
+   * The Drupal Filesystem.
+   *
+   * @var \Drupal\Core\File\FileSystem
+   */
+  protected $fileSystem;
+
+  /**
    * {@inheritdoc}
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, SerializerInterface $serializer, Request $request, ImmutableConfig $iiif_config) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, SerializerInterface $serializer, Request $request, ImmutableConfig $iiif_config, FileSystem $file_system) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
 
     $this->serializer = $serializer;
     $this->request = $request;
     $this->iiifConfig = $iiif_config;
+    $this->fileSystem = $file_system;
   }
 
   /**
@@ -83,7 +92,8 @@ class IIIFManifest extends StylePluginBase {
       $plugin_definition,
       $container->get('serializer'),
       $container->get('request_stack')->getCurrentRequest(),
-      $container->get('config.factory')->get('islandora_iiif.settings')
+      $container->get('config.factory')->get('islandora_iiif.settings'),
+      $container->get('file_system')
     );
   }
 
@@ -105,12 +115,16 @@ class IIIFManifest extends StylePluginBase {
       $json += [
         '@type' => 'sc:Manifest',
         '@id' => $request_url,
+        // If the View has a title, set the View title as the manifest label.
+        'label' => $this->view->getTitle() ?: 'IIIF Manifest',
         '@context' => 'http://iiif.io/api/presentation/2/context.json',
         // @see https://iiif.io/api/presentation/2.1/#sequence
         'sequences' => [
-          '@context' => 'http://iiif.io/api/presentation/2/context.json',
-          '@id' => $iiif_base_id . '/sequence/normal',
-          '@type' => 'sc:Sequence',
+          [
+            '@context' => 'http://iiif.io/api/presentation/2/context.json',
+            '@id' => $iiif_base_id . '/sequence/normal',
+            '@type' => 'sc:Sequence',
+          ],
         ],
       ];
       // For each row in the View result.
@@ -157,6 +171,25 @@ class IIIFManifest extends StylePluginBase {
           // Create the IIIF URL for this file
           // Visiting $iiif_url will resolve to the info.json for the image.
           $file_url = $image->entity->url();
+
+          // Get the image properties so we know the image width/height.
+          $properties = $image->getProperties();
+          $width = isset($properties['width']) ? $properties['width'] : 0;
+          $height = isset($properties['height']) ? $properties['height'] : 0;
+          $mime_type = $image->entity->getMimeType();
+
+          // If this is a TIFF AND we don't know the width/height
+          // see if we can get the image size via PHP's core function.
+          if ($mime_type === 'image/tiff' && !$width || !$height) {
+            $uri = $image->entity->getFileUri();
+            $path = $this->fileSystem->realpath($uri);
+            $image_size = getimagesize($path);
+            if ($image_size) {
+              $width = $image_size[0];
+              $height = $image_size[1];
+            }
+          }
+
           $iiif_url = rtrim($iiif_address, '/') . '/' . urlencode($file_url);
 
           // Create the necessary ID's for the canvas and annotation.
@@ -167,22 +200,29 @@ class IIIFManifest extends StylePluginBase {
             // @see https://iiif.io/api/presentation/2.1/#canvas
             '@id' => $canvas_id,
             '@type' => 'sc:Canvas',
-            'label' => $entity->label(),
+            'label' => $image->entity->label(),
+            'height' => $height,
+            'width' => $width,
             // @see https://iiif.io/api/presentation/2.1/#image-resources
-            'images' => [[
-              '@id' => $annotation_id,
-              "@type" => "oa:Annotation",
-              'motivation' => 'sc:painting',
-              'resource' => [
-                '@id' => $iiif_url . '/full/full/0/default.jpg',
-                'service' => [
-                  '@id' => $iiif_url,
-                  '@context' => 'http://iiif.io/api/image/2/context.json',
-                  'profile' => 'http://iiif.io/api/image/2/profiles/level2.json',
+            'images' => [
+              [
+                '@id' => $annotation_id,
+                "@type" => "oa:Annotation",
+                'motivation' => 'sc:painting',
+                'resource' => [
+                  '@id' => $iiif_url . '/full/full/0/default.jpg',
+                  "@type" => "dctypes:Image",
+                  'format' => $mime_type,
+                  'height' => $height,
+                  'width' => $width,
+                  'service' => [
+                    '@id' => $iiif_url,
+                    '@context' => 'http://iiif.io/api/image/2/context.json',
+                    'profile' => 'http://iiif.io/api/image/2/profiles/level2.json',
+                  ],
                 ],
+                'on' => $canvas_id,
               ],
-              'on' => $canvas_id,
-            ],
             ],
           ];
         }
