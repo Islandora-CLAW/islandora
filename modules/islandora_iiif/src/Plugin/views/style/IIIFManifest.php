@@ -176,7 +176,7 @@ class IIIFManifest extends StylePluginBase {
           // Create the IIIF URL for this file
           // Visiting $iiif_url will resolve to the info.json for the image.
           $file_url = $image->entity->url();
-
+          $mime_type = $image->entity->getMimeType();
           $iiif_url = rtrim($iiif_address, '/') . '/' . urlencode($file_url);
 
           // Create the necessary ID's for the canvas and annotation.
@@ -202,7 +202,6 @@ class IIIFManifest extends StylePluginBase {
             $properties = $image->getProperties();
             $width = isset($properties['width']) ? $properties['width'] : 0;
             $height = isset($properties['height']) ? $properties['height'] : 0;
-            $mime_type = $image->entity->getMimeType();
 
             // If this is a TIFF AND we don't know the width/height
             // see if we can get the image size via PHP's core function.
