@@ -3,7 +3,7 @@ status: true
 dependencies: {  }
 id: extracted_text
 label: 'Extracted Text'
-description: 'Test extracted from Images or PDFs'
+description: 'Text extracted from Images or PDFs'
 source: file
 queue_thumbnail_downloads: false
 new_revision: false
