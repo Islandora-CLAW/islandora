@@ -83,11 +83,12 @@ class NodeHasTerm extends ConditionPluginBase implements ContainerFactoryPluginI
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
+    $default = [];
     if (isset($this->configuration['uri']) && !empty($this->configuration['uri'])) {
-      $default = $this->utils->getTermForUri($this->configuration['uri']);
-    }
-    else {
-      $default = NULL;
+      $uris = explode(',', $this->configuration['uri']);
+      foreach ($uris as $uri) {
+        $default[] = $this->utils->getTermForUri($uri);
+      }
     }
 
     $form['term'] = [
@@ -96,6 +97,7 @@ class NodeHasTerm extends ConditionPluginBase implements ContainerFactoryPluginI
       '#tags' => TRUE,
       '#default_value' => $default,
       '#target_type' => 'taxonomy_term',
+      '#required' => TRUE,
     ];
 
     return parent::buildConfigurationForm($form, $form_state);
@@ -108,12 +110,18 @@ class NodeHasTerm extends ConditionPluginBase implements ContainerFactoryPluginI
     // Set URI for term if possible.
     $this->configuration['uri'] = NULL;
     $value = $form_state->getValue('term');
+    $uris = [];
     if (!empty($value)) {
-      $tid = $value[0]['target_id'];
-      $term = $this->entityTypeManager->getStorage('taxonomy_term')->load($tid);
-      $uri = $this->utils->getUriForTerm($term);
-      if ($uri) {
-        $this->configuration['uri'] = $uri;
+      foreach ($value as $target) {
+        $tid = $target['target_id'];
+        $term = $this->entityTypeManager->getStorage('taxonomy_term')->load($tid);
+        $uri = $this->utils->getUriForTerm($term);
+        if ($uri) {
+          $uris[] = $uri;
+        }
+      }
+      if (!empty($uris)) {
+        $this->configuration['uri'] = implode(',', $uris);
       }
     }
     parent::submitConfigurationForm($form, $form_state);
@@ -144,18 +152,35 @@ class NodeHasTerm extends ConditionPluginBase implements ContainerFactoryPluginI
    *   TRUE if entity has all the specified term(s), otherwise FALSE.
    */
   protected function evaluateEntity(EntityInterface $entity) {
-    foreach ($entity->referencedEntities() as $referenced_entity) {
-      if ($referenced_entity->getEntityTypeId() == 'taxonomy_term' && $referenced_entity->hasField(IslandoraUtils::EXTERNAL_URI_FIELD)) {
-        $field = $referenced_entity->get(IslandoraUtils::EXTERNAL_URI_FIELD);
-        if (!$field->isEmpty()) {
-          $link = $field->first()->getValue();
-          if ($link['uri'] == $this->configuration['uri']) {
-            return $this->isNegated() ? FALSE : TRUE;
-          }
-        }
-      }
+    // Find the terms on the node.
+    $terms = array_filter($entity->referencedEntities(), function ($entity) {
+      return $entity->getEntityTypeId() == 'taxonomy_term' &&
+         $entity->hasField(IslandoraUtils::EXTERNAL_URI_FIELD) &&
+         !$entity->get(IslandoraUtils::EXTERNAL_URI_FIELD)->isEmpty();
+    });
+
+    // Get their URIs.
+    $haystack = array_map(function ($term) {
+        return $term->get(IslandoraUtils::EXTERNAL_URI_FIELD)->first()->getValue()['uri'];
+    },
+      $terms
+    );
+
+    // FALSE if there's no URIs on the node.
+    if (empty($haystack)) {
+      return $this->isNegated() ? TRUE : FALSE;
     }
 
+    // Get the URIs to look for.  It's a required field, so there
+    // will always be one.
+    $needles = explode(',', $this->configuration['uri']);
+
+    // TRUE if every needle is in the haystack.
+    if (count(array_intersect($needles, $haystack)) == count($needles)) {
+      return $this->isNegated() ? FALSE : TRUE;
+    }
+
+    // Otherwise, FALSE.
     return $this->isNegated() ? TRUE : FALSE;
   }
 

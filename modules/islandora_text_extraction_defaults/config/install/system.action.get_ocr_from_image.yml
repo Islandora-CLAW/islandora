@@ -1,0 +1,19 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - islandora_text_extraction
+id: get_ocr_from_image
+label: 'Extract Text from Image or PDF'
+type: node
+plugin: generate_ocr_derivative
+configuration:
+  queue: islandora-connector-ocr
+  event: 'Generate Derivative'
+  source_term_uri: 'http://pcdm.org/use#OriginalFile'
+  derivative_term_uri: 'http://pcdm.org/use#ExtractedText'
+  mimetype: text/plain
+  args: null
+  destination_media_type: extracted_text
+  scheme: public
+  path: '[date:custom:Y]-[date:custom:m]/[node:nid]-[term:name].txt'
