@@ -155,7 +155,7 @@ class MediaSourceService {
    * @param string $mimetype
    *   New mimetype of contents.
    *
-   * @throws HttpException
+   * @throws \Symfony\Component\HttpKernel\Exception\HttpException
    */
   public function updateSourceField(
     MediaInterface $media,
@@ -206,6 +206,8 @@ class MediaSourceService {
 
     $content_length = stream_copy_to_stream($resource, $destination);
 
+    fclose($destination);
+
     if ($content_length === FALSE) {
       throw new HttpException(500, "Request body could not be copied to $uri");
     }
@@ -240,7 +242,7 @@ class MediaSourceService {
    * @param string $content_location
    *   Drupal/PHP stream wrapper for where to upload the binary.
    *
-   * @throws HttpException
+   * @throws \Symfony\Component\HttpKernel\Exception\HttpException
    */
   public function putToNode(
     NodeInterface $node,

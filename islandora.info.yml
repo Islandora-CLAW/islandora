@@ -3,7 +3,7 @@
 name: 'islandora'
 description: "Islandora Core"
 type: module
-package: islandora
+package: Islandora
 core: 8.x
 dependencies:
   - block

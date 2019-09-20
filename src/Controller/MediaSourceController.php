@@ -11,6 +11,7 @@ use Drupal\media\MediaInterface;
 use Drupal\media\MediaTypeInterface;
 use Drupal\node\NodeInterface;
 use Drupal\taxonomy\TermInterface;
+use Drupal\islandora\IslandoraUtils;
 use Drupal\islandora\MediaSource\MediaSourceService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -40,19 +41,30 @@ class MediaSourceController extends ControllerBase {
   protected $database;
 
   /**
+   * Islandora utils.
+   *
+   * @var \Drupal\islandora\IslandoraUtils
+   */
+  protected $utils;
+
+  /**
    * MediaSourceController constructor.
    *
    * @param \Drupal\islandora\MediaSource\MediaSourceService $service
    *   Service for business logic.
    * @param \Drupal\Core\Database\Connection $database
    *   Database connection.
+   * @param \Drupal\islandora\IslandoraUtils $utils
+   *   Islandora utils.
    */
   public function __construct(
     MediaSourceService $service,
-    Connection $database
+    Connection $database,
+    IslandoraUtils $utils
   ) {
     $this->service = $service;
     $this->database = $database;
+    $this->utils = $utils;
   }
 
   /**
@@ -67,7 +79,8 @@ class MediaSourceController extends ControllerBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('islandora.media_source_service'),
-      $container->get('database')
+      $container->get('database'),
+      $container->get('islandora.utils')
     );
   }
 
@@ -162,7 +175,7 @@ class MediaSourceController extends ControllerBase {
       // We return the media if it was newly created.
       if ($media) {
         $response = new Response("", 201);
-        $response->headers->set("Location", $media->url('canonical', ['absolute' => TRUE]));
+        $response->headers->set("Location", $this->utils->getEntityUrl($media));
       }
       else {
         $response = new Response("", 204);

@@ -1,0 +1,41 @@
+
+sudo: true
+language: php
+php:
+  - 7.1
+  - 7.2
+
+matrix:
+    fast_finish: true
+
+branches:
+  only:
+    - /^8.x/
+
+before_install:
+  - export SCRIPT_DIR=$HOME/CLAW/.scripts
+  - export DRUPAL_DIR=/opt/drupal
+  - export COMPOSER_PATH="/home/travis/.phpenv/versions/$TRAVIS_PHP_VERSION/bin/composer"
+
+install:
+  - git clone https://github.com/Islandora-CLAW/CLAW.git $HOME/CLAW 
+  - $SCRIPT_DIR/travis_setup_drupal.sh
+  - git -C "$TRAVIS_BUILD_DIR" checkout -b travis-testing
+  - cd $DRUPAL_DIR; 
+  - php -dmemory_limit=-1 $COMPOSER_PATH config repositories.local path "$TRAVIS_BUILD_DIR"
+  - php -dmemory_limit=-1 $COMPOSER_PATH require "islandora/islandora_image:dev-travis-testing as dev-8.x-1.x" --prefer-source
+  - cd web; drush en -y islandora_image
+
+script:
+  - $SCRIPT_DIR/line_endings.sh $TRAVIS_BUILD_DIR
+  - phpcs --standard=Drupal --ignore=*.md --extensions=php,module,inc,install,test,profile,theme,css,info $TRAVIS_BUILD_DIR
+  - phpcpd --names *.module,*.inc,*.test,*.php $TRAVIS_BUILD_DIR
+  - php core/scripts/run-tests.sh --url http://127.0.0.1:8282 --suppress-deprecations --verbose --php `which php` --module "islandora_image"
+
+notifications:
+  irc:
+    channels:
+      - "irc.freenode.org#islandora"
+    on_success: change
+    on_failure: always
+    skip_join: true

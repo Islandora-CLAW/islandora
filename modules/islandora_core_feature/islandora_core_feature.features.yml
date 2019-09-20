@@ -10,7 +10,5 @@ excluded:
   - core.entity_form_display.taxonomy_term.islandora_display.default
   - core.entity_form_display.taxonomy_term.islandora_media_use.default
   - core.entity_form_display.taxonomy_term.islandora_models.default
-  - language.content_settings.taxonomy_term.islandora_access
-  - field.storage.node.field_access_terms
   - taxonomy.vocabulary.islandora_access
 required: true

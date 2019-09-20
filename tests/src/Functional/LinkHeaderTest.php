@@ -40,44 +40,14 @@ class LinkHeaderTest extends IslandoraFunctionalTestBase {
   protected $file;
 
   /**
-   * Term to belong to the referencer.
-   *
-   * @var \Drupal\taxonomy\TermInterface
-   */
-  protected $imageTerm;
-
-  /**
-   * Term to belong to the media.
-   *
-   * @var \Drupal\taxonomy\TermInterface
-   */
-  protected $preservationMasterTerm;
-
-  /**
    * {@inheritdoc}
    */
   public function setUp() {
     parent::setUp();
 
-    // Create a test user.
-    $account = $this->drupalCreateUser();
-    $this->drupalLogin($account);
-
-    // 'Image' tag.
-    $this->imageTerm = $this->container->get('entity_type.manager')->getStorage('taxonomy_term')->create([
-      'name' => 'Image',
-      'vid' => $this->testVocabulary->id(),
-      'field_external_uri' => [['uri' => "http://purl.org/coar/resource_type/c_c513"]],
-    ]);
-    $this->imageTerm->save();
-
-    // 'Preservation Master' tag.
-    $this->preservationMasterTerm = $this->container->get('entity_type.manager')->getStorage('taxonomy_term')->create([
-      'name' => 'Preservation Master',
-      'vid' => $this->testVocabulary->id(),
-      'field_external_uri' => [['uri' => "http://pcdm.org/use#PreservationMasterFile"]],
-    ]);
-    $this->preservationMasterTerm->save();
+    $account = $this->createUserAndLogin();
+    $this->createImageTag();
+    $this->createPreservationMasterTag();
 
     // Node to be referenced via member of.
     $this->referenced = $this->container->get('entity_type.manager')->getStorage('node')->create([

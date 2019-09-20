@@ -14,6 +14,11 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class PresetReaction extends ContextReactionPluginBase implements ContainerFactoryPluginInterface {
 
+  /**
+   * Action storage.
+   *
+   * @var \Drupal\Core\Entity\EntityStorageInterface
+   */
   protected $actionStorage;
 
   /**

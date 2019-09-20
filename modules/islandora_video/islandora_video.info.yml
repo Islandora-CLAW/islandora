@@ -1,0 +1,7 @@
+name: 'Islandora Video'
+description: 'Islandora video derivative actions'
+type: module
+package: Islandora
+core: 8.x
+dependencies:
+  - islandora

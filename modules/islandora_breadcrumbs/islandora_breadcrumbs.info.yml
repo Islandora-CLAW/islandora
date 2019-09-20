@@ -1,0 +1,7 @@
+name: 'Islandora Breadcrumbs'
+type: module
+description: 'Builds breadcrumbs based on field_member_of relationships.'
+core: 8.x
+package: Islandora
+dependencies:
+  - islandora

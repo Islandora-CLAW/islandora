@@ -5,11 +5,11 @@ namespace Drupal\Tests\islandora\Functional;
 use Drupal\Core\Config\FileStorage;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\field\Tests\EntityReference\EntityReferenceTestTrait;
 use Drupal\link\LinkItemInterface;
 use Drupal\Tests\BrowserTestBase;
+use Drupal\Tests\field\Traits\EntityReferenceTestTrait;
+use Drupal\Tests\media\Traits\MediaTypeCreationTrait;
 use Drupal\Tests\TestFileCreationTrait;
-use Drupal\Tests\media\Functional\MediaFunctionalTestCreateMediaTypeTrait;
 
 /**
  * Base class for Functional tests.
@@ -18,10 +18,16 @@ class IslandoraFunctionalTestBase extends BrowserTestBase {
 
   use EntityReferenceTestTrait;
   use TestFileCreationTrait;
-  use MediaFunctionalTestCreateMediaTypeTrait;
+  use MediaTypeCreationTrait;
 
-  protected static $modules = ['context_ui', 'islandora'];
+  /**
+   * {@inheritdoc}
+   */
+  protected static $modules = ['context_ui', 'field_ui', 'islandora'];
 
+  /**
+   * {@inheritdoc}
+   */
   protected static $configSchemaCheckerExclusions = [
     'jwt.config',
     'context.context.test',
@@ -29,13 +35,43 @@ class IslandoraFunctionalTestBase extends BrowserTestBase {
     'context.context.media',
     'context.context.file',
     'key.key.test',
+    'media.settings',
   ];
 
+  /**
+   * Test node type.
+   *
+   * @var \Drupal\node\Entity\NodeType
+   */
   protected $testType;
 
+  /**
+   * Test media type.
+   *
+   * @var \Drupal\media\Entity\MediaType
+   */
   protected $testMediaType;
 
+  /**
+   * Test vocabulary.
+   *
+   * @var \Drupal\taxonomy\Entity\Vocabulary
+   */
   protected $testVocabulary;
+
+  /**
+   * Term to belong to the node.
+   *
+   * @var \Drupal\taxonomy\TermInterface
+   */
+  protected $imageTerm;
+
+  /**
+   * Term to belong to the source media.
+   *
+   * @var \Drupal\taxonomy\TermInterface
+   */
+  protected $preservationMasterTerm;
 
   /**
    * {@inheritdoc}
@@ -143,7 +179,7 @@ EOD;
     $this->createEntityReferenceField('node', 'test_type', 'field_tags', 'Tags', 'taxonomy_term', 'default', [], 2);
 
     // Create a media type.
-    $this->testMediaType = $this->createMediaType(['bundle' => 'test_media_type'], 'file');
+    $this->testMediaType = $this->createMediaType('file', ['id' => 'test_media_type']);
     $this->testMediaType->save();
     $this->createEntityReferenceField('media', $this->testMediaType->id(), 'field_media_of', 'Media Of', 'node', 'default', [], 2);
     $this->createEntityReferenceField('media', $this->testMediaType->id(), 'field_tags', 'Tags', 'taxonomy_term', 'default', [], 2);
@@ -156,9 +192,53 @@ EOD;
       $destination->write($name, $source->read($name));
     }
 
+    $media_settings = $this->container->get('config.factory')->getEditable('media.settings');
+    $media_settings->set('standalone_url', TRUE);
+    $media_settings->save(TRUE);
+
     // Cache clear / rebuild.
     drupal_flush_all_caches();
     $this->container->get('router.builder')->rebuild();
+  }
+
+  /**
+   * Create a new user and log them in.
+   */
+  protected function createUserAndLogin() {
+    // Create a test user.
+    $account = $this->drupalCreateUser();
+    $this->drupalLogin($account);
+    return $account;
+  }
+
+  /**
+   * Create an Image tag.
+   *
+   * @throws \Drupal\Core\Entity\EntityStorageException
+   */
+  protected function createImageTag() {
+    // 'Image' tag.
+    $this->imageTerm = $this->container->get('entity_type.manager')->getStorage('taxonomy_term')->create([
+      'name' => 'Image',
+      'vid' => $this->testVocabulary->id(),
+      'field_external_uri' => [['uri' => "http://purl.org/coar/resource_type/c_c513"]],
+    ]);
+    $this->imageTerm->save();
+  }
+
+  /**
+   * Create a Preservation Master tag.
+   *
+   * @throws \Drupal\Core\Entity\EntityStorageException
+   */
+  protected function createPreservationMasterTag() {
+    // 'Preservation Master' tag.
+    $this->preservationMasterTerm = $this->container->get('entity_type.manager')->getStorage('taxonomy_term')->create([
+      'name' => 'Preservation Master',
+      'vid' => $this->testVocabulary->id(),
+      'field_external_uri' => [['uri' => "http://pcdm.org/use#PreservationMasterFile"]],
+    ]);
+    $this->preservationMasterTerm->save();
   }
 
   /**
@@ -193,6 +273,14 @@ EOD;
    */
   protected function postNodeAddForm($bundle_id, $values, $button_text) {
     $this->drupalPostForm("node/add/$bundle_id", $values, t('@text', ['@text' => $button_text]));
+    $this->assertSession()->statusCodeEquals(200);
+  }
+
+  /**
+   * Create a new node by posting its add form.
+   */
+  protected function postTermAddForm($taxomony_id, $values, $button_text) {
+    $this->drupalPostForm("admin/structure/taxonomy/manage/$taxomony_id/add", $values, t('@text', ['@text' => $button_text]));
     $this->assertSession()->statusCodeEquals(200);
   }
 

@@ -4,12 +4,15 @@ namespace Drupal\islandora;
 
 use Drupal\context\ContextManager;
 use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityFieldManager;
 use Drupal\Core\Entity\EntityTypeManager;
 use Drupal\Core\Entity\Query\QueryException;
 use Drupal\Core\Entity\Query\QueryFactory;
 use Drupal\Core\Entity\Query\QueryInterface;
+use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Site\Settings;
+use Drupal\Core\Url;
 use Drupal\file\FileInterface;
 use Drupal\flysystem\FlysystemFactory;
 use Drupal\islandora\ContextProvider\NodeContextProvider;
@@ -65,6 +68,13 @@ class IslandoraUtils {
   protected $flysystemFactory;
 
   /**
+   * Language manager.
+   *
+   * @var \Drupal\Core\Language\LanguageManagerInterface
+   */
+  protected $languageManager;
+
+  /**
    * Constructor.
    *
    * @param \Drupal\Core\Entity\EntityTypeManager $entity_type_manager
@@ -77,19 +87,23 @@ class IslandoraUtils {
    *   Context manager.
    * @param \Drupal\flysystem\FlysystemFactory $flysystem_factory
    *   Flysystem factory.
+   * @param \Drupal\Core\Language\LanguageManagerInterface $language_manager
+   *   Language manager.
    */
   public function __construct(
     EntityTypeManager $entity_type_manager,
     EntityFieldManager $entity_field_manager,
     QueryFactory $entity_query,
     ContextManager $context_manager,
-    FlysystemFactory $flysystem_factory
+    FlysystemFactory $flysystem_factory,
+    LanguageManagerInterface $language_manager
   ) {
     $this->entityTypeManager = $entity_type_manager;
     $this->entityFieldManager = $entity_field_manager;
     $this->entityQuery = $entity_query;
     $this->contextManager = $context_manager;
     $this->flysystemFactory = $flysystem_factory;
+    $this->languageManager = $language_manager;
   }
 
   /**
@@ -496,6 +510,64 @@ class IslandoraUtils {
       $condition->condition($field, $value);
     }
     return $condition;
+  }
+
+  /**
+   * Gets the id URL of an entity.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The entity whose URL you want.
+   *
+   * @return string
+   *   The entity URL.
+   */
+  public function getEntityUrl(EntityInterface $entity) {
+    $undefined = $this->languageManager->getLanguage('und');
+    $entity_type = $entity->getEntityTypeId();
+    return Url::fromRoute(
+      "entity.$entity_type.canonical",
+      [$entity_type => $entity->id()],
+      ['absolute' => TRUE, 'language' => $undefined]
+    )->toString();
+  }
+
+  /**
+   * Gets the downloadable URL for a file.
+   *
+   * @param \Drupal\file\FileInterface $file
+   *   The file whose URL you want.
+   *
+   * @return string
+   *   The file URL.
+   */
+  public function getDownloadUrl(FileInterface $file) {
+    $undefined = $this->languageManager->getLanguage('und');
+    return $file->url('canonical', ['absolute' => TRUE, 'language' => $undefined]);
+  }
+
+  /**
+   * Gets the URL for an entity's REST endpoint.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The entity whose REST endpoint you want.
+   * @param string $format
+   *   REST serialization format.
+   *
+   * @return string
+   *   The REST URL.
+   */
+  public function getRestUrl(EntityInterface $entity, $format = '') {
+    $undefined = $this->languageManager->getLanguage('und');
+    $entity_type = $entity->getEntityTypeId();
+    $rest_url = Url::fromRoute(
+      "rest.entity.$entity_type.GET",
+      [$entity_type => $entity->id()],
+      ['absolute' => TRUE, 'language' => $undefined]
+    )->toString();
+    if (!empty($format)) {
+      $rest_url .= "?_format=$format";
+    }
+    return $rest_url;
   }
 
 }

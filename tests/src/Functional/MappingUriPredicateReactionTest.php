@@ -107,7 +107,7 @@ class MappingUriPredicateReactionTest extends IslandoraFunctionalTestBase {
     );
     $this->assertEquals(
       "$url?_format=jsonld",
-      $json['@graph'][0]['http://www.w3.org/2002/07/owl#sameAs'][0]['@value'],
+      $json['@graph'][0]['http://www.w3.org/2002/07/owl#sameAs'][0]['@id'],
       'Missing alter added predicate.'
     );
 
@@ -129,9 +129,67 @@ class MappingUriPredicateReactionTest extends IslandoraFunctionalTestBase {
       $json['@graph'][0], 'Still has old predicate');
     $this->assertEquals(
       "$url?_format=jsonld",
-      $json['@graph'][0]['http://example.org/first/second'][0]['@value'],
+      $json['@graph'][0]['http://example.org/first/second'][0]['@id'],
       'Missing alter added predicate.'
     );
+  }
+
+  /**
+   * @covers \Drupal\islandora\Plugin\ContextReaction\MappingUriPredicateReaction
+   */
+  public function testMappingReactionForMedia() {
+    $account = $this->drupalCreateUser([
+      'create media',
+      'view media',
+      'administer contexts',
+    ]);
+    $this->drupalLogin($account);
+
+    $context_name = 'test';
+    $reaction_id = 'islandora_map_uri_predicate';
+
+    list($file, $media) = $this->makeMediaAndFile($account);
+    $media_url = $media->url('canonical', ['absolute' => TRUE]);
+    $file_url = $file->url('canonical', ['absolute' => TRUE]);
+
+    $this->drupalGet($media_url);
+    $this->assertSession()->statusCodeEquals(200);
+
+    $contents = $this->drupalGet($media_url . '?_format=jsonld');
+    $this->assertSession()->statusCodeEquals(200);
+    $json = \GuzzleHttp\json_decode($contents, TRUE);
+    $this->assertEquals(
+      "$media_url?_format=jsonld",
+      $json['@graph'][0]['@id'],
+      'Swapped file and media urls when not configured'
+    );
+    $this->assertArrayNotHasKey('http://www.iana.org/assignments/relation/describedby',
+      $json['@graph'][0], 'Has predicate when not configured');
+
+    $this->createContext('Test', $context_name);
+    $this->drupalGet("admin/structure/context/$context_name/reaction/add/$reaction_id");
+    $this->assertSession()->statusCodeEquals(200);
+
+    // Use an existing prefix.
+    $this->getSession()->getPage()
+      ->fillField("Drupal URI predicate", "iana:describedby");
+    $this->getSession()->getPage()->pressButton("Save and continue");
+    $this->assertSession()
+      ->pageTextContains("The context $context_name has been saved");
+
+    $new_contents = $this->drupalGet($media_url . '?_format=jsonld');
+    $json = \GuzzleHttp\json_decode($new_contents, TRUE);
+    $this->assertEquals(
+      "$media_url?_format=jsonld",
+      $json['@graph'][0]['http://www.iana.org/assignments/relation/describedby'][0]['@id'],
+      'Missing alter added predicate.'
+    );
+    $this->assertEquals(
+      $file_url,
+      $json['@graph'][0]['@id'],
+      'Alter did not swap "@id" of media with file url.'
+    );
+
   }
 
 }

@@ -1,0 +1,16 @@
+name: 'Islandora Text Extraction Defaults'
+type: module
+description: 'Default config for the Islandora Text Extraction module.'
+core: 8.x
+package: Islandora
+dependencies:
+  - field
+  - file
+  - islandora_core_feature
+  - islandora_text_extraction
+  - language
+  - media
+  - path
+  - system
+  - text
+  - user

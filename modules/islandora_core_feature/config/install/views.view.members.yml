@@ -225,7 +225,7 @@ display:
       filter_groups:
         operator: AND
         groups: {  }
-      title: Members
+      title: Children
     cache_metadata:
       max-age: -1
       contexts:

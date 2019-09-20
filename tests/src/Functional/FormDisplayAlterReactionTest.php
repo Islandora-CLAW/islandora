@@ -40,7 +40,7 @@ class FormDisplayAlterReactionTest extends IslandoraFunctionalTestBase {
     $url = $this->getUrl();
 
     // Visit the edit url and make sure we're on the default form display
-    // (e.g. there's an autocomplete for the member of field);
+    // (e.g. there's an autocomplete for the member of field).
     $this->drupalGet($url . "/edit");
     $this->assertSession()->pageTextContains("Member Of");
 
@@ -62,4 +62,3 @@ class FormDisplayAlterReactionTest extends IslandoraFunctionalTestBase {
   }
 
 }
-

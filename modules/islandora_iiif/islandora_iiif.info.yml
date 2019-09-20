@@ -1,0 +1,7 @@
+name: 'Islandora IIIF'
+type: module
+description: 'IIIF support for Islandora'
+core: 8.x
+package: Islandora
+dependencies:
+  - islandora

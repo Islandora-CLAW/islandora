@@ -80,7 +80,7 @@ class MediaLinkHeaderSubscriber extends LinkHeaderSubscriber implements EventSub
     // Collect file links for the media.
     foreach ($media->get($source_field)->referencedEntities() as $referencedEntity) {
       if ($referencedEntity->access('view')) {
-        $file_url = $referencedEntity->url('canonical', ['absolute' => TRUE]);
+        $file_url = $this->utils->getDownloadUrl($referencedEntity);
         $links[] = "<$file_url>; rel=\"describes\"; type=\"{$referencedEntity->getMimeType()}\"";
       }
     }

@@ -3,6 +3,7 @@
 services:
   islandora.eventgenerator:
     class: Drupal\islandora\EventGenerator\EventGenerator
+    arguments: ['@islandora.utils', '@islandora.media_source_service']
   islandora.stomp:
     class: Stomp\StatefulStomp
     factory: ['Drupal\islandora\StompFactory', create]
@@ -15,7 +16,7 @@ services:
       - { name: event_subscriber }
   islandora.media_link_header_subscriber:
     class: Drupal\islandora\EventSubscriber\MediaLinkHeaderSubscriber
-    arguments: ['@entity_type.manager', '@entity_field.manager', '@access_manager', '@current_user', '@current_route_match', '@request_stack']
+    arguments: ['@entity_type.manager', '@entity_field.manager', '@access_manager', '@current_user', '@current_route_match', '@request_stack', '@islandora.utils']
     tags:
       - { name: event_subscriber }
   islandora.node_link_header_subscriber:
@@ -50,4 +51,11 @@ services:
     arguments: ['@entity_type.manager', '@current_user', '@language_manager', '@entity.query', '@file_system', '@islandora.utils']
   islandora.utils:
     class: Drupal\islandora\IslandoraUtils
-    arguments: ['@entity_type.manager', '@entity_field.manager', '@entity.query', '@context.manager', '@flysystem_factory']
+    arguments: ['@entity_type.manager', '@entity_field.manager', '@entity.query', '@context.manager', '@flysystem_factory', '@language_manager']
+  islandora.gemini.client:
+    class: Islandora\Crayfish\Commons\Client\GeminiClient
+    factory: ['Drupal\islandora\GeminiClientFactory', create]
+    arguments: ['@config.factory', '@logger.channel.islandora']
+  islandora.gemini.lookup:
+    class: Drupal\islandora\GeminiLookup
+    arguments: ['@islandora.gemini.client', '@jwt.authentication.jwt', '@islandora.media_source_service', '@http_client', '@logger.channel.islandora']

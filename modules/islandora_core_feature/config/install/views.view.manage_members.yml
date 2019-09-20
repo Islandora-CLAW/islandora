@@ -294,7 +294,7 @@ display:
       path: node/%node/members
       menu:
         type: tab
-        title: Members
+        title: Children
         description: ''
         expanded: false
         parent: ''

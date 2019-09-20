@@ -43,3 +43,6 @@ fieldMappings:
     properties:
       - 'schema:additionalType'
     mapping_type: rel
+  field_file_size:
+    properties:
+      - 'premis:hasSize'

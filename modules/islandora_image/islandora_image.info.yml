@@ -1,0 +1,7 @@
+name: 'Islandora Image'
+type: module
+description: 'Islandora Image derivative actions'
+core: 8.x
+package: Islandora
+dependencies:
+  - islandora

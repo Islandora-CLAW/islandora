@@ -14,8 +14,12 @@
  * @author Diego Pino Navarro <dpino@metro.org> https://github.com/diegopino
  */
 
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Url;
+use Drupal\islandora\Form\IslandoraSettingsForm;
+use Drupal\islandora\GeminiLookup;
 use Drupal\node\NodeInterface;
 use Drupal\media\MediaInterface;
 use Drupal\file\FileInterface;
@@ -56,6 +60,8 @@ function islandora_rdf_namespaces() {
     'pcdm' => 'http://pcdm.org/models#',
     'use' => 'http://pcdm.org/use#',
     'iana' => 'http://www.iana.org/assignments/relation/',
+    'premis' => 'http://www.loc.gov/premis/rdf/v1#',
+    'co' => 'http://purl.org/co/',
   ];
 }
 
@@ -257,23 +263,27 @@ function islandora_entity_view_mode_alter(&$view_mode, EntityInterface $entity) 
   // ContextReaction.
   $storage = \Drupal::service('entity_type.manager')->getStorage('entity_view_mode');
   $context_manager = \Drupal::service('context.manager');
+  $current_entity = \Drupal::routeMatch()->getParameter('node');
+  $current_id = ($current_entity instanceof NodeInterface) ? $current_entity->id() : NULL;
+  if (isset($current_id) && $current_id == $entity->id()) {
+    foreach ($context_manager->getActiveReactions('\Drupal\islandora\Plugin\ContextReaction\ViewModeAlterReaction') as $reaction) {
+      // Construct the new view mode's machine name.
+      $entity_type = $entity->getEntityTypeId();
+      $mode = $reaction->execute();
+      $machine_name = "$entity_type.$mode";
 
-  foreach ($context_manager->getActiveReactions('\Drupal\islandora\Plugin\ContextReaction\ViewModeAlterReaction') as $reaction) {
-    // Construct the new view mode's machine name.
-    $entity_type = $entity->getEntityTypeId();
-    $mode = $reaction->execute();
-    $machine_name = "$entity_type.$mode";
+      // Try to load it.
+      $new_mode = $storage->load($machine_name);
 
-    // Try to load it.
-    $new_mode = $storage->load($machine_name);
-
-    // If successful, alter the view mode.
-    if ($new_mode) {
-      $view_mode = $mode;
-    }
-    else {
-      // Otherwise, leave it be, but log a message.
-      \Drupal::logger('islandora')->info("EntityViewMode $machine_name does not exist.  View mode cannot be altered.");
+      // If successful, alter the view mode.
+      if ($new_mode) {
+        $view_mode = $mode;
+      }
+      else {
+        // Otherwise, leave it be, but log a message.
+        \Drupal::logger('islandora')
+          ->info("EntityViewMode $machine_name does not exist.  View mode cannot be altered.");
+      }
     }
   }
 }
@@ -335,8 +345,67 @@ function islandora_form_block_form_alter(&$form, FormStateInterface $form_state,
   // to alter block layout.
   unset($form['visibility']['content_entity_type']);
   unset($form['visibility']['parent_node_has_term']);
+  unset($form['visibility']['node_had_namespace']);
   unset($form['visibility']['media_has_term']);
   unset($form['visibility']['file_uses_filesystem']);
   unset($form['visibility']['node_has_term']);
+  unset($form['visibility']['node_has_parent']);
   unset($form['visibility']['media_uses_filesystem']);
+  unset($form['visibility']['media_has_mimetype']);
+}
+
+/**
+ * Implements hook_entity_extra_field_info().
+ */
+function islandora_entity_extra_field_info() {
+  $config_factory = \Drupal::service('config.factory')->get(IslandoraSettingsForm::CONFIG_NAME);
+  $extra_field = [];
+
+  $pseudo_bundles = $config_factory->get(IslandoraSettingsForm::GEMINI_PSEUDO);
+
+  foreach ($pseudo_bundles as $key) {
+    list($bundle, $content_entity) = explode(":", $key);
+    $extra_field[$content_entity][$bundle]['display']['field_gemini_uri'] = [
+      'label' => t('Fedora URI'),
+      'description' => t('The URI to the persistent'),
+      'weight' => 100,
+      'visible' => TRUE,
+    ];
+  }
+  return $extra_field;
+}
+
+/**
+ * Implements hook_entity_view().
+ */
+function islandora_entity_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
+  $route_match_item = \Drupal::routeMatch()->getParameters()->all();
+  // Get the parameter, which might be node, media or taxonomy term.
+  $current_entity = reset($route_match_item);
+  // Match exactly to ensure they are the same entity type too.
+  if ($entity === $current_entity) {
+    if ($display->getComponent('field_gemini_uri')) {
+      $gemini = \Drupal::service('islandora.gemini.lookup');
+      if ($gemini instanceof GeminiLookup) {
+        $fedora_uri = $gemini->lookup($entity);
+        if (!is_null($fedora_uri)) {
+          $build['field_gemini_uri'] = [
+            '#type' => 'container',
+            '#attributes' => [
+              'id' => 'field-gemini-uri',
+            ],
+            'internal_label' => [
+              '#type' => 'item',
+              '#title' => t('Fedora URI'),
+              'internal_uri' => [
+                '#type' => 'link',
+                '#title' => t("@url", ['@url' => $fedora_uri]),
+                '#url' => Url::fromUri($fedora_uri),
+              ],
+            ],
+          ];
+        }
+      }
+    }
+  }
 }

@@ -2,13 +2,14 @@
 
 namespace Drupal\islandora\Plugin\ContextReaction;
 
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\islandora\ContextReaction\NormalizerAlterReaction;
 use Drupal\islandora\MediaSource\MediaSourceService;
 use Drupal\jsonld\Normalizer\NormalizerBase;
 use Drupal\media\MediaInterface;
+use Drupal\islandora\IslandoraUtils;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -19,17 +20,34 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   label = @Translation("Map URI to predicate")
  * )
  */
-class MappingUriPredicateReaction extends NormalizerAlterReaction implements ContainerFactoryPluginInterface {
+class MappingUriPredicateReaction extends NormalizerAlterReaction {
 
   const URI_PREDICATE = 'drupal_uri_predicate';
 
+  /**
+   * Media source service.
+   *
+   * @var \Drupal\islandora\MediaSource\MediaSourceService
+   */
   protected $mediaSource;
 
   /**
    * {@inheritdoc}
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, MediaSourceService $media_source) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition);
+  public function __construct(array $configuration,
+                              $plugin_id,
+                              $plugin_definition,
+                              ConfigFactoryInterface $config_factory,
+                              IslandoraUtils $utils,
+                              MediaSourceService $media_source) {
+
+    parent::__construct(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $config_factory,
+      $utils
+    );
     $this->mediaSource = $media_source;
   }
 
@@ -41,6 +59,8 @@ class MappingUriPredicateReaction extends NormalizerAlterReaction implements Con
       $configuration,
       $plugin_id,
       $plugin_definition,
+      $container->get('config.factory'),
+      $container->get('islandora.utils'),
       $container->get('islandora.media_source_service')
     );
   }
@@ -59,19 +79,17 @@ class MappingUriPredicateReaction extends NormalizerAlterReaction implements Con
     $config = $this->getConfiguration();
     $drupal_predicate = $config[self::URI_PREDICATE];
     if (!is_null($drupal_predicate) && !empty($drupal_predicate)) {
-      $url = $entity
-        ->toUrl('canonical', ['absolute' => TRUE])
-        ->setRouteParameter('_format', 'jsonld')
-        ->toString();
+      $url = $this->getSubjectUrl($entity);
       if ($context['needs_jsonldcontext'] === FALSE) {
         $drupal_predicate = NormalizerBase::escapePrefix($drupal_predicate, $context['namespaces']);
       }
       if (isset($normalized['@graph']) && is_array($normalized['@graph'])) {
         foreach ($normalized['@graph'] as &$graph) {
           if (isset($graph['@id']) && $graph['@id'] == $url) {
+            // Swap media and file urls.
             if ($entity instanceof MediaInterface) {
               $file = $this->mediaSource->getSourceFile($entity);
-              $url = $file->url('canonical', ['absolute' => TRUE]);
+              $graph['@id'] = $this->utils->getDownloadUrl($file);
             }
             if (isset($graph[$drupal_predicate])) {
               if (!is_array($graph[$drupal_predicate])) {
@@ -82,7 +100,7 @@ class MappingUriPredicateReaction extends NormalizerAlterReaction implements Con
                 $tmp = $graph[$drupal_predicate];
                 $graph[$drupal_predicate] = [$tmp];
               }
-              elseif (array_search($url, array_column($graph[$drupal_predicate], '@value'))) {
+              elseif (array_search($url, array_column($graph[$drupal_predicate], '@id'))) {
                 // Don't add it if it already exists.
                 return;
               }
@@ -90,7 +108,7 @@ class MappingUriPredicateReaction extends NormalizerAlterReaction implements Con
             else {
               $graph[$drupal_predicate] = [];
             }
-            $graph[$drupal_predicate][] = ["@value" => $url];
+            $graph[$drupal_predicate][] = ["@id" => $url];
             return;
           }
         }

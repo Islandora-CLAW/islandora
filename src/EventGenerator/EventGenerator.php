@@ -3,8 +3,8 @@
 namespace Drupal\islandora\EventGenerator;
 
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Url;
-use Drupal\file\FileInterface;
+use Drupal\islandora\IslandoraUtils;
+use Drupal\islandora\MediaSource\MediaSourceService;
 use Drupal\user\UserInterface;
 
 /**
@@ -15,18 +15,47 @@ use Drupal\user\UserInterface;
 class EventGenerator implements EventGeneratorInterface {
 
   /**
+   * Islandora utils.
+   *
+   * @var \Drupal\islandora\IslandoraUtils
+   */
+  protected $utils;
+
+  /**
+   * Media source service.
+   *
+   * @var \Drupal\islandora\MediaSource\MediaSourceService
+   */
+  protected $mediaSource;
+
+  /**
+   * Constructor.
+   *
+   * @param \Drupal\islandora\IslandoraUtils $utils
+   *   Islandora utils.
+   * @param \Drupal\islandora\MediaSource\MediaSourceService $media_source
+   *   Media source service.
+   */
+  public function __construct(IslandoraUtils $utils, MediaSourceService $media_source) {
+    $this->utils = $utils;
+    $this->mediaSource = $media_source;
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function generateEvent(EntityInterface $entity, UserInterface $user, array $data) {
 
-    $user_url = $user->toUrl()->setAbsolute()->toString();
+    $user_url = $this->utils->getEntityUrl($user);
 
-    if ($entity instanceof FileInterface) {
-      $entity_url = $entity->url();
+    $entity_type = $entity->getEntityTypeId();
+
+    if ($entity_type == 'file') {
+      $entity_url = $this->utils->getDownloadUrl($entity);
       $mimetype = $entity->getMimeType();
     }
     else {
-      $entity_url = $entity->toUrl()->setAbsolute()->toString();
+      $entity_url = $this->utils->getEntityUrl($entity);
       $mimetype = 'text/html';
     }
 
@@ -75,17 +104,31 @@ class EventGenerator implements EventGeneratorInterface {
       $event['object']['url'][] = [
         "name" => "JSON",
         "type" => "Link",
-        "href" => "$entity_url?_format=json",
+        "href" => $this->utils->getRestUrl($entity, 'json'),
         "mediaType" => "application/json",
         "rel" => "alternate",
       ];
       $event['object']['url'][] = [
         "name" => "JSONLD",
         "type" => "Link",
-        "href" => "$entity_url?_format=jsonld",
+        "href" => $this->utils->getRestUrl($entity, 'jsonld'),
         "mediaType" => "application/ld+json",
         "rel" => "alternate",
       ];
+    }
+
+    // Add a link to the file described by a media.
+    if ($entity_type == 'media') {
+      $file = $this->mediaSource->getSourceFile($entity);
+      if ($file) {
+        $event['object']['url'][] = [
+          "name" => "Describes",
+          "type" => "Link",
+          "href" => $this->utils->getDownloadUrl($file),
+          "mediaType" => $file->getMimeType(),
+          "rel" => "describes",
+        ];
+      }
     }
 
     unset($data["event"]);

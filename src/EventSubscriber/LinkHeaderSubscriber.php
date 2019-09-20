@@ -8,7 +8,7 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManager;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\Core\Url;
+use Drupal\islandora\IslandoraUtils;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
@@ -65,6 +65,13 @@ abstract class LinkHeaderSubscriber implements EventSubscriberInterface {
   protected $requestStack;
 
   /**
+   * Islandora utils.
+   *
+   * @var \Drupal\islandora\IslandoraUtils
+   */
+  protected $utils;
+
+  /**
    * Constructor.
    *
    * @param \Drupal\Core\Entity\EntityTypeManager $entity_type_manager
@@ -79,6 +86,8 @@ abstract class LinkHeaderSubscriber implements EventSubscriberInterface {
    *   The route match object.
    * @param Symfony\Component\HttpFoundation\RequestStack $request_stack
    *   Request stack (for current request).
+   * @param \Drupal\islandora\IslandoraUtils $utils
+   *   Islandora utils.
    */
   public function __construct(
     EntityTypeManager $entity_type_manager,
@@ -86,7 +95,8 @@ abstract class LinkHeaderSubscriber implements EventSubscriberInterface {
     AccessManagerInterface $access_manager,
     AccountInterface $account,
     RouteMatchInterface $route_match,
-    RequestStack $request_stack
+    RequestStack $request_stack,
+    IslandoraUtils $utils
   ) {
     $this->entityTypeManager = $entity_type_manager;
     $this->entityFieldManager = $entity_field_manager;
@@ -96,6 +106,7 @@ abstract class LinkHeaderSubscriber implements EventSubscriberInterface {
     $this->accessManager = $access_manager;
     $this->account = $account;
     $this->requestStack = $request_stack;
+    $this->utils = $utils;
   }
 
   /**
@@ -194,6 +205,8 @@ abstract class LinkHeaderSubscriber implements EventSubscriberInterface {
         // Headers are subject to an access check.
         if ($referencedEntity->access('view')) {
 
+          $entity_url = $this->utils->getEntityUrl($referencedEntity);
+
           // Taxonomy terms are written out as
           // <url>; rel="tag"; title="Tag Name"
           // where url is defined in field_same_as.
@@ -201,7 +214,6 @@ abstract class LinkHeaderSubscriber implements EventSubscriberInterface {
           // it becomes the taxonomy term's local uri.
           if ($referencedEntity->getEntityTypeId() == 'taxonomy_term') {
             $rel = "tag";
-            $entity_url = $referencedEntity->url('canonical', ['absolute' => TRUE]);
             if ($referencedEntity->hasField('field_external_uri')) {
               $external_uri = $referencedEntity->get('field_external_uri')->getValue();
               if (!empty($external_uri) && isset($external_uri[0]['uri'])) {
@@ -216,7 +228,6 @@ abstract class LinkHeaderSubscriber implements EventSubscriberInterface {
             // <url>; rel="related"; title="Field Label"
             // and the url is the local uri.
             $rel = "related";
-            $entity_url = $referencedEntity->url('canonical', ['absolute' => TRUE]);
             $title = $field_definition->label();
           }
           $links[] = "<$entity_url>; rel=\"$rel\"; title=\"$title\"";
@@ -275,19 +286,16 @@ abstract class LinkHeaderSubscriber implements EventSubscriberInterface {
             continue;
         }
 
+        // Skip route if the user doesn't have access.
         $meta_route_name = "rest.entity.$entity_type.GET";
-
         $route_params = [$entity_type => $entity->id()];
-
         if (!$this->accessManager->checkNamedRoute($meta_route_name, $route_params, $this->account)) {
           continue;
         }
 
-        $meta_url = Url::fromRoute($meta_route_name, $route_params)
-          ->setAbsolute()
-          ->toString();
+        $meta_url = $this->utils->getRestUrl($entity, $format);
 
-        $links[] = "<$meta_url?_format=$format>; rel=\"alternate\"; type=\"$mime\"";
+        $links[] = "<$meta_url>; rel=\"alternate\"; type=\"$mime\"";
       }
     }
 

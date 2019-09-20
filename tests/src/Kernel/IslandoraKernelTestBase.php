@@ -54,6 +54,7 @@ abstract class IslandoraKernelTestBase extends KernelTestBase {
     $this->installEntitySchema('context');
     $this->installEntitySchema('file');
     $this->installConfig('filter');
+    $this->installConfig('rest');
   }
 
 }

@@ -1,0 +1,30 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - taxonomy.vocabulary.islandora_display
+  enforced:
+    module:
+      - islandora_core_feature
+  module:
+    - taxonomy
+id: taxonomy_term.islandora_display
+targetEntityType: taxonomy_term
+bundle: islandora_display
+types:
+  - 'schema:Thing'
+fieldMappings:
+  name:
+    properties:
+      - 'dc:title'
+  description:
+    properties:
+      - 'dc:description'
+  field_external_uri:
+    properties:
+      - 'owl:sameAs'
+  changed:
+    properties:
+      - 'schema:dateModified'
+    datatype_callback:
+      callable: 'Drupal\rdf\CommonDataConverter::dateIso8601Value'

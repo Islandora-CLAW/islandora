@@ -20,7 +20,18 @@ class FedoraAdapter implements AdapterInterface {
   use StreamedCopyTrait;
   use NotSupportingVisibilityTrait;
 
+  /**
+   * Fedora client.
+   *
+   * @var \Islandora\Chullo\IFedoraApi
+   */
   protected $fedora;
+
+  /**
+   * Mimetype guesser.
+   *
+   * @var \Symfony\Component\HttpFoundation\File\Mimetype\MimeTypeGuesserInterface
+   */
   protected $mimeTypeGuesser;
 
   /**
@@ -75,7 +86,6 @@ class FedoraAdapter implements AdapterInterface {
 
     $meta = $this->getMetadataFromHeaders($response);
     $meta['path'] = $path;
-
     if ($meta['type'] == 'file') {
       $meta['stream'] = StreamWrapper::getResource($response->getBody());
     }

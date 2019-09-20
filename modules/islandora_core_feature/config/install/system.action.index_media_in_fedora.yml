@@ -12,4 +12,4 @@ type: media
 plugin: emit_media_event
 configuration:
   queue: islandora-indexing-fcrepo-media
-  event: update
+  event: Update
