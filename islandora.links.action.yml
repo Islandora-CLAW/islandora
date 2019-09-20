@@ -9,3 +9,9 @@ islandora.add_member_to_node:
   title: Add child
   appears_on:
     - view.manage_members.page_1
+
+islandora.reorder_children:
+  route_name: view.reorder_children.page_1
+  title: Reorder Children
+  appears_on:
+    - view.manage_members.page_1

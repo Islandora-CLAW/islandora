@@ -24,6 +24,10 @@ class AdminViewsRouteSubscriber extends RouteSubscriberBase {
       $route->setRequirement('_permission', 'manage members');
       $route->setRequirement('_custom_access', '\Drupal\islandora\Controller\ManageMediaController::access');
     }
+    if ($route = $collection->get('view.reorder_children.page_1')) {
+      $route->setOption('_admin_route', 'TRUE');
+      $route->setRequirement('_permission', 'manage members');
+    }
   }
 
 }
