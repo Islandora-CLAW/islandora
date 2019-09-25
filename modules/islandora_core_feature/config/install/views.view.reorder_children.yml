@@ -249,9 +249,9 @@ display:
     position: 1
     display_options:
       display_extenders: {  }
-      path: node/%node/reorder
+      path: node/%node/members/reorder
       menu:
-        type: tab
+        type: none
         title: 'Reorder Children'
         description: ''
         expanded: false
