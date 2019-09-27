@@ -46,6 +46,19 @@ class IntegerWeightSelector extends FieldPluginBase {
       $options[$this->getValue($row)] = $this->getValue($row);
     }
 
+    // If we were given some blank values we need to fill
+    // out the option list from 1 through the result count
+    // to make sure we have enough. (Blanks should only appear
+    // at the beginning of the results list.)
+    // Also, blank values will break the selector, remove it.
+    if (array_key_exists('', $options)) {
+      unset($options['']);
+      for ($i = 1; $i <= $this->view->total_rows; $i++) {
+        $options[$i] = $i;
+      }
+      ksort($options);
+    }
+
     // Now that we have all the available weight values, populate the forms.
     foreach ($this->view->result as $row_index => $row) {
       $entity = $row->_entity;
