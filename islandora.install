@@ -5,6 +5,8 @@
  * Install/update hook implementations.
  */
 
+use Drupal\islandora\Form\IslandoraSettingsForm;
+
 /**
  * Implements hook_schema().
  */
@@ -51,4 +53,27 @@ function islandora_update_8001(&$sandbox) {
   if ($action) {
     $action->delete();
   }
+}
+
+/**
+ * Add in default Gemini URI and Pseudo bundle setting values.
+ */
+function islandora_update_8002(&$sandbox) {
+  $config_factory = \Drupal::service('config.factory')->getEditable(IslandoraSettingsForm::CONFIG_NAME);
+
+  $changed = FALSE;
+  $gemini_url = $config_factory->get(IslandoraSettingsForm::GEMINI_URL);
+  $pseudo_bundles = $config_factory->get(IslandoraSettingsForm::GEMINI_PSEUDO);
+  if (!isset($gemini_url)) {
+    $config_factory->set(IslandoraSettingsForm::GEMINI_URL, '');
+    $changed = TRUE;
+  }
+  if (!isset($pseudo_bundles)) {
+    $config_factory->set(IslandoraSettingsForm::GEMINI_PSEUDO, []);
+    $changed = TRUE;
+  }
+  if ($changed) {
+    $config_factory->save();
+  }
+
 }

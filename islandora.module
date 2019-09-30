@@ -379,31 +379,37 @@ function islandora_entity_extra_field_info() {
  * Implements hook_entity_view().
  */
 function islandora_entity_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
-  $route_match_item = \Drupal::routeMatch()->getParameters()->all();
-  // Get the parameter, which might be node, media or taxonomy term.
-  $current_entity = reset($route_match_item);
-  // Match exactly to ensure they are the same entity type too.
-  if ($entity === $current_entity) {
-    if ($display->getComponent('field_gemini_uri')) {
-      $gemini = \Drupal::service('islandora.gemini.lookup');
-      if ($gemini instanceof GeminiLookup) {
-        $fedora_uri = $gemini->lookup($entity);
-        if (!is_null($fedora_uri)) {
-          $build['field_gemini_uri'] = [
-            '#type' => 'container',
-            '#attributes' => [
-              'id' => 'field-gemini-uri',
-            ],
-            'internal_label' => [
-              '#type' => 'item',
-              '#title' => t('Fedora URI'),
-              'internal_uri' => [
-                '#type' => 'link',
-                '#title' => t("@url", ['@url' => $fedora_uri]),
-                '#url' => Url::fromUri($fedora_uri),
+  $config_factory = \Drupal::service('config.factory')->get(IslandoraSettingsForm::CONFIG_NAME);
+  $gemini_url = $config_factory->get(IslandoraSettingsForm::GEMINI_URL);
+  $pseudo_fields = $config_factory->get(IslandoraSettingsForm::GEMINI_PSEUDO);
+  // If we aren't configured then don't display.
+  if (!empty($gemini_url) && count($pseudo_fields) > 0) {
+    $route_match_item = \Drupal::routeMatch()->getParameters()->all();
+    // Get the parameter, which might be node, media or taxonomy term.
+    $current_entity = reset($route_match_item);
+    // Match exactly to ensure they are the same entity type too.
+    if ($entity === $current_entity) {
+      if ($display->getComponent('field_gemini_uri')) {
+        $gemini = \Drupal::service('islandora.gemini.lookup');
+        if ($gemini instanceof GeminiLookup) {
+          $fedora_uri = $gemini->lookup($entity);
+          if (!is_null($fedora_uri)) {
+            $build['field_gemini_uri'] = [
+              '#type' => 'container',
+              '#attributes' => [
+                'id' => 'field-gemini-uri',
               ],
-            ],
-          ];
+              'internal_label' => [
+                '#type' => 'item',
+                '#title' => t('Fedora URI'),
+                'internal_uri' => [
+                  '#type' => 'link',
+                  '#title' => t("@url", ['@url' => $fedora_uri]),
+                  '#url' => Url::fromUri($fedora_uri),
+                ],
+              ],
+            ];
+          }
         }
       }
     }
