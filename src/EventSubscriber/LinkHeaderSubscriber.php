@@ -214,8 +214,8 @@ abstract class LinkHeaderSubscriber implements EventSubscriberInterface {
           // it becomes the taxonomy term's local uri.
           if ($referencedEntity->getEntityTypeId() == 'taxonomy_term') {
             $rel = "tag";
-            if ($referencedEntity->hasField('field_external_uri')) {
-              $external_uri = $referencedEntity->get('field_external_uri')->getValue();
+            if ($referencedEntity->hasField(IslandoraUtils::EXTERNAL_URI_FIELD)) {
+              $external_uri = $referencedEntity->get(IslandoraUtils::EXTERNAL_URI_FIELD)->getValue();
               if (!empty($external_uri) && isset($external_uri[0]['uri'])) {
                 $entity_url = $external_uri[0]['uri'];
               }

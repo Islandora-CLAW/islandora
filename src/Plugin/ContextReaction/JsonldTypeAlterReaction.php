@@ -6,6 +6,7 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\islandora\ContextReaction\NormalizerAlterReaction;
 use Drupal\jsonld\Normalizer\NormalizerBase;
+use Drupal\islandora\IslandoraUtils;
 
 /**
  * Alter JSON-LD Type context reaction.
@@ -46,13 +47,13 @@ class JsonldTypeAlterReaction extends NormalizerAlterReaction {
       if ($elem['@id'] === $this->getSubjectUrl($entity)) {
         foreach ($entity->get($config['source_field'])->getValue() as $type) {
           // If the configured field is using an entity reference,
-          // we will see if it uses the core config's field_external_uri.
+          // we will see if it uses the core config's IslandoraUtils::EXTERNAL_URI_FIELD.
           if (array_key_exists('target_id', $type)) {
             $target_type = $entity->get($config['source_field'])->getFieldDefinition()->getSetting('target_type');
             $referenced_entity = \Drupal::entityTypeManager()->getStorage($target_type)->load($type['target_id']);
-            if ($referenced_entity->hasField('field_external_uri') &&
-                !empty($referenced_entity->get('field_external_uri')->getValue())) {
-              foreach ($referenced_entity->get('field_external_uri')->getValue() as $value) {
+            if ($referenced_entity->hasField(IslandoraUtils::EXTERNAL_URI_FIELD) &&
+                !empty($referenced_entity->get(IslandoraUtils::EXTERNAL_URI_FIELD)->getValue())) {
+              foreach ($referenced_entity->get(IslandoraUtils::EXTERNAL_URI_FIELD)->getValue() as $value) {
                 $elem['@type'][] = $value['uri'];
               }
             }
