@@ -47,7 +47,8 @@ class JsonldTypeAlterReaction extends NormalizerAlterReaction {
       if ($elem['@id'] === $this->getSubjectUrl($entity)) {
         foreach ($entity->get($config['source_field'])->getValue() as $type) {
           // If the configured field is using an entity reference,
-          // we will see if it uses the core config's IslandoraUtils::EXTERNAL_URI_FIELD.
+          // we will see if it uses the core config's
+          // IslandoraUtils::EXTERNAL_URI_FIELD.
           if (array_key_exists('target_id', $type)) {
             $target_type = $entity->get($config['source_field'])->getFieldDefinition()->getSetting('target_type');
             $referenced_entity = \Drupal::entityTypeManager()->getStorage($target_type)->load($type['target_id']);
