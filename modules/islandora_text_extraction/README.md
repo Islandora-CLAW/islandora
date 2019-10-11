@@ -4,7 +4,7 @@
 Install module in the usual way, 
 then copy `assets/ca.islandora.alpaca.connector.ocr.blueprint.xml` 
 to `/opt/karaf/deploy` on the server. 
- _note:_ This config file assumes a url of `http://localhost:8000/hypercube`.  
+ _note:_ This config file assumes a URL of `http://localhost:8000/hypercube`.  
 If your service is found elsewhere this must be changed.
 There is no need to restart.
   
@@ -22,7 +22,7 @@ field in the media type description.
 
 ## Prepare module for PDF text extraction
 Install `texttopdf` on your server if not already present.
-On an ubuntu/debian machine like the default claw playbook run 
+On an Ubuntu/Debian machine like the default claw playbook run 
 `sudo apt-get install poppler-utils`
 
 test to see its been properly installed with `which pdftotext`
