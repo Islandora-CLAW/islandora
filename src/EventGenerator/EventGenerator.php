@@ -99,12 +99,13 @@ class EventGenerator implements EventGeneratorInterface {
       $event["summary"] = ucfirst($data["event"]) . " a " . ucfirst($entity_type);
     }
 
+    $isNewRev = FALSE;
     if ($entity->getEntityType()->isRevisionable()) {
-      $isNewRev = $this->isNewRevision($entity);
-      if ($isNewRev) {
-        $event["object"]["isNewVersion"] = $isNewRev;
+      if ($this->isNewRevision($entity)) {
+        $isNewRev = $this->isNewRevision($entity);
       }
     }
+    $event["object"]["isNewVersion"] = $isNewRev;
 
     // Add REST links for non-file entities.
     if ($entity_type != 'file') {
