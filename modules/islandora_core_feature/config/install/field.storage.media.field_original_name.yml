@@ -1,6 +1,9 @@
 langcode: en
 status: true
 dependencies:
+  enforced:
+    module:
+      - islandora_core_feature
   module:
     - media
 id: media.field_original_name
