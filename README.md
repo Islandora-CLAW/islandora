@@ -1,7 +1,10 @@
 # ![Islandora](https://cloud.githubusercontent.com/assets/2371345/25624809/f95b0972-2f30-11e7-8992-a8f135402cdc.png) Islandora
-[![Build Status][1]](https://travis-ci.com/Islandora/islandora)
-[![Contribution Guidelines][2]](./CONTRIBUTING.md)
-[![LICENSE][3]](./LICENSE)
+
+[![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%207.2-8892BF.svg?style=flat-square)](https://php.net/)
+[![Build Status](https://travis-ci.org/Islandora/islandora.png?branch=8.x-1.x)](https://travis-ci.com/Islandora/islandora)
+[![Contribution Guidelines](http://img.shields.io/badge/CONTRIBUTING-Guidelines-blue.svg)](./CONTRIBUTING.md)
+[![LICENSE](https://img.shields.io/badge/license-GPLv2-blue.svg?style=flat-square)](./LICENSE)
+[![codecov](https://codecov.io/gh/Islandora/islandora/branch/8.x-1.x/graph/badge.svg)](https://codecov.io/gh/Islandora/islandora)
 
 ## Introduction
 
@@ -24,11 +27,35 @@ This is the core module of Islandora's digital repository ecosystem. The `island
 - `islandora_iiif`
   - Provides IIIF manifests for repository content 
 
-## Requirements / Installation
 
-For our full digital repository solution, see our [installation documentation](https://islandora.github.io/documentation/installation/).
+## Requirements
 
-To download/enable just this module from the command line:
+This module requires the following drupal modules:
+
+- [context](http://drupal.org/project/context)
+- [search_api](http://drupal.org/project/search_api)
+- [jsonld](http://drupal.org/project/jsonld)
+- [jwt](http://drupal.org/project/jwt)
+- [filehash](http://drupal.org/project/filehash)
+- [prepopulate](http://drupal.org/project/prepopulate)
+- [eva](http://drupal.org/project/eva)
+- [features](http://drupal.org/project/features)
+- [migrate_plus](http://drupal.org/project/migrate_plus)
+- [migrate_tools](http://drupal.org/project/migrate_tools)
+- [migrate_source_csv](http://drupal.org/project/migrate_source_csv)
+- [flysystem](http://drupal.org/project/flysystem)
+
+It also requires the following PHP libraries:
+
+- [Crayfish Commons](https://packagist.org/packages/islandora/crayfish-commons)
+- [Stomp PHP](http://drupal.org/project/)
+
+
+## Installation
+
+For a full digital repository solution, see our [installation documentation](https://islandora.github.io/documentation/installation/).
+
+To download/enable just this module, use the following from the command line:
 
 ```bash
 $ composer require islandora/islandora
@@ -42,11 +69,22 @@ You can set the following configuration at `admin/config/islandora/core`:
 - Broker URL
   - The URL to your message broker (i.e. Activemq)
 - JWT Expiry
-  - Set to increase the amount of time that authorization tokens remain valid.  If you have a long running derivative processes or a migration, you may need to set this.  Otherwise, it's best to leave it alone.
+  - Set to increase the amount of time that authorization tokens remain valid.  If you have a long running derivative processes or a migration, you may need to set this to be a very long time, e.g. `500d`.  Otherwise, it's best to leave it alone.
 - Gemini URL
   - The URL to your Gemini server, which keeps track of where Islandora content is in Fedora.
 - Fedora URL Display
   - Selected bundles can display the Fedora URL for repository content.
+
+## Documentation
+
+Further documentation for this module is available on the [Islandora 8 documentation site](https://islandora.github.io/documentation/).
+
+## Troubleshooting/Issues
+
+Having problems or solved a problem? Check out the Islandora google groups for a solution.
+
+* [Islandora Group](https://groups.google.com/forum/?hl=en&fromgroups#!forum/islandora)
+* [Islandora Dev Group](https://groups.google.com/forum/?hl=en&fromgroups#!forum/islandora-dev)
 
 ## Maintainers
 
@@ -54,24 +92,28 @@ Current maintainers:
 
 * [Danny Lamb](https://github.com/dannylamb)
 
+## Sponsors
+
+* UPEI
+* discoverygarden inc.
+* LYRASIS
+* McMaster University
+* University of Limerick
+* York University
+* University of Manitoba
+* Simon Fraser University
+* PALS
+* American Philosophical Society
+* Common Media Inc.
+
 ## Development
 
-If you would like to contribute, please get involved by attending our weekly 
-[Tech Call][4]. We love to hear from you!
+If you would like to contribute, please get involved by attending our weekly [Tech Call](https://github.com/Islandora/documentation/wiki). We love to hear from you!
 
-If you would like to contribute code to the project, you need to be covered by 
-an Islandora Foundation [Contributor License Agreement][5] or 
-[Corporate Contributor License Agreement][6]. Please see the 
-[Contributors][7] pages on Islandora.ca for more information.
+If you would like to contribute code to the project, you need to be covered by an Islandora Foundation [Contributor License Agreement](http://islandora.ca/sites/default/files/islandora_cla.pdf) or [Corporate Contributor License Agreement](http://islandora.ca/sites/default/files/islandora_ccla.pdf). Please see the [Contributors](http://islandora.ca/resources/contributors) pages on Islandora.ca for more information.
+
+We recommend using the [islandora-playbook](https://github.com/Islandora-Devops/islandora-playbook) to get started.
 
 ## License
 
 [GPLv2](http://www.gnu.org/licenses/gpl-2.0.txt)
-[1]: https://travis-ci.org/Islandora/islandora.png?branch=8.x-1.x
-[2]: http://img.shields.io/badge/CONTRIBUTING-Guidelines-blue.svg
-[3]: https://img.shields.io/badge/license-GPLv2-blue.svg?style=flat-square
-[4]: https://github.com/Islandora/documentation/wiki
-[5]: http://islandora.ca/sites/default/files/islandora_cla.pdf
-[6]: http://islandora.ca/sites/default/files/islandora_ccla.pdf
-[7]: http://islandora.ca/resources/contributors
-
