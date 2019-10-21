@@ -17,16 +17,15 @@ This is the core module of Islandora's digital repository ecosystem. The `island
 - `islandora_core_feature` (**required**)
   - Configuration required by the `islandora` module
 - `islandora_image`
-  - Integrates with a Houdini (Imagemagick) server for image processing
+  - Integrates with a [Houdini](https://github.com/Islandora/Crayfish/tree/dev/Houdini) (Imagemagick) server for image processing
 - `islandora_audio` and `islandora_video`
-  - Integrate with a Homarus (`ffmpeg`) server for audio/video processing 
+  - Integrate with a [Homarus](https://github.com/Islandora/Crayfish/tree/dev/Homarus) (`ffmpeg`) server for audio/video processing 
 - `islandora_text_extraction` and `islandora_text_extraction_defaults`
-  - Integrate with a Hypercube (`tessseract` and `pdftotext`) server for text extraction
+  - Integrate with a [Hypercube](https://github.com/Islandora/Crayfish/tree/dev/Hypercube) (`tessseract` and `pdftotext`) server for text extraction
 - `islandora_breadcrumbs`
   - Provides breadcrumbs following collection structure
 - `islandora_iiif`
   - Provides IIIF manifests for repository content 
-
 
 ## Requirements
 
@@ -49,7 +48,6 @@ It also requires the following PHP libraries:
 
 - [Crayfish Commons](https://packagist.org/packages/islandora/crayfish-commons)
 - [Stomp PHP](http://drupal.org/project/)
-
 
 ## Installation
 
