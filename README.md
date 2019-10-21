@@ -65,6 +65,8 @@ $ drush mim islandora_tags
 
 ## Configuration
 
+![image](https://user-images.githubusercontent.com/20773151/67234502-ac171900-f41b-11e9-964e-c7d4cfadbd67.png)
+
 You can set the following configuration at `admin/config/islandora/core`:
 - Broker URL
   - The URL to your message broker (i.e. Activemq)
