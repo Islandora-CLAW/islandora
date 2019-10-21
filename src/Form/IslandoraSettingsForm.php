@@ -111,8 +111,8 @@ class IslandoraSettingsForm extends ConfigFormBase {
 
     $form['bundle_container'] = [
       '#type' => 'details',
-      '#title' => $this->t('Bundles with Gemini URI Pseudo field'),
-      '#description' => $this->t('The selected bundles can display the pseudo-field showing the Gemini linked URI. Configured in the field display.'),
+      '#title' => $this->t('Fedora URL Display'),
+      '#description' => $this->t('Selected bundles can display the Fedora URL of repository content.'),
       '#open' => TRUE,
       self::GEMINI_PSEUDO => [
         '#type' => 'checkboxes',
