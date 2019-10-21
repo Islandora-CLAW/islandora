@@ -1,5 +1,5 @@
 # ![Islandora](https://cloud.githubusercontent.com/assets/2371345/25624809/f95b0972-2f30-11e7-8992-a8f135402cdc.png) Islandora
-[![Build Status][1]](https://travis-ci.com/Islandora-CLAW/islandora)
+[![Build Status][1]](https://travis-ci.com/Islandora/islandora)
 [![Contribution Guidelines][2]](./CONTRIBUTING.md)
 [![LICENSE][3]](./LICENSE)
 
@@ -224,10 +224,10 @@ an Islandora Foundation [Contributor License Agreement][5] or
 
 [GPLv2](http://www.gnu.org/licenses/gpl-2.0.txt)
 
-[1]: https://travis-ci.org/Islandora-CLAW/islandora.png?branch=8.x-1.x
+[1]: https://travis-ci.org/Islandora/islandora.png?branch=8.x-1.x
 [2]: http://img.shields.io/badge/CONTRIBUTING-Guidelines-blue.svg
 [3]: https://img.shields.io/badge/license-GPLv2-blue.svg?style=flat-square
-[4]: https://github.com/Islandora-CLAW/CLAW/wiki
+[4]: https://github.com/Islandora/documentation/wiki
 [5]: http://islandora.ca/sites/default/files/islandora_cla.pdf
 [6]: http://islandora.ca/sites/default/files/islandora_ccla.pdf
 [7]: http://islandora.ca/resources/contributors
