@@ -8,7 +8,7 @@ namespace Drupal\Tests\islandora\Functional;
  * @package Drupal\Tests\islandora\Functional
  * @group islandora
  */
-class JsonldTypeAlterReactionTest extends MappingUriPredicateReactionTest {
+class JsonldTypeAlterReactionTest extends JsonldSelfReferenceReactionTest {
 
   /**
    * @covers \Drupal\islandora\Plugin\ContextReaction\JsonldTypeAlterReaction
