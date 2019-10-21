@@ -29,7 +29,7 @@ This is the core module of Islandora's digital repository ecosystem. The `island
 
 ## Requirements
 
-This module requires the following drupal modules:
+Installing via composer will download all required libraries and modules.  However, for reference, `islandora` requires the following drupal modules:
 
 - [context](http://drupal.org/project/context)
 - [search_api](http://drupal.org/project/search_api)
