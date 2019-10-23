@@ -1,44 +1,49 @@
-# islandora_text_extraction
-### Connects Islandora 8 to Hypercube microservice and extracts text from PDFs
+# Islandora Text Extraction `
 
-Install module in the usual way, 
-then copy `assets/ca.islandora.alpaca.connector.ocr.blueprint.xml` 
-to `/opt/karaf/deploy` on the server. 
- _note:_ This config file assumes a URL of `http://localhost:8000/hypercube`.  
-If your service is found elsewhere this must be changed.
-There is no need to restart.
-  
-In the usual Ansible build this will require no modification.
+[![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%207.2-8892BF.svg?style=flat-square)](https://php.net/)
+[![Contribution Guidelines](http://img.shields.io/badge/CONTRIBUTING-Guidelines-blue.svg)](./CONTRIBUTING.md)
+[![LICENSE](https://img.shields.io/badge/license-GPLv2-blue.svg?style=flat-square)](./LICENSE)
 
-If a parent node is tagged as `Digital Document` an `Image` tagged media
-will extract text from that image at the time of ingestion.  
-The content type of the parent node should be configured to allow multiple tags.
+## Introduction
 
-_note:_ Media are linked to their parent nodes with the `Media Of` 
-entity reference field.  If you wish to attach the PDF (or any other ) media type
-to a parent node which has any content type other than Repository Item 
-(islandora_object) the parent content type will have to be added to the `Media Of`
-field in the media type description.
+Provides actions to extract text with a [Hypercube](https://github.com/Islandora/Crayfish/tree/dev/Hypercube) (`tessseract` and `pdftotext`) server, as well as a Media type to hold the extracted text.
 
-## Prepare module for PDF text extraction
-Install `texttopdf` on your server if not already present.
-On an Ubuntu/Debian machine like the default claw playbook run 
-`sudo apt-get install poppler-utils`
+## Requirements
 
-test to see its been properly installed with `which pdftotext`
+- `islandora` and `islandora_core_feature`
+- A Hypercube microservice
+- A message broker (e.g. Activemq) for Islandora 8
+- An instance of `islandora-connector-derivative` configured for Hypercube
 
-Install php libraries with  `composer require spatie/pdf-to-text`
+## Installation
 
-In the unlikely event that your `pdftotext` binary exists on your server 
-outside of the system path, the path to the binary can be set at 
-`/admin/config/islandora/text_extraction`.
+For a full digital repository solution (including a Hypercube microservice), see our [installation documentation](https://islandora.github.io/documentation/installation/).
 
-## Using text extraction ##
-The containing document must be tagged as `Digital Document`, 
-and the media must be tagged as `Original File`.
-A new editable `Extracted Text` media will be created and attached when `PDF` or 
-`Image` media types are added to a node.
+To download/enable just this module, use the following from the command line:
 
+```bash
+$ composer require islandora/islandora
+$ drush en islandora_core_feature
+$ drush mim islandora_tags
+$ drush en islandora_text_extraction
+```
 
+## Documentation
 
+Official documentation is available on the [Islandora 8 documentation site](https://islandora.github.io/documentation/).
 
+## Sponsors
+
+Original work for this module was done by @ajstanley for @roblib at University of Prince Edward Island.
+
+## Development
+
+If you would like to contribute, please get involved by attending our weekly [Tech Call](https://github.com/Islandora/documentation/wiki). We love to hear from you!
+
+If you would like to contribute code to the project, you need to be covered by an Islandora Foundation [Contributor License Agreement](http://islandora.ca/sites/default/files/islandora_cla.pdf) or [Corporate Contributor License Agreement](http://islandora.ca/sites/default/files/islandora_ccla.pdf). Please see the [Contributors](http://islandora.ca/resources/contributors) pages on Islandora.ca for more information.
+
+We recommend using the [islandora-playbook](https://github.com/Islandora-Devops/islandora-playbook) to get started.
+
+## License
+
+[GPLv2](http://www.gnu.org/licenses/gpl-2.0.txt)
