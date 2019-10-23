@@ -13,7 +13,7 @@ Provides an action to extract text with a [Hypercube](https://github.com/Islando
 - `islandora` and `islandora_core_feature`
 - A Hypercube microservice
 - A message broker (e.g. Activemq) for Islandora 8
-- An instance of `islandora-connector-derivative` configured for Hypercube
+- An instance of `islandora-connector-derivative` (from [Alpaca](https://github.com/Islandora/Alpaca/tree/dev/islandora-connector-derivative)) configured for Hypercube
 
 ## Installation
 

@@ -13,7 +13,7 @@ Provides actions to convert audio with a [Homarus](https://github.com/Islandora/
 - `islandora` and `islandora_core_feature`
 - A Homarus microservice
 - A message broker (e.g. Activemq) for Islandora 8
-- An instance of `islandora-connector-derivative` configured for Homarus 
+- An instance of `islandora-connector-derivative` (from [Alpaca](https://github.com/Islandora/Alpaca/tree/dev/islandora-connector-derivative)) configured for Homarus 
 
 ## Installation
 
