@@ -15,7 +15,7 @@ Provides IIIF manifests using views.
 
 ## Installation
 
-For a full digital repository solution (including a Homarus microservice), see our [installation documentation](https://islandora.github.io/documentation/installation/).
+For a full digital repository solution, see our [installation documentation](https://islandora.github.io/documentation/installation/).
 
 To download/enable just this module, use the following from the command line:
 
