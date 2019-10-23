@@ -1,4 +1,4 @@
-# Islandora Text Extraction `
+# Islandora Text Extraction
 
 [![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%207.2-8892BF.svg?style=flat-square)](https://php.net/)
 [![Contribution Guidelines](http://img.shields.io/badge/CONTRIBUTING-Guidelines-blue.svg)](./CONTRIBUTING.md)
@@ -6,7 +6,7 @@
 
 ## Introduction
 
-Provides actions to extract text with a [Hypercube](https://github.com/Islandora/Crayfish/tree/dev/Hypercube) (`tessseract` and `pdftotext`) server, as well as a Media type to hold the extracted text.
+Provides an action to extract text with a [Hypercube](https://github.com/Islandora/Crayfish/tree/dev/Hypercube) (`tessseract` and `pdftotext`) server, as well as a Media type to hold the extracted text.
 
 ## Requirements
 
