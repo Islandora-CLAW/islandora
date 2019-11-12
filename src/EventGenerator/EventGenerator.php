@@ -6,6 +6,8 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\islandora\IslandoraUtils;
 use Drupal\islandora\MediaSource\MediaSourceService;
 use Drupal\user\UserInterface;
+use Drupal\media\Entity\Media;
+use Drupal\Core\Entity\EntityStorageInterface;
 
 /**
  * The default EventGenerator implementation.
@@ -99,6 +101,14 @@ class EventGenerator implements EventGeneratorInterface {
       $event["summary"] = ucfirst($data["event"]) . " a " . ucfirst($entity_type);
     }
 
+    if ($data['event'] != "Generate Derivative") {
+      $isNewRev = FALSE;
+      if ($entity->getEntityType()->isRevisionable()) {
+        $isNewRev = $this->isNewRevision($entity);
+      }
+      $event["object"]["isNewVersion"] = $isNewRev;
+    }
+
     // Add REST links for non-file entities.
     if ($entity_type != 'file') {
       $event['object']['url'][] = [
@@ -143,6 +153,43 @@ class EventGenerator implements EventGeneratorInterface {
     }
 
     return json_encode($event);
+  }
+
+  /**
+   * Method to check if an entity is a new revision.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   Drupal Entity.
+   *
+   * @return bool
+   *   Is new version.
+   */
+  protected function isNewRevision(EntityInterface $entity) {
+    if ($entity->getEntityTypeId() == "node") {
+      $revision_ids = \Drupal::entityTypeManager()->getStorage($entity->getEntityTypeId())->revisionIds($entity);
+      return count($revision_ids) > 1;
+    }
+    elseif ($entity->getEntityTypeId() == "media") {
+      $mediaStorage = \Drupal::entityTypeManager()->getStorage($entity->getEntityTypeId());
+      return count($this->getRevisionIds($entity, $mediaStorage)) > 1;
+    }
+  }
+
+  /**
+   * Method to get the revisionIds of a media object.
+   *
+   * @param \Drupal\media\Entity\Media $media
+   *   Media object.
+   * @param \Drupal\Core\Entity\EntityStorageInterface $media_storage
+   *   Media Storage.
+   */
+  protected function getRevisionIds(Media $media, EntityStorageInterface $media_storage) {
+    $result = $media_storage->getQuery()
+      ->allRevisions()
+      ->condition($media->getEntityType()->getKey('id'), $media->id())
+      ->sort($media->getEntityType()->getKey('revision'), 'DESC')
+      ->execute();
+    return array_keys($result);
   }
 
 }
