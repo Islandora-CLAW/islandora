@@ -78,6 +78,9 @@ condition.plugin.node_has_term:
     uri:
       type: text
       label: 'Taxonomy Term URI'
+    logic:
+      type: string
+      label: 'Logic (AND or OR)'
 
 condition.plugin.node_has_parent:
   type: condition.plugin
@@ -95,6 +98,9 @@ condition.plugin.media_has_term:
     uri:
       type: text
       label: 'Taxonomy Term URI'
+    logic:
+      type: string
+      label: 'Logic (AND or OR)'
 
 condition.plugin.parent_node_has_term:
   type: condition.plugin
@@ -102,6 +108,9 @@ condition.plugin.parent_node_has_term:
     uri:
       type: text
       label: 'Taxonomy Term URI'
+    logic:
+      type: string
+      label: 'Logic (AND or OR)'
 
 condition.plugin.file_uses_filesystem:
   type: condition.plugin

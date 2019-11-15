@@ -82,6 +82,16 @@ class NodeHasTerm extends ConditionPluginBase implements ContainerFactoryPluginI
   /**
    * {@inheritdoc}
    */
+  public function defaultConfiguration() {
+    return array_merge(
+      ['logic' => 'and'],
+      parent::defaultConfiguration()
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
     $default = [];
     if (isset($this->configuration['uri']) && !empty($this->configuration['uri'])) {
@@ -100,6 +110,16 @@ class NodeHasTerm extends ConditionPluginBase implements ContainerFactoryPluginI
       '#required' => TRUE,
     ];
 
+    $form['logic'] = [
+      '#type' => 'radios',
+      '#title' => $this->t('Logic'),
+      '#description' => $this->t('Whether to use AND or OR logic to evaluate multiple terms'),
+      '#options' => [
+        'and' => 'And',
+        'or' => 'Or',
+      ],
+      '#default_value' => $this->configuration['logic'],
+    ];
     return parent::buildConfigurationForm($form, $form_state);
   }
 
@@ -124,6 +144,9 @@ class NodeHasTerm extends ConditionPluginBase implements ContainerFactoryPluginI
         $this->configuration['uri'] = implode(',', $uris);
       }
     }
+
+    $this->configuration['logic'] = $form_state->getValue('logic');
+
     parent::submitConfigurationForm($form, $form_state);
   }
 
@@ -168,7 +191,7 @@ class NodeHasTerm extends ConditionPluginBase implements ContainerFactoryPluginI
 
     // FALSE if there's no URIs on the node.
     if (empty($haystack)) {
-      return $this->isNegated() ? TRUE : FALSE;
+      return FALSE;
     }
 
     // Get the URIs to look for.  It's a required field, so there
@@ -176,12 +199,19 @@ class NodeHasTerm extends ConditionPluginBase implements ContainerFactoryPluginI
     $needles = explode(',', $this->configuration['uri']);
 
     // TRUE if every needle is in the haystack.
-    if (count(array_intersect($needles, $haystack)) == count($needles)) {
-      return $this->isNegated() ? FALSE : TRUE;
+    if ($this->configuration['logic'] == 'and') {
+      if (count(array_intersect($needles, $haystack)) == count($needles)) {
+        return TRUE;
+      }
+      return FALSE;
     }
-
-    // Otherwise, FALSE.
-    return $this->isNegated() ? TRUE : FALSE;
+    // TRUE if any needle is in the haystack.
+    else {
+      if (count(array_intersect($needles, $haystack)) > 0) {
+        return TRUE;
+      }
+      return FALSE;
+    }
   }
 
   /**
