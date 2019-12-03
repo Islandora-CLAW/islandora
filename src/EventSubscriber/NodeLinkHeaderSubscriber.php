@@ -3,6 +3,7 @@
 namespace Drupal\islandora\EventSubscriber;
 
 use Drupal\node\NodeInterface;
+use Drupal\islandora\IslandoraUtils;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -50,8 +51,8 @@ class NodeLinkHeaderSubscriber extends LinkHeaderSubscriber implements EventSubs
     foreach ($this->utils->getMedia($node) as $media) {
       $url = $this->utils->getEntityUrl($media);
       foreach ($media->referencedEntities() as $term) {
-        if ($term->getEntityTypeId() == 'taxonomy_term' && $term->hasField('field_external_uri')) {
-          $field = $term->get('field_external_uri');
+        if ($term->getEntityTypeId() == 'taxonomy_term' && $term->hasField(IslandoraUtils::EXTERNAL_URI_FIELD)) {
+          $field = $term->get(IslandoraUtils::EXTERNAL_URI_FIELD);
           if (!$field->isEmpty()) {
             $link = $field->first()->getValue();
             $uri = $link['uri'];

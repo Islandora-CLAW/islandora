@@ -21,7 +21,7 @@ support for
 - Bulk ingest content (using Drupal's migrate framework)
 - Administer fine grained access control
 - Index RDF metadata in a triplestore
-- Generate derivative files, such as web quality represenations.
+- Generate derivative files, such as web quality representations.
   - Currently, only image derivatives are supported (requires islandora_image), but more to come.
 - Apply bulk operations to lists of content (re-index content, regenerate derivatives, etc...) 
 - And much, much more...
@@ -36,7 +36,7 @@ update, delete, etc...) by the criteria of their choice and respond by executing
 
 ## Requirements / Installation
 
-Setting up a full digital repsository is a daunting task involving many moving parts on one or more servers.  To make things
+Setting up a full digital repository is a daunting task involving many moving parts on one or more servers.  To make things
 easier to get started, you can fully bootstrap a complete repository solution using our Ansible installer, claw-playbook.
 It can install both to a local Vagrant environment for development purposes, or it can install to one or more remote servers
 by providing your own playbook.  By default you'll get one server with everything on it (i.e. the kitchen sink install). But
@@ -47,9 +47,9 @@ only what their needs require.  See the README for more details.
 
 If you want to get up and running as quickly as possible, import the `islanora_demo_feature` feature to install example configuration
 and bootstrap your site. If you're starting from scratch, then _at a minimum_, you must:
-1. Set the url to your message broker at `admin/config/islandora`
+1. Set the URL to your message broker at `admin/config/islandora`
 1. Enable the `islandora_core_feature` module, then visit `admin/config/development/features` and import its config. It contains
-everything required for basic content modeling. You can also use drush to import the feature
+everything required for basic content modeling. You can also use Drush to import the feature
 `drush -y fim --bundle=islandora islandora_core_feature`. 
 1. Run the migration to load the taxonomy terms required by Islandora.  This can be done by visiting `admin/structure/migrate`, or executed via drush
 `drush -l http://localhost:8000 mim --group=islandora`. 
@@ -69,8 +69,8 @@ The role of the media is indicated by tagging it with a taxonomy term using `fie
 tagging a media as 'Preservation Master' indicates that it is the master archival copy of a file, while 'Service File' would
 indicate that it is a lower quality derivative intended to be shown to the average user.
 1. Files
-    1. Files hold the binary conents that are described by Media.  They often created along with a media to hold its technical metadata,
-but can be created and then later associted with a Media in a separate process.
+    1. Files hold the binary contents that are described by Media.  They often created along with a media to hold its technical metadata,
+but can be created and then later associated with a Media in a separate process.
 1. Taxonomy Terms
     1. Taxonomy terms are used to tag nodes and media so they can be classified, organized, and acted upon.  They must contain a
 `field_external_uri` field that holds an external URI for the term from a controlled vocabulary / ontology.  The `islandora_core_feature`
@@ -83,12 +83,12 @@ example actions for generating image derivatives (using the `islandora_image` mo
 In fact, this feature is not meant to be the end-all-be-all of content modeling, but serves as an example of how it's done using 
 Islandora.  You can take as much or as little of it as you'd like. If you're doing you're own thing, the gist is:
 
-- When making your own content type, it will require `field_member_of`, `field_tags`, and an rdf mapping.
-- When making your own media type, it will require `field_media_of`, `field_tags`, `field_mimetype`, an rdf mapping, and a field to hold the file.
+- When making your own content type, it will require `field_member_of`, `field_tags`, and an RDF mapping.
+- When making your own media type, it will require `field_media_of`, `field_tags`, `field_mimetype`, an RDF mapping, and a field to hold the file.
 You can re-use `field_media_file`, `field_media_image`, `field_media_audio`, and `field_media_video` to do so.  Media should
 always be tagged (`field_tags`) with a term from the pcdmuse ontology (preservation master, service file, thumbnail image) to denote its usage.  
-- When making your own taxonomy vocabulary, its terms will require `field_external_uri` and an rdf mapping.
-- All rdf mappings need to map the `changed` time to `schema:dateModified`.
+- When making your own taxonomy vocabulary, its terms will require `field_external_uri` and an RDF mapping.
+- All RDF mappings need to map the `changed` time to `schema:dateModified`.
 
 ## Actions
 
@@ -125,7 +125,7 @@ of useful REST exports.
 #### Referenced taxonomy terms (Nodes and Media)
 
 The taxonomy terms used to tag content are exposed as link headers with `rel="tag"` and a title equal to the taxonomy term's display
-label.  If the term has an external uri in a controlled vocabulary, then that uri is provided.  Otherwise, the local Drupal uri is
+label.  If the term has an external URI in a controlled vocabulary, then that URI is provided.  Otherwise, the local Drupal URI is
 provided.  For example, if a piece of content is tagged with `taxonomy/term/1`, which has a display label of "Example Term", then the
 link header returned in a GET or HEAD response would look like `Link: <http://example.org/taxonomy/term/1>; rel="tag"; title="Example Term"`
 
@@ -196,7 +196,7 @@ curl -v -u admin:islandora http://localhost:8000/node/1/members?_format=json&ite
 #### /node/{node}/media
 
 You can issue GET requests to this endpoint to get a list of media of a node.  It is actually a REST export, and requires the `_format` query param.  Like the members endpoint, it can 
-be paged, but is less likely to be neccessary as most nodes don't have that many media.  For example, to get the full list of media for a node:
+be paged, but is less likely to be necessary as most nodes don't have that many media.  For example, to get the full list of media for a node:
 
 ```
 curl -v -u admin:islandora http://localhost:8000/node/1/media?_format=json 
