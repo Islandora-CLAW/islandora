@@ -18,6 +18,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Drupal\media\Entity\Media;
 
 /**
  * Class MediaSourceController.
@@ -209,5 +210,21 @@ class MediaSourceController extends ControllerBase {
     $node = $route_match->getParameter('node');
     return AccessResult::allowedIf($node->access('update', $account) && $account->hasPermission('create media'));
   }
+  public function attachToMedia(
+    Media $media,
+    string $destination_field,
+    Request $request) {
 
+    \Drupal::logger('alan_dev', 'In attachToMedia');
+    $content_location = $request->headers->get('Content-Location', "");
+    $contents = $request->getContent();
+    if ($contents) {
+      $file = file_save_data($contents, $content_location, FILE_EXISTS_REPLACE);
+      $media->{$destination_field}->setValue([
+        'target_id' => $file->id(),
+      ]);
+      $media->save();
+    }
+    return new Response("<h1>Complete</h1>");
+  }
 }
