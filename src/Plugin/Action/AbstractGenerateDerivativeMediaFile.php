@@ -138,7 +138,7 @@ class AbstractGenerateDerivativeMediaFile extends EmitEvent {
       'mimetype' => '',
       'args' => '',
       'scheme' => file_default_scheme(),
-      'path' => '[date:custom:Y]-[date:custom:m]/[node:nid].bin',
+      'path' => '[date:custom:Y]-[date:custom:m]/[media:mid].bin',
       'source_field_name' => 'field_media_file',
       'destination_field_name' => 'field_fits_technical_metadata',
     ];

@@ -64,7 +64,7 @@ islandora.attach_file_to_media:
     _controller: '\Drupal\islandora\Controller\MediaSourceController::attachToMedia'
   methods: [GET, PUT]
   requirements:
-    _custom_access: '\Drupal\islandora\Controller\MediaSourceController::putToNodeAccess'
+    _custom_access: '\Drupal\islandora\Controller\MediaSourceController::attachToMediaAccess'
   options:
     _auth: ['basic_auth', 'cookie', 'jwt_auth']
     parameters:

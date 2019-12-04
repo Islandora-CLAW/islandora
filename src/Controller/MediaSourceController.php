@@ -227,4 +227,21 @@ class MediaSourceController extends ControllerBase {
     }
     return new Response("<h1>Complete</h1>");
   }
+
+  /**
+   * Checks for permissions to update a node and update media.
+   *
+   * @param \Drupal\Core\Session\AccountInterface $account
+   *   Account for user making the request.
+   * @param \Drupal\Core\Routing\RouteMatch $route_match
+   *   Route match to get Node from url params.
+   *
+   * @return \Drupal\Core\Access\AccessResultInterface
+   *   Access result.
+   */
+  public function attachToMediaAccess(AccountInterface $account, RouteMatch $route_match) {
+    $media = $route_match->getParameter('media');
+    $node = $this->utils->getParentNode($media);
+    return AccessResult::allowedIf($node->access('update', $account) && $account->hasPermission('create media'));
+  }
 }
