@@ -4,6 +4,7 @@ namespace Drupal\islandora\Plugin\ContextReaction;
 
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\islandora\Plugin\Action\AbstractGenerateDerivativeMediaFile;
 use Drupal\islandora\PresetReaction\PresetReaction;
 
 /**
@@ -21,8 +22,14 @@ class DerivativeFileReaction extends PresetReaction {
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
     $actions = $this->actionStorage->loadByProperties(['type' => 'media']);
+   // $actions = $this->actionStorage->loadMultiple();
+
     foreach ($actions as $action) {
-      $options[ucfirst($action->getType())][$action->id()] = $action->label();
+      $plugin = $action->getPlugin();
+      $name = $plugin->getPluginId();
+      if ($plugin instanceof AbstractGenerateDerivativeMediaFile) {
+        $options[ucfirst($action->getType())][$action->id()] = $action->label();
+      }
     }
     $config = $this->getConfiguration();
     $form['actions'] = [
