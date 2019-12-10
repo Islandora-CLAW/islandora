@@ -23,10 +23,8 @@ use Drupal\islandora\GeminiLookup;
 use Drupal\node\NodeInterface;
 use Drupal\media\MediaInterface;
 use Drupal\file\FileInterface;
-use Drupal\system\Entity\Action;
 use Drupal\taxonomy\TermInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
-use Drupal\media\Entity\Media;
 
 /**
  * Implements hook_help().
@@ -108,9 +106,6 @@ function islandora_media_insert(MediaInterface $media) {
   $utils = \Drupal::service('islandora.utils');
   // Execute index reactions.
   $utils->executeMediaReactions('\Drupal\islandora\Plugin\ContextReaction\IndexReaction', $media);
-  // Add derived file to the media.
-  sleep(10);
-  $utils->executeMediaReactions('\Drupal\islandora\Plugin\ContextReaction\DerivativeFileReaction', $media);
 
   // If it has a parent node...
   $node = $utils->getParentNode($media);
@@ -150,7 +145,6 @@ function islandora_media_update(MediaInterface $media) {
   if ($media->get($source_field)->equals($media->original->get($source_field))) {
     return;
   }
-  $utils->executeMediaReactions('\Drupal\islandora\Plugin\ContextReaction\DerivativeFileReaction', $media);
   // If it has a parent node...
   $node = $utils->getParentNode($media);
   if ($node) {
@@ -160,7 +154,7 @@ function islandora_media_update(MediaInterface $media) {
       $node,
       $media
     );
-
+    $utils->executeMediaReactions('\Drupal\islandora\Plugin\ContextReaction\DerivativeFileReaction', $media);
   }
 }
 
@@ -176,11 +170,14 @@ function islandora_media_delete(MediaInterface $media) {
 /**
  * Implements hook_ENTITYTYPE_postsave.
  */
-function islandora_media_postsave_x(EntityInterface $media, $op) {
+function islandora_media_postsave(EntityInterface $media, $op) {
 
   $utils = \Drupal::service('islandora.utils');
   // Add derived file to the media.
-  //$utils->executeMediaReactions('\Drupal\islandora\Plugin\ContextReaction\DerivativeFileReaction', $media);
+  if ($op == 'insert') {
+    $utils->executeMediaReactions('\Drupal\islandora\Plugin\ContextReaction\DerivativeFileReaction', $media);
+  }
+
 }
 
 /**

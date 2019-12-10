@@ -210,15 +210,29 @@ class MediaSourceController extends ControllerBase {
     $node = $route_match->getParameter('node');
     return AccessResult::allowedIf($node->access('update', $account) && $account->hasPermission('create media'));
   }
+
+  /**
+   *  Adds file to existing media.
+   *
+   * @param Media $media
+   *  The media to which file is added
+   * @param string $destination_field
+   *   The name of the media field to add file reference.
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The request object.
+   *
+   * @return \Symfony\Component\HttpFoundation\Response
+   *   201 on success with a Location link header.
+   *
+   * @throws \Drupal\Core\Entity\EntityStorageException
+   * @throws \Drupal\Core\TypedData\Exception\ReadOnlyException
+   */
   public function attachToMedia(
     Media $media,
     string $destination_field,
     Request $request) {
-
-    \Drupal::logger('alan_dev')->notice("In attach to media using $destination_field");
     $content_location = $request->headers->get('Content-Location', "");
     $contents = $request->getContent();
-    \Drupal::logger('alan_dev')->notice("Content location is $content_location");
     if ($contents) {
       $file = file_save_data($contents, $content_location, FILE_EXISTS_REPLACE);
       $media->{$destination_field}->setValue([
