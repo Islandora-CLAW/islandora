@@ -75,6 +75,8 @@ class AbstractGenerateDerivativeMediaFile extends EmitEvent {
    *   Media source service.
    * @param \Drupal\token\Token $token
    *   Token service.
+   * @param \Drupal\Core\Entity\EntityFieldManagerInterface $entity_field_manager
+   *   Field Manager service.
    */
   public function __construct(
     array $configuration,
@@ -140,7 +142,7 @@ class AbstractGenerateDerivativeMediaFile extends EmitEvent {
       'scheme' => file_default_scheme(),
       'path' => '[date:custom:Y]-[date:custom:m]/[media:mid].bin',
       'source_field_name' => 'field_media_file',
-      'destination_field_name' => 'field_fits_technical_metadata',
+      'destination_field_name' => '',
     ];
   }
 
@@ -171,10 +173,17 @@ class AbstractGenerateDerivativeMediaFile extends EmitEvent {
     ];
     $path = $this->token->replace($data['path'], $token_data);
     $data['file_upload_uri'] = $data['scheme'] . '://' . $path;
-    $allowed = ['queue', 'event', 'args', 'source_uri', 'destination_uri', 'file_upload_uri', 'mimetype'];
+    $allowed = ['queue',
+      'event',
+      'args',
+      'source_uri',
+      'destination_uri',
+      'file_upload_uri',
+      'mimetype',
+    ];
     foreach ($data as $key => $value) {
       if (!in_array($key, $allowed)) {
-       unset($data[$key]);
+        unset($data[$key]);
       }
     }
     return $data;
@@ -191,22 +200,10 @@ class AbstractGenerateDerivativeMediaFile extends EmitEvent {
     $file_fields = $map['media'];
     $file_options = array_combine(array_keys($file_fields), array_keys($file_fields));
     $file_options = array_merge(['' => ''], $file_options);
-  //  $form['event']['#disabled'] = 'disabled';
-    $form['source_term'] = [
-      '#type' => 'entity_autocomplete',
-      '#target_type' => 'taxonomy_term',
-      '#title' => t('Source term'),
-      '#default_value' => $this->utils->getTermForUri($this->configuration['source_term_uri'])
-    ];
-    $form['source_field_name'] = [
-      '#type' => 'select',
-      '#options' => $file_options,
-      '#title' => $this->t('Source File field Name'),
-      '#default_value' => $this->configuration['source_field_name'],
-      '#description' => $this->t('Source File field on Media Type.'),
-    ];
+    $form['event']['#disabled'] = 'disabled';
 
     $form['destination_field_name'] = [
+      '#required' => TRUE,
       '#type' => 'select',
       '#options' => $file_options,
       '#title' => $this->t('Destination File field Name'),
@@ -280,14 +277,10 @@ class AbstractGenerateDerivativeMediaFile extends EmitEvent {
    */
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
     parent::submitConfigurationForm($form, $form_state);
-    $tid = $form_state->getValue('source_term');
-    $term = $this->entityTypeManager->getStorage('taxonomy_term')->load($tid);
-    $this->configuration['source_term_uri'] = $this->utils->getUriForTerm($term);
     $this->configuration['mimetype'] = $form_state->getValue('mimetype');
     $this->configuration['args'] = $form_state->getValue('args');
-    $this->configuration['scheme']= $form_state->getValue('scheme');
+    $this->configuration['scheme'] = $form_state->getValue('scheme');
     $this->configuration['path'] = trim($form_state->getValue('path'), '\\/');
-    $this->configuration['source_field_name'] = $form_state->getValue('source_field_name');
     $this->configuration['destination_field_name'] = $form_state->getValue('destination_field_name');
   }
 

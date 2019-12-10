@@ -18,6 +18,7 @@ class DerivativeReaction extends PresetReaction {
   /**
    * {@inheritdoc}
    */
+
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
     $actions = $this->actionStorage->loadMultiple();
     foreach ($actions as $action) {
@@ -39,4 +40,5 @@ class DerivativeReaction extends PresetReaction {
 
     return $form;
   }
+
 }

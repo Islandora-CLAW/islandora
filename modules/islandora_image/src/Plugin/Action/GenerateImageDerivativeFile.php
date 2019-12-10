@@ -1,11 +1,10 @@
 <?php
 
-
 namespace Drupal\islandora_image\Plugin\Action;
 
-use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\islandora\Plugin\Action\AbstractGenerateDerivativeMediaFile;
+
 /**
  * Emits a Node for generating fits derivatives event.
  *
@@ -15,8 +14,8 @@ use Drupal\islandora\Plugin\Action\AbstractGenerateDerivativeMediaFile;
  *   type = "media"
  * )
  */
-
 class GenerateImageDerivativeFile extends AbstractGenerateDerivativeMediaFile {
+
   /**
    * {@inheritdoc}
    */
@@ -38,8 +37,7 @@ class GenerateImageDerivativeFile extends AbstractGenerateDerivativeMediaFile {
     $form['mimetype']['#description'] = t('Mimetype to convert to (e.g. application/xml, etc...)');
     $form['mimetype']['#value'] = 'image/jpeg';
     $form['mimetype']['#type'] = 'hidden';
-
-    unset($form['args']);
     return $form;
   }
+
 }

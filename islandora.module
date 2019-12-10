@@ -127,8 +127,6 @@ function islandora_media_update(MediaInterface $media) {
 
   // Exit early if nothing's changed.
   $utils = \Drupal::service('islandora.utils');
-
-
   if (!$utils->haveFieldsChanged($media, $media->original)) {
     return;
   };
@@ -167,8 +165,9 @@ function islandora_media_delete(MediaInterface $media) {
   // Execute delete reactions.
   $utils->executeMediaReactions('\Drupal\islandora\Plugin\ContextReaction\DeleteReaction', $media);
 }
+
 /**
- * Implements hook_ENTITYTYPE_postsave.
+ * Implements hook_ENTITYTYPE_postsave().
  */
 function islandora_media_postsave(EntityInterface $media, $op) {
 

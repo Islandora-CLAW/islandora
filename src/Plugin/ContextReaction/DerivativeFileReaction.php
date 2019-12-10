@@ -22,11 +22,9 @@ class DerivativeFileReaction extends PresetReaction {
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
     $actions = $this->actionStorage->loadByProperties(['type' => 'media']);
-   // $actions = $this->actionStorage->loadMultiple();
 
     foreach ($actions as $action) {
       $plugin = $action->getPlugin();
-      $name = $plugin->getPluginId();
       if ($plugin instanceof AbstractGenerateDerivativeMediaFile) {
         $options[ucfirst($action->getType())][$action->id()] = $action->label();
       }
