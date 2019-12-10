@@ -218,7 +218,7 @@ class MediaSourceController extends ControllerBase {
     \Drupal::logger('alan_dev')->notice("In attach to media using $destination_field");
     $content_location = $request->headers->get('Content-Location', "");
     $contents = $request->getContent();
-    \Drupal::logger('alan_dev')->notice("Content locatiopn is $content_location");
+    \Drupal::logger('alan_dev')->notice("Content location is $content_location");
     if ($contents) {
       $file = file_save_data($contents, $content_location, FILE_EXISTS_REPLACE);
       $media->{$destination_field}->setValue([
