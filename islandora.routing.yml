@@ -67,6 +67,7 @@ islandora.attach_file_to_media:
     _custom_access: '\Drupal\islandora\Controller\MediaSourceController::attachToMediaAccess'
   options:
     _auth: ['basic_auth', 'cookie', 'jwt_auth']
+    no_cache: 'TRUE'
     parameters:
       media:
         type: entity:media
