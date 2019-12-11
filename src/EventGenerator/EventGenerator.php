@@ -6,6 +6,7 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\islandora\IslandoraUtils;
 use Drupal\islandora\MediaSource\MediaSourceService;
 use Drupal\user\UserInterface;
+use Drupal\Core\Site\Settings;
 use Drupal\media\Entity\Media;
 use Drupal\Core\Entity\EntityStorageInterface;
 
@@ -89,6 +90,10 @@ class EventGenerator implements EventGeneratorInterface {
         ],
       ],
     ];
+
+    $flysystem_config = Settings::get('flysystem');
+    $fedora_url = $flysystem_config['fedora']['config']['root'];
+    $event["target"] = $fedora_url;
 
     $entity_type = $entity->getEntityTypeId();
     $event_type = $data["event"];

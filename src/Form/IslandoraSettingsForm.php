@@ -6,6 +6,7 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeBundleInfo;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Site\Settings;
 use Drupal\Core\Url;
 use GuzzleHttp\Exception\ConnectException;
 use Islandora\Crayfish\Commons\Client\GeminiClient;
@@ -24,6 +25,7 @@ class IslandoraSettingsForm extends ConfigFormBase {
   const JWT_EXPIRY = 'jwt_expiry';
   const GEMINI_URL = 'gemini_url';
   const GEMINI_PSEUDO = 'gemini_pseudo_bundles';
+  const FEDORA_URL = 'fedora_url';
 
   /**
    * To list the available bundle types.
@@ -94,6 +96,16 @@ class IslandoraSettingsForm extends ConfigFormBase {
       '#type' => 'textfield',
       '#title' => $this->t('Gemini URL'),
       '#default_value' => $config->get(self::GEMINI_URL),
+    ];
+
+    $flysystem_config = Settings::get('flysystem');
+    $fedora_url = $flysystem_config['fedora']['config']['root'];
+
+    $form[self::FEDORA_URL] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Fedora URL'),
+      '#attributes' => array('readonly' => 'readonly'),
+      '#default_value' => t($fedora_url),
     ];
 
     $selected_bundles = $config->get(self::GEMINI_PSEUDO);
@@ -202,7 +214,6 @@ class IslandoraSettingsForm extends ConfigFormBase {
         $this->t('Must enter Gemini URL before selecting bundles to display a pseudo field on.')
       );
     }
-
   }
 
   /**
