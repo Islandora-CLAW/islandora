@@ -10,7 +10,7 @@ use Drupal\islandora\Plugin\Action\AbstractGenerateDerivativeMediaFile;
  *
  * @Action(
  *   id = "generate_image_derivative_file",
- *   label = @Translation("Generate an Image Service File FOR Media Attachment"),
+ *   label = @Translation("Generate an  Image Derivative for Media Attachment"),
  *   type = "media"
  * )
  */
