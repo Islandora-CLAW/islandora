@@ -18,7 +18,13 @@ use Stomp\StatefulStomp;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Emits a Node event.
+ * Emits a Node for generating derivatives event.
+ *
+ * @Action(
+ *   id = "generate_derivative_file",
+ *   label = @Translation("Generate a Derivative File for Media Attachment"),
+ *   type = "media"
+ * )
  */
 class AbstractGenerateDerivativeMediaFile extends EmitEvent {
 

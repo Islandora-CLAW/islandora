@@ -6,11 +6,11 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\islandora\Plugin\Action\AbstractGenerateDerivativeMediaFile;
 
 /**
- * Emits a Node for generating fits derivatives event.
+ * Emits a Node for generating derivatives event.
  *
  * @Action(
  *   id = "generate_image_derivative_file",
- *   label = @Translation("Generate an  Image Derivative for Media Attachment"),
+ *   label = @Translation("Generate an Image Derivative for Media Attachment"),
  *   type = "media"
  * )
  */
