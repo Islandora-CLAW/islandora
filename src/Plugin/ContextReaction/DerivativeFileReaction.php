@@ -54,4 +54,5 @@ class DerivativeFileReaction extends PresetReaction {
       $action->execute([$entity]);
     }
   }
+
 }
