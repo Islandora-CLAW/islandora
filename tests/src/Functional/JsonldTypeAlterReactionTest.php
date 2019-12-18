@@ -75,6 +75,10 @@ class JsonldTypeAlterReactionTest extends JsonldSelfReferenceReactionTest {
     $this->getSession()->getPage()->findById("edit-conditions-entity-bundle-context-mapping-node")->selectOption("@node.node_route_context:node");
     $this->getSession()->getPage()->pressButton(t('Save and continue'));
 
+    // The first time a Context is saved, you need to clear the cache.
+    // Subsequent changes to the context don't need a cache rebuild, though.
+    drupal_flush_all_caches();
+
     // Check for the new @type from the field_type_predicate value.
     $new_contents = $this->drupalGet($url . '?_format=jsonld');
     $json = \GuzzleHttp\json_decode($new_contents, TRUE);

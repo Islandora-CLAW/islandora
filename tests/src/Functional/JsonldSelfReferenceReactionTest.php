@@ -98,6 +98,10 @@ class JsonldSelfReferenceReactionTest extends IslandoraFunctionalTestBase {
     $this->assertSession()
       ->pageTextContains("The context $context_name has been saved");
 
+    // The first time a Context is saved, you need to clear the cache.
+    // Subsequent changes to the context don't need a cache rebuild, though.
+    drupal_flush_all_caches();
+
     $new_contents = $this->drupalGet($url . '?_format=jsonld');
     $json = \GuzzleHttp\json_decode($new_contents, TRUE);
     $this->assertEquals(
@@ -176,6 +180,10 @@ class JsonldSelfReferenceReactionTest extends IslandoraFunctionalTestBase {
     $this->getSession()->getPage()->pressButton("Save and continue");
     $this->assertSession()
       ->pageTextContains("The context $context_name has been saved");
+
+    // The first time a Context is saved, you need to clear the cache.
+    // Subsequent changes to the context don't need a cache rebuild, though.
+    drupal_flush_all_caches();
 
     $new_contents = $this->drupalGet($media_url . '?_format=jsonld');
     $json = \GuzzleHttp\json_decode($new_contents, TRUE);

@@ -14,6 +14,7 @@
  * @author Diego Pino Navarro <dpino@metro.org> https://github.com/diegopino
  */
 
+use Drupal\Component\Plugin\Exception\PluginNotFoundException;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -253,6 +254,16 @@ function islandora_jsonld_alter_normalized_array(EntityInterface $entity, array 
   $context_manager = \Drupal::service('context.manager');
   foreach ($context_manager->getActiveReactions('\Drupal\islandora\ContextReaction\NormalizerAlterReaction') as $reaction) {
     $reaction->execute($entity, $normalized, $context);
+    foreach ($context_manager->getActiveContexts() as $context_config) {
+      try {
+        if ($context_config->getReaction($reaction->getPluginId())) {
+          $context['cacheability']->addCacheTags($context_config->getCacheTags());
+        };
+      }
+      catch (PluginNotFoundException $e) {
+        // Squash :(.
+      }
+    }
   }
 }
 
