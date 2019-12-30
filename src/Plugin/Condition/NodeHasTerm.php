@@ -123,6 +123,9 @@ class NodeHasTerm extends ConditionPluginBase implements ContainerFactoryPluginI
     return parent::buildConfigurationForm($form, $form_state);
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function validateConfigurationForm(array &$form, FormStateInterface $form_state) {
     parent::validateConfigurationForm($form, $form_state);
     $value = $form_state->getValue('term');
@@ -199,9 +202,9 @@ class NodeHasTerm extends ConditionPluginBase implements ContainerFactoryPluginI
       }
 
       foreach ($field_names as $field_name) {
-	 if ($entity->hasField($field_name) && !$entity->get($field_name)->isEmpty()) {
+        if ($entity->hasField($field_name) && !$entity->get($field_name)->isEmpty()) {
            return TRUE;
-	 }
+        }
       }
       return FALSE;
     });
@@ -209,7 +212,7 @@ class NodeHasTerm extends ConditionPluginBase implements ContainerFactoryPluginI
     // Get their URIs.
     $haystack = array_map(function ($term) {
         return $this->utils->getUriForTerm($term);
-      },
+    },
       $terms
     );
 

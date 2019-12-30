@@ -291,6 +291,12 @@ class IslandoraUtils {
     return NULL;
   }
 
+  /**
+   * Gets every field name that might contain an external uri for a term.
+   *
+   * @return string[]
+   *   Field names for fields that a term may have as an external uri.
+   */
   public function getUriFieldNamesForTerms() {
     // Get authority link fields to search.
     $field_map = $this->entityFieldManager->getFieldMap();
