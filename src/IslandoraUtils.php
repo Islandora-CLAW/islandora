@@ -235,12 +235,32 @@ class IslandoraUtils {
    *   Calling getStorage() throws if the storage handler couldn't be loaded.
    */
   public function getTermForUri($uri) {
-    $results = $this->entityQuery->get('taxonomy_term')
-      ->condition(self::EXTERNAL_URI_FIELD . '.uri', $uri)
+    // Get authority link fields to search.
+    $field_map = $this->entityFieldManager->getFieldMap();
+    $fields = [];
+    foreach ($field_map['taxonomy_term'] as $field_name => $field_data) {
+      if ($field_data['type'] == 'authority_link') {
+        $fields[] = $field_name;
+      }
+    }
+    // Add field_external_uri.
+    $fields[] = self::EXTERNAL_URI_FIELD;
+
+    $query = $this->entityQuery->get('taxonomy_term');
+
+    $orGroup = $query->orConditionGroup();
+    foreach ($fields as $field) {
+      $orGroup->condition("$field.uri", $uri);
+    }
+
+    $results = $query
+      ->condition($orGroup)
       ->execute();
+
     if (empty($results)) {
       return NULL;
     }
+
     return $this->entityTypeManager->getStorage('taxonomy_term')->load(reset($results));
   }
 
@@ -258,14 +278,31 @@ class IslandoraUtils {
    *   be created.
    */
   public function getUriForTerm(TermInterface $term) {
-    if ($term && $term->hasField(self::EXTERNAL_URI_FIELD)) {
-      $field = $term->get(self::EXTERNAL_URI_FIELD);
-      if (!$field->isEmpty()) {
-        $link = $field->first()->getValue();
-        return $link['uri'];
+    $fields = $this->getUriFieldNamesForTerms();
+    foreach ($fields as $field_name) {
+      if ($term && $term->hasField($field_name)) {
+        $field = $term->get($field_name);
+        if (!$field->isEmpty()) {
+          $link = $field->first()->getValue();
+          return $link['uri'];
+        }
       }
     }
     return NULL;
+  }
+
+  public function getUriFieldNamesForTerms() {
+    // Get authority link fields to search.
+    $field_map = $this->entityFieldManager->getFieldMap();
+    $fields = [];
+    foreach ($field_map['taxonomy_term'] as $field_name => $field_data) {
+      if ($field_data['type'] == 'authority_link') {
+        $fields[] = $field_name;
+      }
+    }
+    // Add field_external_uri.
+    $fields[] = self::EXTERNAL_URI_FIELD;
+    return $fields;
   }
 
   /**

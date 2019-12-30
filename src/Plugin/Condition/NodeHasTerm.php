@@ -123,6 +123,22 @@ class NodeHasTerm extends ConditionPluginBase implements ContainerFactoryPluginI
     return parent::buildConfigurationForm($form, $form_state);
   }
 
+  public function validateConfigurationForm(array &$form, FormStateInterface $form_state) {
+    parent::validateConfigurationForm($form, $form_state);
+    $value = $form_state->getValue('term');
+    foreach ($value as $target) {
+      $tid = $target['target_id'];
+      $term = $this->entityTypeManager->getStorage('taxonomy_term')->load($tid);
+      $uri = $this->utils->getUriForTerm($term);
+      if (empty($uri)) {
+        $form_state->setErrorByName(
+          'term',
+          $this->t('@name does not have an external URI.  Give it an Authority Link or the External Uri field.', ['@name' => $term->label()])
+        );
+      }
+    }
+  }
+
   /**
    * {@inheritdoc}
    */
@@ -176,16 +192,24 @@ class NodeHasTerm extends ConditionPluginBase implements ContainerFactoryPluginI
    */
   protected function evaluateEntity(EntityInterface $entity) {
     // Find the terms on the node.
-    $terms = array_filter($entity->referencedEntities(), function ($entity) {
-      return $entity->getEntityTypeId() == 'taxonomy_term' &&
-         $entity->hasField(IslandoraUtils::EXTERNAL_URI_FIELD) &&
-         !$entity->get(IslandoraUtils::EXTERNAL_URI_FIELD)->isEmpty();
+    $field_names = $this->utils->getUriFieldNamesForTerms();
+    $terms = array_filter($entity->referencedEntities(), function ($entity) use ($field_names) {
+      if ($entity->getEntityTypeId() != 'taxonomy_term') {
+        return FALSE;
+      }
+
+      foreach ($field_names as $field_name) {
+	 if ($entity->hasField($field_name) && !$entity->get($field_name)->isEmpty()) {
+           return TRUE;
+	 }
+      }
+      return FALSE;
     });
 
     // Get their URIs.
     $haystack = array_map(function ($term) {
-        return $term->get(IslandoraUtils::EXTERNAL_URI_FIELD)->first()->getValue()['uri'];
-    },
+        return $this->utils->getUriForTerm($term);
+      },
       $terms
     );
 
