@@ -104,10 +104,12 @@ class NodeHasTerm extends ConditionPluginBase implements ContainerFactoryPluginI
     $form['term'] = [
       '#type' => 'entity_autocomplete',
       '#title' => $this->t('Term'),
+      '#description' => $this->t('Terms need an Authority Link or External Uri to be compatible with this Condition. If the term you are looking for is not appearing in the autocomplete, please ensure it has a value for its Authority Link or External Uri field.'),
       '#tags' => TRUE,
       '#default_value' => $default,
       '#target_type' => 'taxonomy_term',
       '#required' => TRUE,
+      '#selection_handler' => 'islandora:external_uri',
     ];
 
     $form['logic'] = [
@@ -121,25 +123,6 @@ class NodeHasTerm extends ConditionPluginBase implements ContainerFactoryPluginI
       '#default_value' => $this->configuration['logic'],
     ];
     return parent::buildConfigurationForm($form, $form_state);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function validateConfigurationForm(array &$form, FormStateInterface $form_state) {
-    parent::validateConfigurationForm($form, $form_state);
-    $value = $form_state->getValue('term');
-    foreach ($value as $target) {
-      $tid = $target['target_id'];
-      $term = $this->entityTypeManager->getStorage('taxonomy_term')->load($tid);
-      $uri = $this->utils->getUriForTerm($term);
-      if (empty($uri)) {
-        $form_state->setErrorByName(
-          'term',
-          $this->t('@name does not have an external URI.  Give it an Authority Link or the External Uri field.', ['@name' => $term->label()])
-        );
-      }
-    }
   }
 
   /**
