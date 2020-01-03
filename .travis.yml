@@ -1,25 +1,29 @@
 sudo: true
 language: php
 php:
-  - 7.1
   - 7.2
-services:
-  - mysql
+  - 7.3
 
 matrix:
     fast_finish: true
+    allow_failures:
+      - php: 7.3
+
+services:
+  - mysql
 
 branches:
   only:
     - /^8.x/
+    - /master/
 
 before_install:
-  - export SCRIPT_DIR=$HOME/CLAW/.scripts
+  - export SCRIPT_DIR=$HOME/islandora/.scripts
   - export DRUPAL_DIR=/opt/drupal
   - export COMPOSER_PATH="/home/travis/.phpenv/versions/$TRAVIS_PHP_VERSION/bin/composer"
 
 install:
-  - git clone https://github.com/Islandora-CLAW/CLAW.git $HOME/CLAW
+  - git clone https://github.com/Islandora/documentation.git $HOME/islandora
   - $SCRIPT_DIR/travis_setup_drupal.sh
   - git -C "$TRAVIS_BUILD_DIR" checkout -b travis-testing
   - cd $DRUPAL_DIR;
@@ -34,11 +38,16 @@ script:
   - $SCRIPT_DIR/travis_scripts.sh
   - $SCRIPT_DIR/run-tests.sh "islandora"
   - $SCRIPT_DIR/run-tests.sh "islandora_breadcrumbs"
+  - $SCRIPT_DIR/run-tests.sh "islandora_image"
+  - $SCRIPT_DIR/run-tests.sh "islandora_audio"
+  - $SCRIPT_DIR/run-tests.sh "islandora_video"
+  - $SCRIPT_DIR/run-tests.sh "islandora_text_extraction"
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
 
 notifications:
-  irc:
-    channels:
-      - "irc.freenode.org#islandora"
+  slack:
     on_success: change
     on_failure: always
-    skip_join: true
+    secure: $SLACK_NOTIFICATION_KEY

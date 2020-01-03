@@ -1,4 +1,4 @@
-# ![Islandora Image](https://cloud.githubusercontent.com/assets/2371345/24199472/6f7bfb7a-0ee8-11e7-9c94-754762fd5566.png) Islandora Image
+# Islandora Text Extraction Defaults 
 
 [![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%207.2-8892BF.svg?style=flat-square)](https://php.net/)
 [![Contribution Guidelines](http://img.shields.io/badge/CONTRIBUTING-Guidelines-blue.svg)](./CONTRIBUTING.md)
@@ -6,18 +6,15 @@
 
 ## Introduction
 
-Provides an action to convert images with a [Houdini](https://github.com/Islandora/Crayfish/tree/dev/Houdini) (`imagemagick`) server.
+Default configuration for `islandora_text_extraction`.
 
 ## Requirements
 
-- `islandora` and `islandora_core_feature`
-- A Houdini microservice
-- A message broker (e.g. Activemq) for Islandora 8
-- `islandora-connector-derivative` (from [Alpaca](https://github.com/Islandora/Alpaca/tree/dev/islandora-connector-derivative)) configured for Houdini 
+- `islandora_text_extraction`
 
 ## Installation
 
-For a full digital repository solution (including Houdini), see our [installation documentation](https://islandora.github.io/documentation/installation/).
+For a full digital repository solution (including a Hypercube microservice), see our [installation documentation](https://islandora.github.io/documentation/installation/).
 
 To download/enable just this module, use the following from the command line:
 
@@ -25,19 +22,12 @@ To download/enable just this module, use the following from the command line:
 $ composer require islandora/islandora
 $ drush en islandora_core_feature
 $ drush mim islandora_tags
-$ drush en islandora_image
+$ drush en islandora_text_extraction
 ```
 
 ## Documentation
 
-Further documentation for this module is available on the [Islandora 8 documentation site](https://islandora.github.io/documentation/).
-
-## Troubleshooting/Issues
-
-Having problems or solved a problem? Check out the Islandora google groups for a solution.
-
-* [Islandora Group](https://groups.google.com/forum/?hl=en&fromgroups#!forum/islandora)
-* [Islandora Dev Group](https://groups.google.com/forum/?hl=en&fromgroups#!forum/islandora-dev)
+Official documentation is available on the [Islandora 8 documentation site](https://islandora.github.io/documentation/).
 
 ## Development
 
