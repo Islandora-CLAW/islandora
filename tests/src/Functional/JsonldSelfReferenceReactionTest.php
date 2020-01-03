@@ -8,7 +8,7 @@ namespace Drupal\Tests\islandora\Functional;
  * @package Drupal\Tests\islandora\Functional
  * @group islandora
  */
-class MappingUriPredicateReactionTest extends IslandoraFunctionalTestBase {
+class JsonldSelfReferenceReactionTest extends IslandoraFunctionalTestBase {
 
   /**
    * {@inheritdoc}
@@ -37,7 +37,7 @@ class MappingUriPredicateReactionTest extends IslandoraFunctionalTestBase {
   }
 
   /**
-   * @covers \Drupal\islandora\Plugin\ContextReaction\MappingUriPredicateReaction
+   * @covers \Drupal\islandora\Plugin\ContextReaction\JsonldSelfReferenceReaction
    */
   public function testMappingReaction() {
     $account = $this->drupalCreateUser([
@@ -79,24 +79,28 @@ class MappingUriPredicateReactionTest extends IslandoraFunctionalTestBase {
     $this->drupalGet("admin/structure/context/$context_name");
     // Can't use an undefined prefix.
     $this->getSession()->getPage()
-      ->fillField("Drupal URI predicate", "bob:smith");
+      ->fillField("Self-reference predicate", "bob:smith");
     $this->getSession()->getPage()->pressButton("Save and continue");
     $this->assertSession()
       ->pageTextContains("Namespace prefix bob is not registered");
 
     // Can't use a straight string.
     $this->getSession()->getPage()
-      ->fillField("Drupal URI predicate", "woohoo");
+      ->fillField("Self-reference predicate", "woohoo");
     $this->getSession()->getPage()->pressButton("Save and continue");
     $this->assertSession()
       ->pageTextContains("Predicate must use a defined prefix or be a full URI");
 
     // Use an existing prefix.
     $this->getSession()->getPage()
-      ->fillField("Drupal URI predicate", "owl:sameAs");
+      ->fillField("Self-reference predicate", "owl:sameAs");
     $this->getSession()->getPage()->pressButton("Save and continue");
     $this->assertSession()
       ->pageTextContains("The context $context_name has been saved");
+
+    // The first time a Context is saved, you need to clear the cache.
+    // Subsequent changes to the context don't need a cache rebuild, though.
+    drupal_flush_all_caches();
 
     $new_contents = $this->drupalGet($url . '?_format=jsonld');
     $json = \GuzzleHttp\json_decode($new_contents, TRUE);
@@ -114,7 +118,7 @@ class MappingUriPredicateReactionTest extends IslandoraFunctionalTestBase {
     $this->drupalGet("admin/structure/context/$context_name");
     // Change to a random URL.
     $this->getSession()->getPage()
-      ->fillField("Drupal URI predicate", "http://example.org/first/second");
+      ->fillField("Self-reference predicate", "http://example.org/first/second");
     $this->getSession()->getPage()->pressButton("Save and continue");
     $this->assertSession()
       ->pageTextContains("The context $context_name has been saved");
@@ -135,7 +139,7 @@ class MappingUriPredicateReactionTest extends IslandoraFunctionalTestBase {
   }
 
   /**
-   * @covers \Drupal\islandora\Plugin\ContextReaction\MappingUriPredicateReaction
+   * @covers \Drupal\islandora\Plugin\ContextReaction\JsonldSelfReferenceReaction
    */
   public function testMappingReactionForMedia() {
     $account = $this->drupalCreateUser([
@@ -172,10 +176,14 @@ class MappingUriPredicateReactionTest extends IslandoraFunctionalTestBase {
 
     // Use an existing prefix.
     $this->getSession()->getPage()
-      ->fillField("Drupal URI predicate", "iana:describedby");
+      ->fillField("Self-reference predicate", "iana:describedby");
     $this->getSession()->getPage()->pressButton("Save and continue");
     $this->assertSession()
       ->pageTextContains("The context $context_name has been saved");
+
+    // The first time a Context is saved, you need to clear the cache.
+    // Subsequent changes to the context don't need a cache rebuild, though.
+    drupal_flush_all_caches();
 
     $new_contents = $this->drupalGet($media_url . '?_format=jsonld');
     $json = \GuzzleHttp\json_decode($new_contents, TRUE);

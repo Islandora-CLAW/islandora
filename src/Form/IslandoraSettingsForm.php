@@ -6,6 +6,7 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeBundleInfo;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Site\Settings;
 use Drupal\Core\Url;
 use GuzzleHttp\Exception\ConnectException;
 use Islandora\Crayfish\Commons\Client\GeminiClient;
@@ -24,6 +25,7 @@ class IslandoraSettingsForm extends ConfigFormBase {
   const JWT_EXPIRY = 'jwt_expiry';
   const GEMINI_URL = 'gemini_url';
   const GEMINI_PSEUDO = 'gemini_pseudo_bundles';
+  const FEDORA_URL = 'fedora_url';
 
   /**
    * To list the available bundle types.
@@ -87,12 +89,23 @@ class IslandoraSettingsForm extends ConfigFormBase {
       '#type' => 'textfield',
       '#title' => $this->t('JWT Expiry'),
       '#default_value' => $config->get(self::JWT_EXPIRY),
+      '#description' => 'Eg: 60, "2 days", "10h", "7d". A numeric value is interpreted as a seconds count. If you use a string be sure you provide the time units (days, hours, etc), otherwise milliseconds unit is used by default ("120" is equal to "120ms").',
     ];
 
     $form[self::GEMINI_URL] = [
       '#type' => 'textfield',
       '#title' => $this->t('Gemini URL'),
       '#default_value' => $config->get(self::GEMINI_URL),
+    ];
+
+    $flysystem_config = Settings::get('flysystem');
+    $fedora_url = $flysystem_config['fedora']['config']['root'];
+
+    $form[self::FEDORA_URL] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Fedora URL'),
+      '#attributes' => ['readonly' => 'readonly'],
+      '#default_value' => $fedora_url,
     ];
 
     $selected_bundles = $config->get(self::GEMINI_PSEUDO);
@@ -111,8 +124,8 @@ class IslandoraSettingsForm extends ConfigFormBase {
 
     $form['bundle_container'] = [
       '#type' => 'details',
-      '#title' => $this->t('Bundles with Gemini URI Pseudo field'),
-      '#description' => $this->t('The selected bundles can display the pseudo-field showing the Gemini linked URI. Configured in the field display.'),
+      '#title' => $this->t('Fedora URL Display'),
+      '#description' => $this->t('Selected bundles can display the Fedora URL of repository content.'),
       '#open' => TRUE,
       self::GEMINI_PSEUDO => [
         '#type' => 'checkboxes',
@@ -201,7 +214,6 @@ class IslandoraSettingsForm extends ConfigFormBase {
         $this->t('Must enter Gemini URL before selecting bundles to display a pseudo field on.')
       );
     }
-
   }
 
   /**

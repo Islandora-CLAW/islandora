@@ -14,6 +14,7 @@
  * @author Diego Pino Navarro <dpino@metro.org> https://github.com/diegopino
  */
 
+use Drupal\Component\Plugin\Exception\PluginNotFoundException;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -56,11 +57,12 @@ function islandora_rdf_namespaces() {
     'owl' => 'http://www.w3.org/2002/07/owl#',
     'ore' => 'http://www.openarchives.org/ore/terms/',
     'rdf' => 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
-    'islandora' => 'http://islandora.ca/CLAW/',
+    'islandora' => 'http://islandora.ca/',
     'pcdm' => 'http://pcdm.org/models#',
     'use' => 'http://pcdm.org/use#',
     'iana' => 'http://www.iana.org/assignments/relation/',
     'premis' => 'http://www.loc.gov/premis/rdf/v1#',
+    'premis3' => 'http://www.loc.gov/premis/rdf/v3/',
     'co' => 'http://purl.org/co/',
   ];
 }
@@ -104,7 +106,6 @@ function islandora_node_delete(NodeInterface $node) {
  */
 function islandora_media_insert(MediaInterface $media) {
   $utils = \Drupal::service('islandora.utils');
-
   // Execute index reactions.
   $utils->executeMediaReactions('\Drupal\islandora\Plugin\ContextReaction\IndexReaction', $media);
 
@@ -134,7 +135,6 @@ function islandora_media_update(MediaInterface $media) {
 
   // Execute index reactions.
   $utils->executeMediaReactions('\Drupal\islandora\Plugin\ContextReaction\IndexReaction', $media);
-
   // Does it have a source field?
   $source_field = $media_source_service->getSourceFieldName($media->bundle());
   if (empty($source_field)) {
@@ -145,7 +145,6 @@ function islandora_media_update(MediaInterface $media) {
   if ($media->get($source_field)->equals($media->original->get($source_field))) {
     return;
   }
-
   // If it has a parent node...
   $node = $utils->getParentNode($media);
   if ($node) {
@@ -155,6 +154,7 @@ function islandora_media_update(MediaInterface $media) {
       $node,
       $media
     );
+    $utils->executeMediaReactions('\Drupal\islandora\Plugin\ContextReaction\DerivativeFileReaction', $media);
   }
 }
 
@@ -166,6 +166,19 @@ function islandora_media_delete(MediaInterface $media) {
 
   // Execute delete reactions.
   $utils->executeMediaReactions('\Drupal\islandora\Plugin\ContextReaction\DeleteReaction', $media);
+}
+
+/**
+ * Implements hook_ENTITYTYPE_postsave().
+ */
+function islandora_media_postsave(EntityInterface $media, $op) {
+
+  $utils = \Drupal::service('islandora.utils');
+  // Add derived file to the media.
+  if ($op == 'insert') {
+    $utils->executeMediaReactions('\Drupal\islandora\Plugin\ContextReaction\DerivativeFileReaction', $media);
+  }
+
 }
 
 /**
@@ -221,7 +234,7 @@ function islandora_file_delete(FileInterface $file) {
 function islandora_taxonomy_term_insert(TermInterface $term) {
   $utils = \Drupal::service('islandora.utils');
 
-  // Execute delete reactions.
+  // Execute index reactions.
   $utils->executeTermReactions('\Drupal\islandora\Plugin\ContextReaction\IndexReaction', $term);
 }
 
@@ -231,7 +244,7 @@ function islandora_taxonomy_term_insert(TermInterface $term) {
 function islandora_taxonomy_term_update(TermInterface $term) {
   $utils = \Drupal::service('islandora.utils');
 
-  // Execute delete reactions.
+  // Execute index reactions.
   $utils->executeTermReactions('\Drupal\islandora\Plugin\ContextReaction\IndexReaction', $term);
 }
 
@@ -252,6 +265,16 @@ function islandora_jsonld_alter_normalized_array(EntityInterface $entity, array 
   $context_manager = \Drupal::service('context.manager');
   foreach ($context_manager->getActiveReactions('\Drupal\islandora\ContextReaction\NormalizerAlterReaction') as $reaction) {
     $reaction->execute($entity, $normalized, $context);
+    foreach ($context_manager->getActiveContexts() as $context_config) {
+      try {
+        if ($context_config->getReaction($reaction->getPluginId())) {
+          $context['cacheability']->addCacheTags($context_config->getCacheTags());
+        };
+      }
+      catch (PluginNotFoundException $e) {
+        // Squash :(.
+      }
+    }
   }
 }
 
