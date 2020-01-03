@@ -377,14 +377,16 @@ function islandora_entity_extra_field_info() {
 
   $pseudo_bundles = $config_factory->get(IslandoraSettingsForm::GEMINI_PSEUDO);
 
-  foreach ($pseudo_bundles as $key) {
-    list($bundle, $content_entity) = explode(":", $key);
-    $extra_field[$content_entity][$bundle]['display']['field_gemini_uri'] = [
-      'label' => t('Fedora URI'),
-      'description' => t('The URI to the persistent'),
-      'weight' => 100,
-      'visible' => TRUE,
-    ];
+  if (!empty($pseudo_bundles)) {
+    foreach ($pseudo_bundles as $key) {
+      list($bundle, $content_entity) = explode(":", $key);
+      $extra_field[$content_entity][$bundle]['display']['field_gemini_uri'] = [
+        'label' => t('Fedora URI'),
+        'description' => t('The URI to the persistent'),
+        'weight' => 100,
+        'visible' => TRUE,
+      ];
+    }
   }
   return $extra_field;
 }
