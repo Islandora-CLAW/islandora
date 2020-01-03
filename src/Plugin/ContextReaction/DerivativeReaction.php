@@ -21,6 +21,7 @@ class DerivativeReaction extends PresetReaction {
 
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
     $actions = $this->actionStorage->loadMultiple();
+    $options = [];
     foreach ($actions as $action) {
       $plugin = $action->getPlugin();
       if ($plugin instanceof AbstractGenerateDerivative) {
