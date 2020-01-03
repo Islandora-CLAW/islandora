@@ -15,7 +15,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *
  * @Condition(
  *   id = "node_has_term",
- *   label = @Translation("Node has term"),
+ *   label = @Translation("Node has term with URI"),
  *   context = {
  *     "node" = @ContextDefinition("entity:node", required = TRUE , label = @Translation("node"))
  *   }
@@ -104,7 +104,7 @@ class NodeHasTerm extends ConditionPluginBase implements ContainerFactoryPluginI
     $form['term'] = [
       '#type' => 'entity_autocomplete',
       '#title' => $this->t('Term'),
-      '#description' => $this->t('Terms need an Authority Link or External Uri to be compatible with this Condition. If the term you are looking for is not appearing in the autocomplete, please ensure it has a value for its Authority Link or External Uri field.'),
+      '#description' => $this->t('Only terms that have external URIs/URLs will appear here.'),
       '#tags' => TRUE,
       '#default_value' => $default,
       '#target_type' => 'taxonomy_term',
