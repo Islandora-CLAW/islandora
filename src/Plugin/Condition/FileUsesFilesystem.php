@@ -3,7 +3,7 @@
 namespace Drupal\islandora\Plugin\Condition;
 
 use Drupal\Core\Condition\ConditionPluginBase;
-use Drupal\Core\File\FileSystem;
+use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\file\FileInterface;
@@ -33,7 +33,7 @@ class FileUsesFilesystem extends ConditionPluginBase implements ContainerFactory
   /**
    * File system service.
    *
-   * @var \Drupal\Core\File\FileSystem
+   * @var \Drupal\Core\File\FileSystemInterface
    */
   protected $fileSystem;
 
@@ -51,7 +51,7 @@ class FileUsesFilesystem extends ConditionPluginBase implements ContainerFactory
    *   The plugin implementation definition.
    * @param \Drupal\islandora\IslandoraUtils $utils
    *   Islandora utility functions.
-   * @param \Drupal\Core\File\FileSystem $file_system
+   * @param \Drupal\Core\File\FileSystemInterface $file_system
    *   File system service.
    */
   public function __construct(
@@ -59,7 +59,7 @@ class FileUsesFilesystem extends ConditionPluginBase implements ContainerFactory
     $plugin_id,
     $plugin_definition,
     IslandoraUtils $utils,
-    FileSystem $file_system
+    FileSystemInterface $file_system
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->utils = $utils;

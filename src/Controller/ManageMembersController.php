@@ -5,7 +5,7 @@ namespace Drupal\islandora\Controller;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\Entity\Controller\EntityController;
-use Drupal\Core\Entity\EntityFieldManager;
+use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Link;
 use Drupal\node\NodeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -25,7 +25,7 @@ class ManageMembersController extends EntityController {
   /**
    * The entity field manager.
    *
-   * @var \Drupal\Core\Entity\EntityFieldManager
+   * @var \Drupal\Core\Entity\EntityFieldManagerInterface
    */
   protected $entityFieldManger;
 
@@ -41,14 +41,14 @@ class ManageMembersController extends EntityController {
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
-   * @param \Drupal\Core\Entity\EntityFieldManager $entity_field_manager
+   * @param \Drupal\Core\Entity\EntityFieldManagerInterface $entity_field_manager
    *   The entity field manager.
    * @param \Drupal\Core\Render\RendererInterface $renderer
    *   The renderer.
    */
   public function __construct(
     EntityTypeManagerInterface $entity_type_manager,
-    EntityFieldManager $entity_field_manager,
+    EntityFieldManagerInterface $entity_field_manager,
     RendererInterface $renderer
   ) {
     $this->entityTypeManager = $entity_type_manager;

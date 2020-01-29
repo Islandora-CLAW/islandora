@@ -3,7 +3,7 @@
 namespace Drupal\islandora\Form;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\Entity\EntityTypeBundleInfo;
+use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Site\Settings;
@@ -30,7 +30,7 @@ class IslandoraSettingsForm extends ConfigFormBase {
   /**
    * To list the available bundle types.
    *
-   * @var \Drupal\Core\Entity\EntityTypeBundleInfo
+   * @var \Drupal\Core\Entity\EntityTypeBundleInfoInterface
    */
   private $entityTypeBundleInfo;
 
@@ -39,10 +39,10 @@ class IslandoraSettingsForm extends ConfigFormBase {
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The factory for configuration objects.
-   * @param \Drupal\Core\Entity\EntityTypeBundleInfo $entity_type_bundle_info
+   * @param \Drupal\Core\Entity\EntityTypeBundleInfoInterface $entity_type_bundle_info
    *   The EntityTypeBundleInfo service.
    */
-  public function __construct(ConfigFactoryInterface $config_factory, EntityTypeBundleInfo $entity_type_bundle_info) {
+  public function __construct(ConfigFactoryInterface $config_factory, EntityTypeBundleInfoInterface $entity_type_bundle_info) {
     $this->setConfigFactory($config_factory);
     $this->entityTypeBundleInfo = $entity_type_bundle_info;
   }

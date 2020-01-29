@@ -5,7 +5,7 @@ namespace Drupal\islandora\EventGenerator;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Action\ConfigurableActionBase;
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Entity\EntityTypeManager;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Session\AccountInterface;
@@ -30,7 +30,7 @@ abstract class EmitEvent extends ConfigurableActionBase implements ContainerFact
   /**
    * Entity type manager.
    *
-   * @var \Drupal\Core\Entity\EntityTypeManager
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entityTypeManager;
 
@@ -66,7 +66,7 @@ abstract class EmitEvent extends ConfigurableActionBase implements ContainerFact
    *   The plugin implementation definition.
    * @param \Drupal\Core\Session\AccountInterface $account
    *   Current user.
-   * @param \Drupal\Core\Entity\EntityTypeManager $entity_type_manager
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   Entity type manager.
    * @param \Drupal\islandora\EventGenerator\EventGeneratorInterface $event_generator
    *   EventGenerator service to serialize AS2 events.
@@ -80,7 +80,7 @@ abstract class EmitEvent extends ConfigurableActionBase implements ContainerFact
     $plugin_id,
     $plugin_definition,
     AccountInterface $account,
-    EntityTypeManager $entity_type_manager,
+    EntityTypeManagerInterface $entity_type_manager,
     EventGeneratorInterface $event_generator,
     StatefulStomp $stomp,
     JwtAuth $auth

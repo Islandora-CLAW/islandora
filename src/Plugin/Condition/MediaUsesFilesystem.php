@@ -2,7 +2,7 @@
 
 namespace Drupal\islandora\Plugin\Condition;
 
-use Drupal\Core\File\FileSystem;
+use Drupal\Core\File\FileSystemInterface;
 use Drupal\islandora\MediaSource\MediaSourceService;
 use Drupal\islandora\IslandoraUtils;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -41,7 +41,7 @@ class MediaUsesFilesystem extends FileUsesFilesystem {
    *   The plugin implementation definition.
    * @param \Drupal\islandora\IslandoraUtils $utils
    *   Islandora utility functions.
-   * @param \Drupal\Core\File\FileSystem $file_system
+   * @param \Drupal\Core\File\FileSystemInterface $file_system
    *   File system service.
    * @param \Drupal\islandora\MediaSource\MediaSourceService $media_source
    *   Media source service.
@@ -51,7 +51,7 @@ class MediaUsesFilesystem extends FileUsesFilesystem {
     $plugin_id,
     $plugin_definition,
     IslandoraUtils $utils,
-    FileSystem $file_system,
+    FileSystemInterface $file_system,
     MediaSourceService $media_source
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition, $utils, $file_system);

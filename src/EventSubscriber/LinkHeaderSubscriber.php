@@ -3,9 +3,9 @@
 namespace Drupal\islandora\EventSubscriber;
 
 use Drupal\Core\Access\AccessManagerInterface;
-use Drupal\Core\Entity\EntityFieldManager;
+use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Entity\EntityTypeManager;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\islandora\IslandoraUtils;
@@ -25,14 +25,14 @@ abstract class LinkHeaderSubscriber implements EventSubscriberInterface {
   /**
    * The entity type manager.
    *
-   * @var \Drupal\Core\Entity\EntityTypeManager
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entityTypeManager;
 
   /**
    * The entity field manager.
    *
-   * @var \Drupal\Core\Entity\EntityFieldManager
+   * @var \Drupal\Core\Entity\EntityFieldManagerInterface
    */
   protected $entityFieldManager;
 
@@ -74,9 +74,9 @@ abstract class LinkHeaderSubscriber implements EventSubscriberInterface {
   /**
    * Constructor.
    *
-   * @param \Drupal\Core\Entity\EntityTypeManager $entity_type_manager
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
-   * @param \Drupal\Core\Entity\EntityFieldManager $entity_field_manager
+   * @param \Drupal\Core\Entity\EntityFieldManagerInterface $entity_field_manager
    *   The entity field manager.
    * @param \Drupal\Core\Access\AccessManagerInterface $access_manager
    *   The access manager.
@@ -90,8 +90,8 @@ abstract class LinkHeaderSubscriber implements EventSubscriberInterface {
    *   Islandora utils.
    */
   public function __construct(
-    EntityTypeManager $entity_type_manager,
-    EntityFieldManager $entity_field_manager,
+    EntityTypeManagerInterface $entity_type_manager,
+    EntityFieldManagerInterface $entity_field_manager,
     AccessManagerInterface $access_manager,
     AccountInterface $account,
     RouteMatchInterface $route_match,

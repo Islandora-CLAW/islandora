@@ -3,8 +3,8 @@
 namespace Drupal\islandora\Plugin\Action;
 
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Entity\EntityTypeManager;
-use Drupal\Core\File\FileSystem;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Site\Settings;
 use Drupal\jwt\Authentication\Provider\JwtAuth;
@@ -27,7 +27,7 @@ class EmitFileEvent extends EmitEvent {
   /**
    * File system service.
    *
-   * @var \Drupal\Core\File\FileSystem
+   * @var \Drupal\Core\File\FileSystemInterface
    */
   protected $fileSystem;
 
@@ -42,7 +42,7 @@ class EmitFileEvent extends EmitEvent {
    *   The plugin implementation definition.
    * @param \Drupal\Core\Session\AccountInterface $account
    *   Current user.
-   * @param \Drupal\Core\Entity\EntityTypeManager $entity_type_manager
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   Entity type manager.
    * @param \Drupal\islandora\EventGenerator\EventGeneratorInterface $event_generator
    *   EventGenerator service to serialize AS2 events.
@@ -50,7 +50,7 @@ class EmitFileEvent extends EmitEvent {
    *   Stomp client.
    * @param \Drupal\jwt\Authentication\Provider\JwtAuth $auth
    *   JWT Auth client.
-   * @param \Drupal\Core\File\FileSystem $file_system
+   * @param \Drupal\Core\File\FileSystemInterface $file_system
    *   File system service.
    */
   public function __construct(
@@ -58,11 +58,11 @@ class EmitFileEvent extends EmitEvent {
     $plugin_id,
     $plugin_definition,
     AccountInterface $account,
-    EntityTypeManager $entity_type_manager,
+    EntityTypeManagerInterface $entity_type_manager,
     EventGeneratorInterface $event_generator,
     StatefulStomp $stomp,
     JwtAuth $auth,
-    FileSystem $file_system
+    FileSystemInterface $file_system
   ) {
     parent::__construct(
       $configuration,

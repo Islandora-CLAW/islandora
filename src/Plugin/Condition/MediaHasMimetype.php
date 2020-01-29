@@ -3,7 +3,7 @@
 namespace Drupal\islandora\Plugin\Condition;
 
 use Drupal\Core\Condition\ConditionPluginBase;
-use Drupal\Core\Entity\EntityTypeManager;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\islandora\IslandoraUtils;
@@ -37,7 +37,7 @@ class MediaHasMimetype extends ConditionPluginBase implements ContainerFactoryPl
   /**
    * Term storage.
    *
-   * @var \Drupal\Core\Entity\EntityTypeManager
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entityTypeManager;
 
@@ -62,7 +62,7 @@ class MediaHasMimetype extends ConditionPluginBase implements ContainerFactoryPl
    *   The plugin implementation definition.
    * @param \Drupal\islandora\IslandoraUtils $utils
    *   Islandora utility functions.
-   * @param \Drupal\Core\Entity\EntityTypeManager $entity_type_manager
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   Entity type manager.
    * @param \Drupal\islandora\MediaSource\MediaSourceService $media_source
    *   Media source service.
@@ -72,7 +72,7 @@ class MediaHasMimetype extends ConditionPluginBase implements ContainerFactoryPl
     $plugin_id,
     $plugin_definition,
     IslandoraUtils $utils,
-    EntityTypeManager $entity_type_manager,
+    EntityTypeManagerInterface $entity_type_manager,
     MediaSourceService $media_source
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition, $utils);

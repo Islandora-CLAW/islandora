@@ -5,8 +5,8 @@ namespace Drupal\islandora;
 use Drupal\context\ContextManager;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Entity\EntityFieldManager;
-use Drupal\Core\Entity\EntityTypeManager;
+use Drupal\Core\Entity\EntityFieldManagerInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Query\QueryException;
 use Drupal\Core\Entity\Query\QueryFactory;
 use Drupal\Core\Entity\Query\QueryInterface;
@@ -35,14 +35,14 @@ class IslandoraUtils {
   /**
    * The entity type manager.
    *
-   * @var \Drupal\Core\Entity\EntityTypeManager
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entityTypeManager;
 
   /**
    * The entity field manager.
    *
-   * @var \Drupal\Core\Entity\EntityFieldManager
+   * @var \Drupal\Core\Entity\EntityFieldManagerInterface
    */
   protected $entityFieldManager;
 
@@ -77,9 +77,9 @@ class IslandoraUtils {
   /**
    * Constructor.
    *
-   * @param \Drupal\Core\Entity\EntityTypeManager $entity_type_manager
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
-   * @param \Drupal\Core\Entity\EntityFieldManager $entity_field_manager
+   * @param \Drupal\Core\Entity\EntityFieldManagerInterface $entity_field_manager
    *   The entity field manager.
    * @param \Drupal\Core\Entity\Query\QueryFactory $entity_query
    *   Entity query.
@@ -91,8 +91,8 @@ class IslandoraUtils {
    *   Language manager.
    */
   public function __construct(
-    EntityTypeManager $entity_type_manager,
-    EntityFieldManager $entity_field_manager,
+    EntityTypeManagerInterface $entity_type_manager,
+    EntityFieldManagerInterface $entity_field_manager,
     QueryFactory $entity_query,
     ContextManager $context_manager,
     FlysystemFactory $flysystem_factory,

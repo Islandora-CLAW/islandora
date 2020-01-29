@@ -3,7 +3,7 @@
 namespace Drupal\islandora\Plugin\Action;
 
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Entity\EntityTypeManager;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\jwt\Authentication\Provider\JwtAuth;
 use Drupal\islandora\EventGenerator\EmitEvent;
@@ -41,7 +41,7 @@ class EmitMediaEvent extends EmitEvent {
    *   The plugin implementation definition.
    * @param \Drupal\Core\Session\AccountInterface $account
    *   Current user.
-   * @param \Drupal\Core\Entity\EntityTypeManager $entity_type_manager
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   Entity type manager.
    * @param \Drupal\islandora\EventGenerator\EventGeneratorInterface $event_generator
    *   EventGenerator service to serialize AS2 events.
@@ -57,7 +57,7 @@ class EmitMediaEvent extends EmitEvent {
     $plugin_id,
     $plugin_definition,
     AccountInterface $account,
-    EntityTypeManager $entity_type_manager,
+    EntityTypeManagerInterface $entity_type_manager,
     EventGeneratorInterface $event_generator,
     StatefulStomp $stomp,
     JwtAuth $auth,

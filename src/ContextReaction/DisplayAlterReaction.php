@@ -2,7 +2,7 @@
 
 namespace Drupal\islandora\ContextReaction;
 
-use Drupal\Core\Entity\EntityTypeManager;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\context\ContextReactionPluginBase;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
@@ -18,14 +18,14 @@ abstract class DisplayAlterReaction extends ContextReactionPluginBase implements
   /**
    * View mode storage.
    *
-   * @var \Drupal\Core\Entity\EntityTypeManager
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entityTypeManager;
 
   /**
    * {@inheritdoc}
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManager $entity_type_manager) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->entityTypeManager = $entity_type_manager;
   }

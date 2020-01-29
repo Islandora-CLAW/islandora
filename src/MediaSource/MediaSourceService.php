@@ -2,9 +2,9 @@
 
 namespace Drupal\islandora\MediaSource;
 
-use Drupal\Core\Entity\EntityTypeManager;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Query\QueryFactory;
-use Drupal\Core\File\FileSystem;
+use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\file\FileInterface;
@@ -25,7 +25,7 @@ class MediaSourceService {
   /**
    * The entity type manager.
    *
-   * @var \Drupal\Core\Entity\EntityTypeManager
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entityTypeManager;
 
@@ -53,7 +53,7 @@ class MediaSourceService {
   /**
    * File system service.
    *
-   * @var \Drupal\Core\File\FileSystem
+   * @var \Drupal\Core\File\FileSystemInterface
    */
   protected $fileSystem;
 
@@ -67,7 +67,7 @@ class MediaSourceService {
   /**
    * Constructor.
    *
-   * @param \Drupal\Core\Entity\EntityTypeManager $entity_type_manager
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
    * @param \Drupal\Core\Session\AccountInterface $account
    *   The current user.
@@ -75,17 +75,17 @@ class MediaSourceService {
    *   Language manager.
    * @param \Drupal\Core\Entity\Query\QueryFactory $entity_query
    *   Entity query.
-   * @param \Drupal\Core\File\FileSystem $file_system
+   * @param \Drupal\Core\File\FileSystemInterface $file_system
    *   File system service.
    * @param \Drupal\islandora\IslandoraUtils $islandora_utils
    *   Utility service.
    */
   public function __construct(
-    EntityTypeManager $entity_type_manager,
+    EntityTypeManagerInterface $entity_type_manager,
     AccountInterface $account,
     LanguageManagerInterface $language_manager,
     QueryFactory $entity_query,
-    FileSystem $file_system,
+    FileSystemInterface $file_system,
     IslandoraUtils $islandora_utils
   ) {
     $this->entityTypeManager = $entity_type_manager;

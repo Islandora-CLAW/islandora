@@ -3,7 +3,7 @@
 namespace Drupal\islandora\Plugin\Condition;
 
 use Drupal\Core\Condition\ConditionPluginBase;
-use Drupal\Core\Entity\EntityTypeManager;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -23,7 +23,7 @@ class NodeIsPublished extends ConditionPluginBase implements ContainerFactoryPlu
   /**
    * Term storage.
    *
-   * @var \Drupal\Core\Entity\EntityTypeManager
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entityTypeManager;
 
@@ -39,14 +39,14 @@ class NodeIsPublished extends ConditionPluginBase implements ContainerFactoryPlu
    *   The plugin_id for the plugin instance.
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
-   * @param \Drupal\Core\Entity\EntityTypeManager $entity_type_manager
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   Entity type manager.
    */
   public function __construct(
     array $configuration,
     $plugin_id,
     $plugin_definition,
-    EntityTypeManager $entity_type_manager
+    EntityTypeManagerInterface $entity_type_manager
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->entityTypeManager = $entity_type_manager;

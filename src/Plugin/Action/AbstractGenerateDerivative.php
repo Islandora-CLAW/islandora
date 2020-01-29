@@ -3,7 +3,7 @@
 namespace Drupal\islandora\Plugin\Action;
 
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Entity\EntityTypeManager;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
@@ -12,7 +12,7 @@ use Drupal\islandora\EventGenerator\EmitEvent;
 use Drupal\islandora\EventGenerator\EventGeneratorInterface;
 use Drupal\islandora\MediaSource\MediaSourceService;
 use Drupal\jwt\Authentication\Provider\JwtAuth;
-use Drupal\token\Token;
+use Drupal\token\TokenInterface;
 use Stomp\StatefulStomp;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -38,7 +38,7 @@ class AbstractGenerateDerivative extends EmitEvent {
   /**
    * Token replacement service.
    *
-   * @var \Drupal\token\Token
+   * @var \Drupal\token\TokenInterface
    */
   protected $token;
 
@@ -53,7 +53,7 @@ class AbstractGenerateDerivative extends EmitEvent {
    *   The plugin implementation definition.
    * @param \Drupal\Core\Session\AccountInterface $account
    *   Current user.
-   * @param \Drupal\Core\Entity\EntityTypeManager $entity_type_manager
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   Entity type manager.
    * @param \Drupal\islandora\EventGenerator\EventGeneratorInterface $event_generator
    *   EventGenerator service to serialize AS2 events.
@@ -65,7 +65,7 @@ class AbstractGenerateDerivative extends EmitEvent {
    *   Islandora utility functions.
    * @param \Drupal\islandora\MediaSource\MediaSourceService $media_source
    *   Media source service.
-   * @param \Drupal\token\Token $token
+   * @param \Drupal\token\TokenInterface $token
    *   Token service.
    */
   public function __construct(
@@ -73,13 +73,13 @@ class AbstractGenerateDerivative extends EmitEvent {
     $plugin_id,
     $plugin_definition,
     AccountInterface $account,
-    EntityTypeManager $entity_type_manager,
+    EntityTypeManagerInterface $entity_type_manager,
     EventGeneratorInterface $event_generator,
     StatefulStomp $stomp,
     JwtAuth $auth,
     IslandoraUtils $utils,
     MediaSourceService $media_source,
-    Token $token
+    TokenInterface $token
   ) {
     parent::__construct(
       $configuration,
