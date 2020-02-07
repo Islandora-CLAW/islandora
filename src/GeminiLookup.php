@@ -144,7 +144,7 @@ class GeminiLookup {
       }
     }
     catch (RequestException $e) {
-      $this->logger->warn(
+      $this->logger->warning(
         "Error performing Gemini lookup for media. Fedora HEAD to @url returned @status => @message",
         [
           '@url' => $urls['fedora'],
