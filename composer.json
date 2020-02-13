@@ -36,6 +36,9 @@
     "drupal/coder": "*",
     "sebastian/phpcpd": "*"
   },
+  "suggest": {
+    "drupal/transliterate_filenames": "Sanitizes filenames when they are uploaded so they don't break your repository." 
+  },
   "license": "GPL-2.0+",
   "authors": [
     {
