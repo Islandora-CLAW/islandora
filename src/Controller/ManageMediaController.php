@@ -22,7 +22,11 @@ class ManageMediaController extends ManageMembersController {
    *   Array of media types to add.
    */
   public function addToNodePage(NodeInterface $node) {
-    return $this->generateTypeList(
+    // The role fedoraAdmin is currently hardcoded and
+    // must be in the user's profile for successful writes to Fedora.
+    $roles = $this->currentUser->getRoles();
+    $checked_fields = ['file', 'image'];
+    $list = $this->generateTypeList(
       'media',
       'media_type',
       'entity.media.add_form',
@@ -30,6 +34,22 @@ class ManageMediaController extends ManageMembersController {
       $node,
       'field_media_of'
     );
+    if (!in_array('fedoraadmin', $roles)) {
+      $bundles = $list['#bundles'];
+      foreach ($bundles as $label => $bundle) {
+        $fields = $this->entityFieldManager->getFieldDefinitions('media', $label);
+        foreach ($fields as $field) {
+          $file_type = $field->getType();
+          if (in_array($file_type, $checked_fields)) {
+            $scheme = $field->getSetting('uri_scheme');
+            if ($scheme == 'fedora') {
+              unset($list['#bundles'][$label]);
+            }
+          }
+        }
+      }
+    }
+    return $list;
   }
 
   /**

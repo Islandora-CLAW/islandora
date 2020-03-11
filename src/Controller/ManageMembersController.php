@@ -7,6 +7,7 @@ use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\Entity\Controller\EntityController;
 use Drupal\Core\Entity\EntityFieldManager;
 use Drupal\Core\Link;
+use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\node\NodeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -35,6 +36,12 @@ class ManageMembersController extends EntityController {
    * @var \Drupal\Core\Render\RendererInterface
    */
   protected $renderer;
+  /**
+   * The current user.
+   *
+   * @var \Drupal\Core\Session\AccountProxyInterface
+   */
+  protected $currentUser;
 
   /**
    * Constructor.
@@ -45,15 +52,20 @@ class ManageMembersController extends EntityController {
    *   The entity field manager.
    * @param \Drupal\Core\Render\RendererInterface $renderer
    *   The renderer.
+   * @param \Drupal\Core\Session\AccountProxyInterface $currentUser
+   *   The current user.
    */
   public function __construct(
     EntityTypeManagerInterface $entity_type_manager,
     EntityFieldManager $entity_field_manager,
-    RendererInterface $renderer
+    RendererInterface $renderer,
+    AccountProxyInterface $currentUser
   ) {
     $this->entityTypeManager = $entity_type_manager;
     $this->entityFieldManager = $entity_field_manager;
     $this->renderer = $renderer;
+    $this->currentUser = $currentUser;
+
   }
 
   /**
@@ -63,7 +75,8 @@ class ManageMembersController extends EntityController {
     return new static(
       $container->get('entity_type.manager'),
       $container->get('entity_field.manager'),
-      $container->get('renderer')
+      $container->get('renderer'),
+      $container->get('current_user')
     );
   }
 
