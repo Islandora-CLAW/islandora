@@ -145,12 +145,13 @@ class NodeHasParent extends ConditionPluginBase implements ContainerFactoryPlugi
           $nids = $field->getValue();
           foreach ($nids as $nid) {
             if ($nid['target_id'] == $this->configuration['parent_nid']) {
-              return $this->isNegated() ? FALSE : TRUE;
+              return TRUE;
             }
           }
         }
       }
     }
+    return FALSE;
   }
 
   /**

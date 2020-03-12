@@ -154,12 +154,12 @@ class NodeHadNamespace extends ConditionPluginBase implements ContainerFactoryPl
       foreach ($registered_namespaces as &$registered_namespace) {
         $registered_namespace = trim($registered_namespace);
         if (in_array($namespace, $registered_namespaces)) {
-          return $this->isNegated() ? FALSE : TRUE;
+          return TRUE;
         }
       }
     }
 
-    return $this->isNegated() ? TRUE : FALSE;
+    return FALSE;
   }
 
   /**

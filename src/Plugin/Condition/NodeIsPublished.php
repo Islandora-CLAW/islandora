@@ -72,11 +72,12 @@ class NodeIsPublished extends ConditionPluginBase implements ContainerFactoryPlu
     if (!$node  && !$this->isNegated()) {
       return FALSE;
     }
-    if ($node->isPublished() && !$this->isNegated()) {
-      return TRUE;
+    elseif (!$node) {
+      return FALSE;
     }
-
-    return FALSE;
+    else {
+      return $node->isPublished();
+    }
   }
 
   /**

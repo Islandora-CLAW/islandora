@@ -61,11 +61,11 @@ class EntityBundle extends ConditionPluginBase {
       if ($context->hasContextValue()) {
         $entity = $context->getContextValue();
         if (!empty($this->configuration['bundles'][$entity->bundle()])) {
-          return !$this->isNegated();
+          return TRUE;
         }
       }
     }
-    return $this->isNegated();
+    return FALSE;
   }
 
   /**
