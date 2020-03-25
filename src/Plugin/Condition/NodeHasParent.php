@@ -15,7 +15,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * @Condition(
  *   id = "node_has_parent",
  *   label = @Translation("Node has parent"),
- *   context = {
+ *   context_definitions = {
  *     "node" = @ContextDefinition("entity:node", required = TRUE , label = @Translation("node"))
  *   }
  * )

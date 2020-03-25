@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\islandora_breadcrumbs\Functional;
 
+use Drupal\Core\Url;
 use Drupal\Tests\islandora\Functional\IslandoraFunctionalTestBase;
 use Drupal\Tests\system\Functional\Menu\AssertBreadcrumbTrait;
 
@@ -85,6 +86,14 @@ class BreadcrumbsTest extends IslandoraFunctionalTestBase {
     ]);
     $this->nodeD->set('field_member_of', [$this->nodeC->id()]);
     $this->nodeD->save();
+
+    $this->drupalPlaceBlock(
+      'system_breadcrumb_block',
+      [
+        'region' => 'content',
+        'theme' => $this->config('system.theme')->get('default'),
+      ]
+    );
   }
 
   /**
@@ -92,9 +101,10 @@ class BreadcrumbsTest extends IslandoraFunctionalTestBase {
    */
   public function testDefaults() {
     $breadcrumbs = [
-      $this->nodeC->toUrl()->toString() => $this->nodeC->label(),
-      $this->nodeB->toUrl()->toString() => $this->nodeB->label(),
+      Url::fromRoute('<front>')->toString() => 'Home',
       $this->nodeA->toUrl()->toString() => $this->nodeA->label(),
+      $this->nodeB->toUrl()->toString() => $this->nodeB->label(),
+      $this->nodeC->toUrl()->toString() => $this->nodeC->label(),
     ];
     $this->assertBreadcrumb($this->nodeD->toUrl()->toString(), $breadcrumbs);
 

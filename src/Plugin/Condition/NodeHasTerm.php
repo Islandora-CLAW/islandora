@@ -16,7 +16,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * @Condition(
  *   id = "node_has_term",
  *   label = @Translation("Node has term with URI"),
- *   context = {
+ *   context_definitions = {
  *     "node" = @ContextDefinition("entity:node", required = TRUE , label = @Translation("node"))
  *   }
  * )

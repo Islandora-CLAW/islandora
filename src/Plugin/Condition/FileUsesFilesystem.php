@@ -16,7 +16,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * @Condition(
  *   id = "file_uses_filesystem",
  *   label = @Translation("File uses filesystem"),
- *   context = {
+ *   context_definitions = {
  *     "file" = @ContextDefinition("entity:file", required = TRUE , label = @Translation("file"))
  *   }
  * )

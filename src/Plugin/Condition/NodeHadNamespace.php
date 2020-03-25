@@ -16,7 +16,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * @Condition(
  *   id = "node_had_namespace",
  *   label = @Translation("Node had 7.x namespace"),
- *   context = {
+ *   context_definitions = {
  *     "node" = @ContextDefinition("entity:node", required = TRUE , label = @Translation("node"))
  *   }
  * )

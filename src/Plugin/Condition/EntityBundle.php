@@ -11,7 +11,7 @@ use Drupal\Core\Form\FormStateInterface;
  * @Condition(
  *   id = "entity_bundle",
  *   label = @Translation("Entity Bundle"),
- *   context = {
+ *   context_definitions = {
  *     "node" = @ContextDefinition("entity:node", required = FALSE, label = @Translation("Node")),
  *     "media" = @ContextDefinition("entity:media", required = FALSE, label = @Translation("Media")),
  *     "taxonomy_term" = @ContextDefinition("entity:taxonomy_term", required = FALSE, label = @Translation("Term"))

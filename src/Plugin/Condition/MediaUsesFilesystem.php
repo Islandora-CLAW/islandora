@@ -13,7 +13,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * @Condition(
  *   id = "media_uses_filesystem",
  *   label = @Translation("Media uses filesystem"),
- *   context = {
+ *   context_definitions = {
  *     "media" = @ContextDefinition("entity:media", required = TRUE , label = @Translation("media"))
  *   }
  * )

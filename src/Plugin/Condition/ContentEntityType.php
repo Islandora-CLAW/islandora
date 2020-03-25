@@ -11,7 +11,7 @@ use Drupal\Core\Form\FormStateInterface;
  * @Condition(
  *   id = "content_entity_type",
  *   label = @Translation("Content Entity Type"),
- *   context = {
+ *   context_definitions = {
  *     "node" = @ContextDefinition("entity:node", required = FALSE, label = @Translation("Node")),
  *     "media" = @ContextDefinition("entity:media", required = FALSE, label = @Translation("Media")),
  *     "file" = @ContextDefinition("entity:file", required = FALSE, label = @Translation("File")),
